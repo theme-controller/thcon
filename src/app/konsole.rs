@@ -1,6 +1,6 @@
-use crate::thcon::Themeable;
-use crate::thcon::operation::Operation;
-use crate::thcon::config::Config;
+use crate::Themeable;
+use crate::operation::Operation;
+use crate::config::Config;
 
 #[derive(Clone,Debug)]
 pub struct Konsole {}

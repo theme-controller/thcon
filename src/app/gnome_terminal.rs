@@ -1,6 +1,6 @@
-use crate::thcon::themeable::Themeable;
-use crate::thcon::operation::Operation;
-use crate::thcon::config::Config;
+use crate::themeable::Themeable;
+use crate::operation::Operation;
+use crate::config::Config;
 
 #[derive(Clone,Debug)]
 pub struct GnomeTerminal {}

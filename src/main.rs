@@ -1,10 +1,6 @@
-#[macro_use]
-extern crate lazy_static;
-
 extern crate clap;
 use clap::{Arg, App};
 
-mod thcon;
 use thcon::operation::Operation;
 
 fn main() {

@@ -1,5 +1,6 @@
-use super::config::Config;
-use super::operation::Operation;
+use crate::config::Config;
+use crate::operation::Operation;
+
 
 pub trait Themeable: std::fmt::Debug + std::marker::Sync {
     fn switch(&self, operation: &Operation) -> Result<(), ()>;
