@@ -9,6 +9,7 @@ pub mod app;
 pub use config::Config;
 pub use themeable::Themeable;
 pub use app::konsole::Konsole;
+pub use app::gnome_terminal::GnomeTerminal;
 
 #[derive(Debug, Clone)]
 pub struct UnsupportedApp{
@@ -21,9 +22,11 @@ impl fmt::Display for UnsupportedApp {
     }
 }
 
-const KONSOLE_INSTANCE: Konsole = Konsole {};
+const KONSOLE: Konsole = Konsole {};
+const GNOME_TERMINAL: GnomeTerminal = GnomeTerminal {};
 lazy_static! {
     pub static ref KNOWN_APPS: HashMap<&'static str, &'static dyn Themeable> = [
-        ("konsole", &KONSOLE_INSTANCE as &dyn Themeable)
+        ("konsole", &KONSOLE as &dyn Themeable),
+        ("gnome-terminal", &GNOME_TERMINAL as &dyn Themeable)
     ].iter().cloned().collect();
 }
