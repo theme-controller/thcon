@@ -2,6 +2,7 @@
 extern crate lazy_static;
 
 use std::collections::HashMap;
+use std::error::Error;
 
 pub mod config;
 pub mod operation;
@@ -13,12 +14,17 @@ pub use themeable::Themeable;
 pub use app::konsole::Konsole;
 pub use app::gnome_terminal::GnomeTerminal;
 
-const KONSOLE: Konsole = Konsole {};
-const GNOME_TERMINAL: GnomeTerminal = GnomeTerminal {};
+pub struct Thcon<'a> {
+    pub known_apps: HashMap<&'a str, Box<dyn Themeable>>,
+}
 
-lazy_static! {
-    pub static ref KNOWN_APPS: HashMap<&'static str, &'static dyn Themeable> = [
-        ("konsole", &KONSOLE as &dyn Themeable),
-        ("gnome-terminal", &GNOME_TERMINAL as &dyn Themeable)
-    ].iter().cloned().collect();
+pub fn init<'a>() -> Result<Thcon<'a>, Box<dyn Error>> {
+    let mut known_apps = HashMap::new();
+    known_apps.insert("konsole", Box::new(Konsole::new()?) as Box<dyn Themeable>);
+
+    let instance = Thcon {
+        known_apps
+    };
+
+    Ok(instance)
 }

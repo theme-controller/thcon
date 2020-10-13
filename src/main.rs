@@ -40,10 +40,12 @@ fn main() {
         _ => panic!("asdfasdfasdf")
     };
 
+    let thcon = thcon::init().unwrap();
+
     if let Some(ref matches) = matches.subcommand_matches("dark") {
         let maybe_apps = matches.values_of("app");
         maybe_apps.unwrap().map(|app_name| {
-            match thcon::KNOWN_APPS.get(app_name) {
+            match thcon.known_apps.get(app_name) {
                 Some(app) => app.to_owned(),
                 None => panic!("Found unknown application '{}'", app_name),
             }
