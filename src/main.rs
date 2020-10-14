@@ -33,24 +33,23 @@ fn main() {
                     )
                     .get_matches();
 
-    let subcommand = match matches.subcommand_name() {
-        Some("light") => Operation::Lighten,
-        Some("dark") => Operation::Darken,
-        Some("invert") => Operation::Invert,
-        _ => panic!("asdfasdfasdf")
+    let (operation, subcommand) = match matches.subcommand() {
+        ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
+        ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
+        ("invert", Some(subcommand)) => (Operation::Invert, subcommand),
+        (other, Some(_)) => panic!("Invalid subcommand name {}", other),
+        _ => panic!("Could not find subcommand")
     };
 
     let thcon = thcon::init().unwrap();
 
-    if let Some(ref matches) = matches.subcommand_matches("dark") {
-        let maybe_apps = matches.values_of("app");
-        maybe_apps.unwrap().map(|app_name| {
-            match thcon.known_apps.get(app_name) {
-                Some(app) => app.to_owned(),
-                None => panic!("Found unknown application '{}'", app_name),
-            }
-        }).for_each(|app| {
-            app.switch(&subcommand).unwrap();
-        });
-    }
+    let maybe_apps = subcommand.values_of("app");
+    maybe_apps.unwrap().map(|app_name| {
+        match thcon.known_apps.get(app_name) {
+            Some(app) => app.to_owned(),
+            None => panic!("Found unknown application '{}'", app_name),
+        }
+    }).for_each(|app| {
+        app.switch(&operation).unwrap();
+    });
 }
