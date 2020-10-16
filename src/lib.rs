@@ -21,6 +21,7 @@ pub struct Thcon<'a> {
 pub fn init<'a>() -> Result<Thcon<'a>, Box<dyn Error>> {
     let mut known_apps = HashMap::new();
     known_apps.insert("konsole", Box::new(Konsole::new()?) as Box<dyn Themeable>);
+    known_apps.insert("gnome-terminal", Box::new(GnomeTerminal::new()?) as Box<dyn Themeable>);
 
     let instance = Thcon {
         known_apps

@@ -5,7 +5,6 @@ use crate::config::Config;
 use xml::reader::{EventReader, XmlEvent};
 
 use std::error::Error;
-use std::collections::HashMap;
 use std::time::Duration;
 use dbus::blocking::Connection;
 
@@ -70,6 +69,11 @@ impl Konsole {
     fn set_profile_name(&self, service_id: &String, session_id: &String, profile_name: &String) -> Result<(), Box<dyn Error>> {
         let proxy = self.dbus.with_proxy(service_id, format!("/Sessions/{}", session_id), Duration::from_millis(2500));
         let _: () = proxy.method_call("org.kde.konsole.Session", "setProfile", (profile_name,))?;
+
+        Ok(())
+    }
+
+    fn set_default_profile(&self, profile_name: &String) -> Result<(), Box<dyn Error>> {
 
         Ok(())
     }
