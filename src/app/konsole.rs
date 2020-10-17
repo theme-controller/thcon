@@ -13,10 +13,10 @@ pub struct Konsole {
 }
 
 impl Konsole {
-    pub fn new() -> Result<Self, Box<dyn Error>> {
-        Ok(Konsole {
-            dbus: Connection::new_session()?
-        })
+    pub fn new() -> Self {
+        Konsole {
+            dbus: Connection::new_session().unwrap(),
+        }
     }
 
     fn get_services(&self) -> Result<Vec<String>, Box<dyn Error>> {

@@ -16,11 +16,10 @@ pub struct GnomeTerminal {
 }
 
 impl GnomeTerminal {
-    pub fn new() -> Result<Self, Box<dyn Error>> {
-        Ok(GnomeTerminal {
-            dbus: Connection::new_session()?
-        })
-
+    pub fn new() -> Self {
+        GnomeTerminal {
+            dbus: Connection::new_session().unwrap(),
+        }
     }
 
     fn get_window_ids(&self) -> Result<Vec<String>, Box<dyn Error>> {

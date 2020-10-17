@@ -1,3 +1,19 @@
-pub mod konsole;
-pub mod gnome_terminal;
-pub mod plasma;
+mod konsole;
+mod gnome_terminal;
+mod plasma;
+
+pub use konsole::Konsole;
+pub use gnome_terminal::GnomeTerminal;
+pub use plasma::Plasma;
+
+use std::option::Option;
+use crate::themeable::Themeable;
+
+pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
+    return match name {
+        "konsole" => Some(Box::new(Konsole::new())),
+        "gnome-terminal" => Some(Box::new(GnomeTerminal::new())),
+        "plasma" => Some(Box::new(Plasma::new())),
+        _ => None,
+    };
+}

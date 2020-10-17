@@ -1,7 +1,8 @@
 extern crate clap;
 use clap::{Arg, App};
 
-use thcon::operation::Operation;
+use thcon::Operation;
+use thcon::app;
 
 fn main() {
     let matches = App::new("thcon")
@@ -41,14 +42,12 @@ fn main() {
         _ => panic!("Could not find subcommand")
     };
 
-    let thcon = thcon::init().unwrap();
-
     let maybe_apps = subcommand.values_of("app");
-    maybe_apps.unwrap().map(|app_name| {
-        match thcon.known_apps.get(app_name) {
-            Some(app) => app.to_owned(),
-            None => panic!("Found unknown application '{}'", app_name),
-        }
+    maybe_apps.unwrap().filter_map(|app_name| {
+        app::get(app_name).or_else(|| {
+            println!("Ignoring unknown app name '{}'", app_name);
+            None
+        })
     }).for_each(|app| {
         app.switch(&operation).unwrap();
     });
