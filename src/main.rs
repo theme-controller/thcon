@@ -1,8 +1,11 @@
-extern crate clap;
+use std::vec::Vec;
+
 use clap::{Arg, App};
+use rayon::prelude::*;
 
 use thcon::Operation;
 use thcon::app;
+use thcon::Themeable;
 
 fn main() {
     let matches = App::new("thcon")
@@ -43,12 +46,16 @@ fn main() {
     };
 
     let maybe_apps = subcommand.values_of("app");
-    maybe_apps.unwrap().filter_map(|app_name| {
-        app::get(app_name).or_else(|| {
-            println!("Ignoring unknown app name '{}'", app_name);
-            None
-        })
-    }).for_each(|app| {
+    let app_names: Vec<&str> = maybe_apps.unwrap().collect();
+    app_names.par_iter().for_each(|app_name| {
+        let app: Box<dyn Themeable> = match app::get(app_name) {
+            None => {
+                println!("Ignoring unknown app name '{}'", app_name);
+                return;
+            },
+            Some(app) => app,
+        };
+
         app.switch(&operation).unwrap();
     });
 }
