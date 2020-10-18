@@ -11,4 +11,4 @@ clap = "2.33.3"
 dbus = "0.9.0"
 xml-rs = "0.8"
 rayon = "1.4.1"
-# indicatif =  { version = "0.15.0", features = ["rayon"] }
+indicatif =  { version = "0.15.0", features = ["rayon"] }

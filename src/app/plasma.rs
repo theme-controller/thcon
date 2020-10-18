@@ -15,8 +15,6 @@ impl Plasma {
 
 impl Themeable for Plasma {
     fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        println!("Switching plasma to {}", operation);
-
         let theme = match operation {
             Operation::Lighten => "org.fedoraproject.fedora.desktop",
             Operation::Darken => "org.kde.breezedark.desktop",

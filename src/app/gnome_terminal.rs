@@ -78,19 +78,16 @@ impl GnomeTerminal {
 
 impl Themeable for GnomeTerminal {
     fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        println!("Switching gnome-terminal to {}", operation);
-
-        let window_ids = self.get_window_ids()?;
-        println!("found gnome-terminal windows: {:?}", window_ids);
-
         let theme = match operation {
             Operation::Darken => String::from("235dcfe6-3db0-4f8b-b01c-28e959a3c3ce"),
             Operation::Lighten => String::from("efb1da39-d74e-40e4-b21f-d9a7a55fec58"),
             _ => panic!("Unsupported operation {}", operation),
         };
-        for window_id in window_ids.iter() {
+
+        for window_id in self.get_window_ids()?.iter() {
             self.set_profile(window_id, &theme)?;
         }
+
         Result::Ok(())
     }
 

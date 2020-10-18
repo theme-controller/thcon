@@ -81,18 +81,12 @@ impl Konsole {
 
 impl Themeable for Konsole {
     fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        println!("Switching konsole to {}", operation);
-
-        let service_ids = self.get_services()?;
-        println!("found konsoles: {:?}", service_ids);
-
-        let sessions: Vec<(String, Vec<String>)> = service_ids.into_iter()
+        let sessions: Vec<(String, Vec<String>)> = self.get_services()?.into_iter()
             .map(|session| {
                 let session_ids = self.get_session_ids(&session).unwrap();
                 (session, session_ids)
             })
             .collect();
-        println!("found sessions: {:?}", sessions);
 
         let theme = match operation {
             Operation::Darken => String::from("Profile 1"),

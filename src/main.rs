@@ -2,6 +2,7 @@ use std::vec::Vec;
 
 use clap::{Arg, App};
 use rayon::prelude::*;
+use indicatif::{ProgressBar,ProgressStyle};
 
 use thcon::Operation;
 use thcon::app;
@@ -45,17 +46,22 @@ fn main() {
         _ => panic!("Could not find subcommand")
     };
 
-    let maybe_apps = subcommand.values_of("app");
-    let app_names: Vec<&str> = maybe_apps.unwrap().collect();
-    app_names.par_iter().for_each(|app_name| {
-        let app: Box<dyn Themeable> = match app::get(app_name) {
+    let app_names: Vec<&str> = subcommand.values_of("app").unwrap().collect();
+
+    let pb = ProgressBar::new(app_names.len() as u64)
+        .with_style(ProgressStyle::default_bar());
+
+    app_names.par_iter().for_each(|name| {
+        let app: Box<dyn Themeable> = match app::get(name) {
             None => {
-                println!("Ignoring unknown app name '{}'", app_name);
                 return;
             },
             Some(app) => app,
         };
 
         app.switch(&operation).unwrap();
+        pb.inc(1);
     });
+
+    pb.finish_and_clear();
 }
