@@ -49,10 +49,9 @@ fn main() -> std::io::Result<()> {
             "thcon",
             "thcon.toml"
         ].iter().collect();
-    println!("config_path = {:?}", config_path);
+    println!("reading config from '{:?}'", config_path);
     let config = fs::read_to_string(config_path)?;
     let config: Config = toml::from_str(config.as_str())?;
-    println!("Found a config file!  Parsed into: {:#?}", config);
 
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
