@@ -1,15 +1,23 @@
 use crate::themeable::Themeable;
 use crate::operation::Operation;
-use crate::config::Config;
+use crate::config::Config as ThconConfig;
 
 use xml::reader::{EventReader, XmlEvent};
 
 use std::vec::Vec;
+use std::io;
 use std::error::Error;
 use std::time::Duration;
 use dbus::blocking::Connection;
 use dbus::arg::Variant;
 use dbus::arg::Dict;
+use serde::Deserialize;
+
+#[derive(Debug,Deserialize)]
+pub struct Config {
+    light: String,
+    dark: String
+}
 
 pub struct GnomeTerminal {
     dbus: Connection,
@@ -77,10 +85,24 @@ impl GnomeTerminal {
 }
 
 impl Themeable for GnomeTerminal {
-    fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let config = match &config.gnome_terminal {
+            Some(gnome_terminal) => gnome_terminal,
+            None => {
+                return Err(
+                    Box::new(
+                        io::Error::new(
+                            io::ErrorKind::NotFound,
+                            "Couldn't find [plasma] section in thcon.toml"
+                        )
+                    )
+                );
+            }
+        };
+
         let theme = match operation {
-            Operation::Darken => String::from("235dcfe6-3db0-4f8b-b01c-28e959a3c3ce"),
-            Operation::Lighten => String::from("efb1da39-d74e-40e4-b21f-d9a7a55fec58"),
+            Operation::Darken => &config.dark,
+            Operation::Lighten => &config.light,
             _ => panic!("Unsupported operation {}", operation),
         };
 
@@ -92,10 +114,6 @@ impl Themeable for GnomeTerminal {
     }
 
     fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Result::Ok(())
-    }
-
-    fn parse_config(&self, config: Config) -> Result<(), ()> {
         Result::Ok(())
     }
 }

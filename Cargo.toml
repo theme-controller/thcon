@@ -14,3 +14,5 @@ rayon = "1.4.1"
 indicatif =  { version = "0.15.0", features = ["rayon"] }
 dirs = "3.0.1"
 regex = "1"
+serde = { version = "1.0.117", features = ["derive"] }
+toml = "0.5.7"

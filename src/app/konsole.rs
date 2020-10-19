@@ -1,12 +1,20 @@
 use crate::Themeable;
 use crate::operation::Operation;
-use crate::config::Config;
+use crate::config::Config as ThconConfig;
 
 use xml::reader::{EventReader, XmlEvent};
 
 use std::error::Error;
+use std::io;
 use std::time::Duration;
 use dbus::blocking::Connection;
+use serde::Deserialize;
+
+#[derive(Debug,Deserialize)]
+pub struct Config {
+    light: String,
+    dark: String,
+}
 
 pub struct Konsole {
     dbus: Connection,
@@ -80,7 +88,21 @@ impl Konsole {
 }
 
 impl Themeable for Konsole {
-    fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let config = match &config.konsole {
+            Some(konsole) => konsole,
+            None => {
+                return Err(
+                    Box::new(
+                        io::Error::new(
+                            io::ErrorKind::NotFound,
+                            "Couldn't find [plasma] section in thcon.toml"
+                        )
+                    )
+                );
+            }
+        };
+
         let sessions: Vec<(String, Vec<String>)> = self.get_services()?.into_iter()
             .map(|session| {
                 let session_ids = self.get_session_ids(&session).unwrap();
@@ -89,8 +111,8 @@ impl Themeable for Konsole {
             .collect();
 
         let theme = match operation {
-            Operation::Darken => String::from("Profile 1"),
-            Operation::Lighten => String::from("zipper"),
+            Operation::Darken => &config.dark,
+            Operation::Lighten => &config.light,
             _ => panic!("Unsupported operation {}", operation),
         };
         for (service_id, session_ids) in sessions.iter() {
@@ -103,10 +125,6 @@ impl Themeable for Konsole {
     }
 
     fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Result::Ok(())
-    }
-
-    fn parse_config(&self, config: Config) -> Result<(), ()> {
         Result::Ok(())
     }
 }

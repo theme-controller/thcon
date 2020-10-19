@@ -1,23 +1,39 @@
 use crate::Themeable;
 use crate::operation::Operation;
-use crate::config::Config;
+use crate::config::Config as ThconConfig;
 
 use std::error::Error;
+use std::io;
 use std::process::Command;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct Config {
+    light: String,
+    dark: String,
+}
 
 pub struct Plasma;
 
-impl Plasma {
-    pub fn new() -> Self {
-        Plasma {}
-    }
-}
-
 impl Themeable for Plasma {
-    fn switch(&self, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let config = match &config.plasma {
+            Some(plasma) => plasma,
+            None => {
+                return Err(
+                    Box::new(
+                        io::Error::new(
+                            io::ErrorKind::NotFound,
+                            "Couldn't find [plasma] section in thcon.toml"
+                        )
+                    )
+                );
+            }
+        };
+
         let theme = match operation {
-            Operation::Lighten => "org.fedoraproject.fedora.desktop",
-            Operation::Darken => "org.kde.breezedark.desktop",
+            Operation::Lighten => &config.light,
+            Operation::Darken => &config.dark,
             _ => panic!("Unsupported operation {}", operation),
         };
 
@@ -31,10 +47,6 @@ impl Themeable for Plasma {
     }
 
     fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Ok(())
-    }
-
-    fn parse_config(&self, config: Config) -> Result<(), ()> {
         Ok(())
     }
 }

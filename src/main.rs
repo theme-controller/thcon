@@ -1,4 +1,5 @@
 use std::vec::Vec;
+use std::path::PathBuf;
 
 use clap::{Arg, App};
 use rayon::prelude::*;
@@ -6,9 +7,14 @@ use indicatif::{ProgressBar,ProgressStyle};
 
 use thcon::Operation;
 use thcon::app;
+use thcon::Config;
 use thcon::Themeable;
 
-fn main() {
+use dirs;
+use std::fs;
+use toml;
+
+fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
                     .version("1.0")
                     .author("Sean Barag <sean@barag.org>")
@@ -38,6 +44,16 @@ fn main() {
                     )
                     .get_matches();
 
+    let config_path: PathBuf = [
+            dirs::config_dir().unwrap().to_str().unwrap(),
+            "thcon",
+            "thcon.toml"
+        ].iter().collect();
+    println!("config_path = {:?}", config_path);
+    let config = fs::read_to_string(config_path)?;
+    let config: Config = toml::from_str(config.as_str())?;
+    println!("Found a config file!  Parsed into: {:#?}", config);
+
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
         ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
@@ -59,9 +75,11 @@ fn main() {
             Some(app) => app,
         };
 
-        app.switch(&operation).unwrap();
+        app.switch(&config, &operation).unwrap();
         pb.inc(1);
     });
 
     pb.finish_and_clear();
+
+    Ok(())
 }
