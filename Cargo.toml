@@ -7,9 +7,11 @@ license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[build-dependencies]
+cfg_aliases = "0.1.1"
+
 [dependencies]
 clap = "2.33.3"
-dbus = "0.9.0"
 xml-rs = "0.8"
 rayon = "1.4.1"
 indicatif =  { version = "0.15.0", features = ["rayon"] }
@@ -17,3 +19,6 @@ dirs = "3.0.1"
 regex = "1"
 serde = { version = "1.0.117", features = ["derive"] }
 toml = "0.5.7"
+
+[target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
+dbus = "0.9.0"
