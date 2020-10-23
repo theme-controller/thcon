@@ -5,12 +5,18 @@ pub mod gnome_terminal;
 pub mod plasma;
 pub mod vscode;
 
+#[cfg(macos)]
+pub mod macos;
+
 #[cfg(dbus)]
 pub use konsole::Konsole;
 #[cfg(dbus)]
 pub use gnome_terminal::GnomeTerminal;
 pub use plasma::Plasma;
 pub use vscode::VSCode;
+
+#[cfg(macos)]
+pub use macos::MacOS;
 
 use std::option::Option;
 use crate::themeable::Themeable;
@@ -21,6 +27,8 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "konsole" => Some(Box::new(Konsole::new())),
         #[cfg(dbus)]
         "gnome-terminal" => Some(Box::new(GnomeTerminal::new())),
+        #[cfg(macos)]
+        "macos" => Some(Box::new(MacOS {})),
         "plasma" => Some(Box::new(Plasma {})),
         "vscode" => Some(Box::new(VSCode {})),
         _ => None,
