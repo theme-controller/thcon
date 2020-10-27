@@ -20,5 +20,8 @@ regex = "1"
 serde = { version = "1.0.117", features = ["derive"] }
 toml = "0.5.7"
 
+[target.'cfg(not(windows))'.dependencies]
+xdg = "2.2.0"
+
 [target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
 dbus = "0.9.0"
