@@ -2,6 +2,7 @@
 name = "thcon"
 version = "0.2.0"
 authors = ["Sean Barag <sean@barag.org>"]
+description = "A configurable theme controller that switches multiple apps between light and dark mode"
 edition = "2018"
 license = "MIT OR Apache-2.0"
 
