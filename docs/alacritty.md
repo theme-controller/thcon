@@ -1,4 +1,4 @@
-# Alacritty Config
+# Alacritty
 Since [alacritty](https://github.com/alacritty/alacritty) is configured via [yaml](https://yaml.org/), using anchors and aliases is the simplest way of managing color schemes.
 
 ## Usage
@@ -41,7 +41,7 @@ config = "/path/to/alacritty.yml"
 ## `thcon.toml` Schema
 Section: `alacritty`
 
-| Key | Type | Description | Defaults |
+| Key | Type | Description | Default |
 | --- | ---- | ----------- | -------- |
 | `dark` | string | The YAML anchor (declared in `alacritty.yml`) used for dark mode | (none) |
 | `light` | string | The YAML anchor (declared in `alacritty.yml`) used for light mode | (none) |
