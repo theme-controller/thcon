@@ -103,17 +103,12 @@ impl Themeable for GnomeTerminal {
         let theme = match operation {
             Operation::Darken => &config.dark,
             Operation::Lighten => &config.light,
-            _ => panic!("Unsupported operation {}", operation),
         };
 
         for window_id in self.get_window_ids()?.iter() {
             self.set_profile(window_id, &theme)?;
         }
 
-        Result::Ok(())
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
         Result::Ok(())
     }
 }

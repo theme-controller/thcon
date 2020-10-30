@@ -3,8 +3,7 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Operation {
     Darken,
-    Lighten,
-    Invert
+    Lighten
 }
 
 impl fmt::Display for Operation {
@@ -12,7 +11,6 @@ impl fmt::Display for Operation {
         let as_str = match &self {
             Self::Darken => "darken",
             Self::Lighten => "lighten",
-            Self::Invert => "invert",
         };
 
         write!(f, "{}", as_str)

@@ -34,14 +34,6 @@ fn main() -> std::io::Result<()> {
                                      .multiple(true)
                                  )
                     )
-                    .subcommand(App::new("invert")
-                                .display_order(1002)
-                                .about("switches from light mode to dark mode and from dark mode to light mode")
-                                .arg(Arg::with_name("app")
-                                     .help("Application(s) to switch between dark and light mode")
-                                     .multiple(true)
-                                 )
-                    )
                     .get_matches();
 
     let config_path: PathBuf = [
@@ -56,7 +48,6 @@ fn main() -> std::io::Result<()> {
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
         ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
-        ("invert", Some(subcommand)) => (Operation::Invert, subcommand),
         (other, Some(_)) => panic!("Invalid subcommand name {}", other),
         _ => panic!("Could not find subcommand")
     };

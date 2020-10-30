@@ -113,7 +113,6 @@ impl Themeable for Konsole {
         let theme = match operation {
             Operation::Darken => &config.dark,
             Operation::Lighten => &config.light,
-            _ => panic!("Unsupported operation {}", operation),
         };
         for (service_id, session_ids) in sessions.iter() {
             for session_id in session_ids.iter() {
@@ -122,9 +121,5 @@ impl Themeable for Konsole {
         }
 
         Ok(())
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Result::Ok(())
     }
 }

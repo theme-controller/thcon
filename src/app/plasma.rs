@@ -34,7 +34,6 @@ impl Themeable for Plasma {
         let theme = match operation {
             Operation::Lighten => &config.light,
             Operation::Darken => &config.dark,
-            _ => panic!("Unsupported operation {}", operation),
         };
 
         Command::new("lookandfeeltool")
@@ -43,10 +42,6 @@ impl Themeable for Plasma {
             .status()
             .expect("Failed to execute `lookandfeeltool`");
 
-        Ok(())
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

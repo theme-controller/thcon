@@ -51,7 +51,6 @@ impl Themeable for VSCode {
         let theme = match operation {
             Operation::Darken => &config.dark,
             Operation::Lighten => &config.light,
-            _ => panic!("Unsupported operation '{}'", operation),
         };
         let theme_regex = Regex::new(r#"^(?P<prefix>\s*"workbench.colorTheme"\s*:\s*)"(?P<v>.+)",?(?P<suffix>\s*//\s*thcon:replace-line)"#)?;
 
@@ -66,9 +65,5 @@ impl Themeable for VSCode {
         fs::write(self.settings_json_path(), settings).map_err(|err| {
             Box::new(err) as Box<dyn Error>
         })
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Ok(())
     }
 }

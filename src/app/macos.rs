@@ -12,7 +12,6 @@ impl Themeable for MacOS {
         let dark_mode = match operation {
             Operation::Lighten => false,
             Operation::Darken => true,
-            _ => panic!("Unsupported operation {}", operation),
         };
 
         Command::new("osascript")
@@ -25,10 +24,6 @@ impl Themeable for MacOS {
             )).status()
             .expect("Failed to execute `osascript`");
 
-        Ok(())
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

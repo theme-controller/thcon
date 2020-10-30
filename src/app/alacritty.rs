@@ -45,7 +45,6 @@ impl Themeable for Alacritty {
         let theme = match operation {
             Operation::Darken => &config.dark,
             Operation::Lighten => &config.light,
-            _ => panic!("Unsupported operation '{}'", operation),
         };
 
         let alacritty_yaml = match alacritty_config() {
@@ -80,10 +79,6 @@ impl Themeable for Alacritty {
         fs::write(&alacritty_yaml, settings).map_err(|err| {
             Box::new(err) as Box<dyn Error>
         })
-    }
-
-    fn toggle(&self) -> Result<(), Box<dyn Error>> {
-        Ok(())
     }
 }
 
