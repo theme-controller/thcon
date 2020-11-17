@@ -1,3 +1,6 @@
+//! # thcon
+//! Switches multiple apps between light and dark mode
+
 mod config;
 mod operation;
 mod themeable;
