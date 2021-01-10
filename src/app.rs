@@ -4,6 +4,7 @@ pub mod konsole;
 pub mod gnome_terminal;
 pub mod plasma;
 pub mod vscode;
+pub mod vim;
 pub mod alacritty;
 
 #[cfg(macos)]
@@ -16,6 +17,7 @@ pub use gnome_terminal::GnomeTerminal;
 pub use plasma::Plasma;
 pub use vscode::VSCode;
 pub use alacritty::Alacritty;
+pub use vim::Vim;
 
 #[cfg(macos)]
 pub use macos::MacOS;
@@ -34,6 +36,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "plasma" => Some(Box::new(Plasma {})),
         "vscode" => Some(Box::new(VSCode {})),
         "alacritty" => Some(Box::new(Alacritty {})),
+        "vim" => Some(Box::new(Vim {})),
         _ => None,
     };
 }

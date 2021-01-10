@@ -5,6 +5,7 @@ use crate::app::gnome_terminal;
 use crate::app::vscode;
 use crate::app::plasma;
 use crate::app::alacritty;
+use crate::app::vim;
 use serde::Deserialize;
 
 #[derive(Debug,Deserialize)]
@@ -16,5 +17,6 @@ pub struct Config {
     pub gnome_terminal: Option<gnome_terminal::Config>,
     pub vscode: Option<vscode::Config>,
     pub plasma: Option<plasma::Config>,
-    pub alacritty: Option<alacritty::Config>
+    pub alacritty: Option<alacritty::Config>,
+    pub vim: Option<vim::Config>,
 }
