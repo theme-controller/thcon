@@ -46,9 +46,9 @@ impl GnomeTerminal {
                         window_ids.extend( attributes.into_iter()
                             .filter_map(|attr| {
                                 if attr.name.local_name == "name" {
-                                    return Some(attr.value);
+                                    Some(attr.value)
                                 } else {
-                                    return None;
+                                    None
                                 }
                             })
                         );

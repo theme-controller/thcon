@@ -29,7 +29,7 @@ use std::option::Option;
 use crate::themeable::Themeable;
 
 pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
-    return match name {
+    match name {
         #[cfg(dbus)]
         "konsole" => Some(Box::new(Konsole::default())),
         #[cfg(dbus)]
@@ -43,7 +43,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "vim" => Some(Box::new(Vim {})),
         "nvim" => Some(Box::new(Neovim {})),
         _ => None,
-    };
+    }
 }
 
 pub fn all_names() -> Vec<&'static str> {
