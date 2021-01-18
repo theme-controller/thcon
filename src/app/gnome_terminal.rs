@@ -23,13 +23,13 @@ pub struct GnomeTerminal {
     dbus: Connection,
 }
 
-impl GnomeTerminal {
-    pub fn new() -> Self {
-        GnomeTerminal {
-            dbus: Connection::new_session().unwrap(),
-        }
+impl Default for GnomeTerminal {
+    fn default() -> Self {
+        Self { dbus: Connection::new_session().unwrap(), }
     }
+}
 
+impl GnomeTerminal {
     fn get_window_ids(&self) -> Result<Vec<String>, Box<dyn Error>> {
         let proxy = self.dbus.with_proxy("org.gnome.Terminal", "/org/gnome/Terminal/window", Duration::from_millis(2500));
         let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;

@@ -44,13 +44,13 @@ pub struct Konsole {
     dbus: Connection,
 }
 
-impl Konsole {
-    pub fn new() -> Self {
-        Konsole {
-            dbus: Connection::new_session().unwrap(),
-        }
+impl Default for Konsole {
+    fn default() -> Self {
+        Self { dbus: Connection::new_session().unwrap(), }
     }
+}
 
+impl Konsole {
     fn get_services(&self) -> Result<Vec<String>, Box<dyn Error>> {
         let proxy = self.dbus.with_proxy("org.freedesktop.DBus", "/", Duration::from_millis(2500));
         let (names,): (Vec<String>,) = proxy.method_call("org.freedesktop.DBus", "ListNames", ())?;

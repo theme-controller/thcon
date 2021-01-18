@@ -31,9 +31,9 @@ use crate::themeable::Themeable;
 pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
     return match name {
         #[cfg(dbus)]
-        "konsole" => Some(Box::new(Konsole::new())),
+        "konsole" => Some(Box::new(Konsole::default())),
         #[cfg(dbus)]
-        "gnome-terminal" => Some(Box::new(GnomeTerminal::new())),
+        "gnome-terminal" => Some(Box::new(GnomeTerminal::default())),
         #[cfg(dbus)]
         "plasma" => Some(Box::new(Plasma {})),
         #[cfg(mac)]
