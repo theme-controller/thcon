@@ -1,3 +1,64 @@
+//! Switches [vim](https://vim.org) and [Neovim](https://neovim.org) colorschemes (and other arbitrary settings)
+//! 
+//! ## Usage: Windows
+//! Windows is not yet supported, but `vim`/`nvim` under WSL should work just fine.
+//! 
+//! ## Usage: macOS & Linux
+//! Install [thcon.vim](https://github.com/sjbarag/thcon.vim) via your `.vimrc` or `init.vim`
+//! according to its README, adding both the relevant line for your plugin manager and `call
+//! thcon#listen()`.
+//! 
+//! In your `thcon.toml`, define light and dark themes. All values within 'dark' and 'light' are
+//! optional (blank values cause no changes):
+//! 
+//! ```toml
+//! [vim]
+//! light.colorscheme = "shine"
+//! dark.colorscheme = "blue"
+//! 
+//! [vim.light]
+//! colorscheme = "shine"
+//! 
+//! [vim.light.set]
+//! background = "light"
+//! 
+//! [vim.dark]
+//! colorscheme = "blue"
+//! 
+//! [vim.dark.set]
+//! background = "dark"
+//! ```
+//! 
+//! or:
+//! 
+//! ```toml
+//! [neovim]
+//! dark.colorscheme = "default"
+//! dark.set.background = "dark"
+//! dark.let."g:lightline" = { colorscheme = "ayu_dark" }
+//! light.colorscheme = "shine"
+//! light.set.background = "light"
+//! light.let."g:lightline" = { colorscheme = "ayu_light" }
+//! ```
+//! 
+//! Feel free to use whichever syntax you prefer (or any other), as long as it's valid TOML.
+//! 
+//! ## `thcon.toml` Schema
+//! | Key | Type | Description | Default |
+//! | --- | ---- | ----------- | -------- |
+//! | light | table | Settings to apply in light mode | (none) |
+//! | light.colorscheme | string | The colorscheme to apply in light mode | (none) |
+//! | light.set | table | Set of key/value pairs to apply with `:set` in light mode | (none) |
+//! | light.setglobal | table | Set of key/value pairs to apply with `:setglobal` in light mode | (none) |
+//! | light.let | table | Set of key/value pairs to apply with `:let` in light mode | (none) |
+//! | dark | table | Settings to apply in dark mode | (none) |
+//! | dark.colorscheme | string | The colorscheme to apply in dark mode | (none) |
+//! | dark.set | table | Set of key/value pairs to apply with `:set` in dark mode | (none) |
+//! | dark.setglobal | table | Set of key/value pairs to apply with `:setglobal` in dark mode | (none) |
+//! | dark.let | table | Set of key/value pairs to apply with `:let` in dark mode | (none) |
+//! 
+
+
 use std::error::Error;
 use std::io;
 use std::fs;
@@ -24,8 +85,11 @@ pub struct ConfigSection {
     setglobal: Option<Map<String, JsonValue>>,
 }
 
+/// A Thcon-controlled vim variant, e.g. vim or neovim.
 trait ControlledVim {
+    /// The name of the thcon.toml section to read.
     const SECTION_NAME: &'static str;
+    /// Returns the path where thcon.vim's named pipes for this variant are stored.
     fn pipes_dir() -> PathBuf {
         [
             dirs::data_dir().unwrap().to_str().unwrap(),
@@ -33,6 +97,7 @@ trait ControlledVim {
             Self::SECTION_NAME
         ].iter().collect()
     }
+    /// Returns an `Option<Config>` for this variant's parsed section in thcon.toml.
     fn extract_config(thcon_config: &ThconConfig) -> &Option<Config>;
 }
 
@@ -62,6 +127,8 @@ impl Themeable for Neovim {
     }
 }
 
+/// Switches settings and colorscheme in a `vim`-agnostic way.
+/// Returns unit result if successful, otherwise the causing error.
 fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
     let config = match V::extract_config(config) {
         Some(section) => section,
