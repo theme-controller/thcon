@@ -50,7 +50,7 @@ fn main() -> std::io::Result<()> {
         println!("reading config from '{:?}'", config_path);
     }
 
-    let config = fs::read_to_string(config_path).unwrap_or(String::from(""));
+    let config = fs::read_to_string(config_path).unwrap_or_default();
     let config: Config = toml::from_str(config.as_str())?;
 
     let (operation, subcommand) = match matches.subcommand() {
