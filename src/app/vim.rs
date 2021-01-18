@@ -44,6 +44,8 @@
 //! Feel free to use whichever syntax you prefer (or any other), as long as it's valid TOML.
 //! 
 //! ## `thcon.toml` Schema
+//! Section: `vim` or `nvim`
+//!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
 //! | light | table | Settings to apply in light mode | (none) |
