@@ -16,7 +16,7 @@ use toml;
 
 fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
-                    .version("1.0")
+                    .version("0.3.0")
                     .author("Sean Barag <sean@barag.org>")
                     .subcommand(App::new("light")
                                 .display_order(1001)
