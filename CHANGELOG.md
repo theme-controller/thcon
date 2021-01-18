@@ -9,6 +9,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * `--verbose`/`-v` argument to enable verbose logging of re-themed and skipped
   (unconfigured) applications
+* Configuration documentation for KDE Plasma
 
 ### Fixed:
 * Stop logging errors for unconfigured applications (silently skips unconfigured
