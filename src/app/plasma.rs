@@ -4,7 +4,7 @@ use crate::config::Config as ThconConfig;
 
 use std::error::Error;
 use std::io;
-use std::process::Command;
+use std::process::{Command,Stdio};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -41,6 +41,7 @@ impl Themeable for Plasma {
         };
 
         Command::new("lookandfeeltool")
+            .stderr(Stdio::null())
             .arg("--apply")
             .arg(theme)
             .status()
