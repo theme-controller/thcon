@@ -78,6 +78,10 @@ impl VSCode {
 }
 
 impl Themeable for VSCode {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        config.vscode.is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match &config.vscode {
             Some(vscode) => vscode,

@@ -109,6 +109,10 @@ impl ControlledVim for Vim {
     }
 }
 impl Themeable for Vim {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        Vim::extract_config(config).is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         anyvim_switch::<Vim>(config, operation)
     }
@@ -122,6 +126,10 @@ impl ControlledVim for Neovim {
     }
 }
 impl Themeable for Neovim {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        Neovim::extract_config(config).is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         anyvim_switch::<Neovim>(config, operation)
     }

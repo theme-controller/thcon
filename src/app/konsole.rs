@@ -88,6 +88,10 @@ impl Konsole {
 }
 
 impl Themeable for Konsole {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        config.konsole.is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match &config.konsole {
             Some(konsole) => konsole,

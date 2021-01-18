@@ -88,6 +88,10 @@ pub struct Config {
 pub struct Alacritty;
 
 impl Themeable for Alacritty {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        config.alacritty.is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match &config.alacritty {
             Some(alacritty) => alacritty,

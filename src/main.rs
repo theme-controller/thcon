@@ -65,7 +65,10 @@ fn main() -> std::io::Result<()> {
             Some(app) => app,
         };
 
-        app.switch(&config, &operation).unwrap();
+        if app.has_config(&config) {
+            app.switch(&config, &operation).unwrap();
+        }
+
         pb.inc(1);
     });
 

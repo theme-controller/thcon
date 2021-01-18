@@ -85,6 +85,10 @@ impl GnomeTerminal {
 }
 
 impl Themeable for GnomeTerminal {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        config.gnome_terminal.is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match &config.gnome_terminal {
             Some(gnome_terminal) => gnome_terminal,

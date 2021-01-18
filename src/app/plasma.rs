@@ -16,6 +16,10 @@ pub struct Config {
 pub struct Plasma;
 
 impl Themeable for Plasma {
+    fn has_config(&self, config: &ThconConfig) -> bool {
+        config.plasma.is_some()
+    }
+
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match &config.plasma {
             Some(plasma) => plasma,

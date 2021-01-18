@@ -8,6 +8,10 @@ use std::process::Command;
 pub struct MacOS;
 
 impl Themeable for MacOS {
+    const fn has_config(&self, _config: &ThconConfig) -> bool {
+        true
+    }
+
     fn switch(&self, _config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let dark_mode = match operation {
             Operation::Lighten => false,
