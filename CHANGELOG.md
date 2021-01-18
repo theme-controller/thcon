@@ -13,6 +13,8 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Fixed:
 * Stop logging errors for unconfigured applications (silently skips unconfigured
   apps instead)
+* Don't require apps to be listed individually on CLI (try all apps by default
+  with `thcon dark` / `thcon light`)
 
 ### Changed:
 * The `plasma` app (KDE Plasma) is not only available on non-macOS, non-Windows

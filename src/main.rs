@@ -62,7 +62,10 @@ fn main() -> std::io::Result<()> {
         _ => panic!("Could not find subcommand")
     };
 
-    let app_names: Vec<&str> = subcommand.values_of("app").unwrap().collect();
+    let app_names: Vec<&str> = match subcommand.values_of("app") {
+        Some(apps) => apps.collect(),
+        None => app::all_names()
+    };
 
     let pb = ProgressBar::new(app_names.len() as u64)
         .with_style(ProgressStyle::default_bar());

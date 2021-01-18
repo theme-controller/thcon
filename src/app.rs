@@ -44,3 +44,20 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         _ => None,
     };
 }
+
+pub fn all_names() -> Vec<&'static str> {
+    vec!(
+        "alacritty",
+        "nvim",
+        "vim",
+        "vscode",
+        #[cfg(dbus)]
+        "gnome-terminal",
+        #[cfg(dbus)]
+        "konsole",
+        #[cfg(dbus)]
+        "plasma",
+        #[cfg(macos)]
+        "macos",
+    )
+}
