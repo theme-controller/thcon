@@ -48,7 +48,6 @@ use std::fs;
 use std::io;
 use std::path::PathBuf;
 
-use dirs;
 use regex::{Captures,Regex};
 
 use crate::themeable::Themeable;

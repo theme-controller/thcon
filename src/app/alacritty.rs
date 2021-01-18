@@ -69,12 +69,6 @@ use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
-#[cfg(windows)]
-use dirs;
-
-#[cfg(not(windows))]
-use xdg;
-
 use serde::Deserialize;
 use regex::{Captures,Regex};
 

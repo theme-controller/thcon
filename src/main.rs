@@ -10,9 +10,7 @@ use thcon::app;
 use thcon::Config;
 use thcon::Themeable;
 
-use dirs;
 use std::fs;
-use toml;
 
 fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
