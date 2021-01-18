@@ -24,62 +24,88 @@ pub struct ConfigSection {
     setglobal: Option<Map<String, JsonValue>>,
 }
 
-pub struct Vim;
-
-impl Vim {
-    fn pipes_dir(&self) -> PathBuf {
+trait ControlledVim {
+    const SECTION_NAME: &'static str;
+    fn pipes_dir() -> PathBuf {
         [
             dirs::data_dir().unwrap().to_str().unwrap(),
             "thcon",
-            "vim"
+            Self::SECTION_NAME
         ].iter().collect()
+    }
+    fn extract_config(thcon_config: &ThconConfig) -> &Option<Config>;
+}
+
+pub struct Vim;
+impl ControlledVim for Vim {
+    const SECTION_NAME: &'static str = "vim";
+    fn extract_config(thcon_config: &ThconConfig) -> &Option<Config> {
+        &thcon_config.vim
+    }
+}
+impl Themeable for Vim {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        anyvim_switch::<Vim>(config, operation)
     }
 }
 
-
-impl Themeable for Vim {
+pub struct Neovim;
+impl ControlledVim for Neovim {
+    const SECTION_NAME: &'static str = "nvim";
+    fn extract_config(thcon_config: &ThconConfig) -> &Option<Config> {
+        &thcon_config.nvim
+    }
+}
+impl Themeable for Neovim {
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.vim {
-            Some(vim) => vim,
-            None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [vim] section in thcon.toml"
+        anyvim_switch::<Neovim>(config, operation)
+    }
+}
+
+fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    let config = match V::extract_config(config) {
+        Some(section) => section,
+        None => {
+            return Err(
+                Box::new(
+                    io::Error::new(
+                        io::ErrorKind::NotFound,
+                        format!(
+                            "Couldn't find [{}] section in thcon.toml",
+                            V::SECTION_NAME
                         )
                     )
                 )
-            }
-        };
+            )
+        }
+    };
 
-        let payload = match operation {
-            Operation::Darken => &config.dark,
-            Operation::Lighten => &config.light
-        };
-        let payload = serde_json::to_string(payload)? + "\n";
+    let payload = match operation {
+        Operation::Darken => &config.dark,
+        Operation::Lighten => &config.light
+    };
+    let payload = serde_json::to_string(payload)? + "\n";
 
 
-        let pipes_dir = self.pipes_dir();
-        let pipes = match fs::read_dir(pipes_dir) {
-            Ok(pipes) => Ok(Some(pipes)),
-            Err(e) => match e.kind() {
-                io::ErrorKind::NotFound => Ok(None),
-                _ => Err(Box::new(e) as Box<dyn Error>)
-            }
-        };
+    let pipes_dir = V::pipes_dir();
+    let pipes = match fs::read_dir(pipes_dir) {
+        Ok(pipes) => Ok(Some(pipes)),
+        Err(e) => match e.kind() {
+            io::ErrorKind::NotFound => Ok(None),
+            _ => Err(Box::new(e) as Box<dyn Error>)
+        }
+    };
 
-        return pipes.map(|pipes| {
-            match pipes {
-                None => (),
-                Some(pipes) => {
-                    for pipe in pipes {
-                        pipe.map(|pipe| {
-                            fs::write(pipe.path(), &payload).unwrap_or(());
-                        }).unwrap_or(());
-                    }
+    pipes.map(|pipes| {
+        match pipes {
+            None => (),
+            Some(pipes) => {
+                for pipe in pipes {
+                    pipe.map(|pipe| {
+                        fs::write(pipe.path(), &payload).unwrap_or(());
+                    }).unwrap_or(());
                 }
             }
-        });
-    }
+        }
+    })
 }

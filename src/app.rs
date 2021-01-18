@@ -18,6 +18,7 @@ pub use plasma::Plasma;
 pub use vscode::VSCode;
 pub use alacritty::Alacritty;
 pub use vim::Vim;
+pub use vim::Neovim;
 
 #[cfg(macos)]
 pub use macos::MacOS;
@@ -37,6 +38,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "vscode" => Some(Box::new(VSCode {})),
         "alacritty" => Some(Box::new(Alacritty {})),
         "vim" => Some(Box::new(Vim {})),
+        "nvim" => Some(Box::new(Neovim {})),
         _ => None,
     };
 }

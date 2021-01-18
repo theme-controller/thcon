@@ -19,4 +19,5 @@ pub struct Config {
     pub plasma: Option<plasma::Config>,
     pub alacritty: Option<alacritty::Config>,
     pub vim: Option<vim::Config>,
+    pub nvim: Option<vim::Config>,
 }
