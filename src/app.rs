@@ -8,20 +8,21 @@ pub mod vscode;
 pub mod vim;
 pub mod alacritty;
 
-#[cfg(macos)]
+#[cfg(mac)]
 pub mod macos;
 
 #[cfg(dbus)]
 pub use konsole::Konsole;
 #[cfg(dbus)]
 pub use gnome_terminal::GnomeTerminal;
+#[cfg(dbus)]
 pub use plasma::Plasma;
 pub use vscode::VSCode;
 pub use alacritty::Alacritty;
 pub use vim::Vim;
 pub use vim::Neovim;
 
-#[cfg(macos)]
+#[cfg(mac)]
 pub use macos::MacOS;
 
 use std::option::Option;
@@ -35,7 +36,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "gnome-terminal" => Some(Box::new(GnomeTerminal::new())),
         #[cfg(dbus)]
         "plasma" => Some(Box::new(Plasma {})),
-        #[cfg(macos)]
+        #[cfg(mac)]
         "macos" => Some(Box::new(MacOS {})),
         "vscode" => Some(Box::new(VSCode {})),
         "alacritty" => Some(Box::new(Alacritty {})),
@@ -57,7 +58,7 @@ pub fn all_names() -> Vec<&'static str> {
         "konsole",
         #[cfg(dbus)]
         "plasma",
-        #[cfg(macos)]
+        #[cfg(mac)]
         "macos",
     )
 }
