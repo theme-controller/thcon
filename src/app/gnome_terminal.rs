@@ -66,7 +66,7 @@ impl GnomeTerminal {
         Ok(window_ids)
     }
 
-    fn set_profile(&self, window_id: &String, profile_id: &String) -> Result<(), Box<dyn Error>> {
+    fn set_profile(&self, window_id: &str, profile_id: &str) -> Result<(), Box<dyn Error>> {
         let proxy = self.dbus.with_proxy(
             "org.gnome.Terminal",
             format!("/org/gnome/Terminal/window/{}", window_id),

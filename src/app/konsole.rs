@@ -62,7 +62,7 @@ impl Konsole {
         Ok(konsoles)
     }
 
-    fn get_session_ids(&self, service_id: &String) -> Result<Vec<String>, Box<dyn Error>> {
+    fn get_session_ids(&self, service_id: &str) -> Result<Vec<String>, Box<dyn Error>> {
         let proxy = self.dbus.with_proxy(service_id, "/Sessions", Duration::from_millis(2500));
         let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;
 
@@ -98,14 +98,14 @@ impl Konsole {
         Ok(session_ids)
     }
 
-    fn set_profile_name(&self, service_id: &String, session_id: &String, profile_name: &String) -> Result<(), Box<dyn Error>> {
+    fn set_profile_name(&self, service_id: &str, session_id: &str, profile_name: &str) -> Result<(), Box<dyn Error>> {
         let proxy = self.dbus.with_proxy(service_id, format!("/Sessions/{}", session_id), Duration::from_millis(2500));
         let _: () = proxy.method_call("org.kde.konsole.Session", "setProfile", (profile_name,))?;
 
         Ok(())
     }
 
-    fn set_default_profile(&self, profile_name: &String) -> Result<(), Box<dyn Error>> {
+    fn set_default_profile(&self, profile_name: &str) -> Result<(), Box<dyn Error>> {
 
         Ok(())
     }
