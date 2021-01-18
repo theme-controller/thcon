@@ -18,6 +18,11 @@ fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
                     .version("0.3.0")
                     .author("Sean Barag <sean@barag.org>")
+                    .arg(Arg::with_name("verbose")
+                            .short("v")
+                            .long("verbose")
+                            .help("Enables verbose output")
+                    )
                     .subcommand(App::new("light")
                                 .display_order(1001)
                                 .about("switches to light mode")
@@ -36,12 +41,17 @@ fn main() -> std::io::Result<()> {
                     )
                     .get_matches();
 
+    let is_verbose = matches.is_present("verbose");
+
     let config_path: PathBuf = [
             dirs::config_dir().unwrap().to_str().unwrap(),
             "thcon",
             "thcon.toml"
         ].iter().collect();
-    println!("reading config from '{:?}'", config_path);
+    if is_verbose {
+        println!("reading config from '{:?}'", config_path);
+    }
+
     let config = fs::read_to_string(config_path).unwrap_or(String::from(""));
     let config: Config = toml::from_str(config.as_str())?;
 
@@ -66,7 +76,12 @@ fn main() -> std::io::Result<()> {
         };
 
         if app.has_config(&config) {
+            if is_verbose {
+                pb.println(format!("{}ing {}", operation, name));
+            }
             app.switch(&config, &operation).unwrap();
+        } else if is_verbose {
+            pb.println(format!("skipping {} (not configured)", name));
         }
 
         pb.inc(1);

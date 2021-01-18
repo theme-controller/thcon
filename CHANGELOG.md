@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added:
+* `--verbose`/`-v` argument to enable verbose logging of re-themed and skipped
+  (unconfigured) applications
+
 ### Fixed:
 * Stop logging errors for unconfigured applications (silently skips unconfigured
   apps instead)
