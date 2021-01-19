@@ -1,7 +1,7 @@
 use std::vec::Vec;
 use std::path::PathBuf;
 
-use clap::{Arg, App};
+use clap::{Arg, App, crate_version};
 use rayon::prelude::*;
 use indicatif::{ProgressBar,ProgressStyle};
 
@@ -14,7 +14,7 @@ use std::fs;
 
 fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
-                    .version("0.3.0")
+                    .version(crate_version!())
                     .author("Sean Barag <sean@barag.org>")
                     .arg(Arg::with_name("verbose")
                             .short("v")
