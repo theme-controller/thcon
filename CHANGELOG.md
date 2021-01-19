@@ -7,6 +7,10 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ## [Unreleased]
 
+## [v0.4.1] - 2021-01-19
+### Fixed:
+* `thcon` can once again be successfully installed on macOS
+
 ## [v0.4.0] - 2021-01-18
 ### Added:
 * `--verbose`/`-v` argument to enable verbose logging of re-themed and skipped
@@ -24,7 +28,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 * Lots of lint failures
 
 ### Changed:
-* The `plasma` app (KDE Plasma) is not only available on non-macOS, non-Windows
+* The `plasma` app (KDE Plasma) is now only available on non-macOS, non-Windows
   platforms
 
 ## [v0.3.0] - 2021-01-18
