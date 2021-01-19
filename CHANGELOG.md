@@ -19,6 +19,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
   with `thcon dark` / `thcon light`)
 * Suppress spurious error messages when switching `plasma` themes
 * Explicitly listed `thcon.toml` section to use for `vim`/`nvim`
+* Lots of lint failures
 
 ### Changed:
 * The `plasma` app (KDE Plasma) is not only available on non-macOS, non-Windows
