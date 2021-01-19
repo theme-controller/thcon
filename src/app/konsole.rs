@@ -104,11 +104,6 @@ impl Konsole {
 
         Ok(())
     }
-
-    fn set_default_profile(&self, profile_name: &str) -> Result<(), Box<dyn Error>> {
-
-        Ok(())
-    }
 }
 
 impl Themeable for Konsole {
