@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v0.4.2] - 2021-01-22
 ### Changed:
 * macOS: `thcon` now reads its config file from ~/.config/thcon/thcon.toml instead of ~/Library/Application Support/thcon/thcon.toml
 * macOS: Support `thcon.vim` 0.2.0 (named pipes are written to ~/.local/share/thcon/ instead of ~/Library/Application Support/thcon/)
