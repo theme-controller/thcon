@@ -72,6 +72,7 @@ use serde_json::{Value as JsonValue, Map};
 use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::dirs;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
@@ -94,7 +95,7 @@ trait ControlledVim {
     /// Returns the path where thcon.vim's named pipes for this variant are stored.
     fn pipes_dir() -> PathBuf {
         [
-            dirs::data_dir().unwrap().to_str().unwrap(),
+            dirs::data().unwrap().to_str().unwrap(),
             "thcon",
             Self::SECTION_NAME
         ].iter().collect()

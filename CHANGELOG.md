@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Changed:
 * macOS: `thcon` now reads its config file from ~/.config/thcon/thcon.toml instead of ~/Library/Application Support/thcon/thcon.toml
+* macOS: Support `thcon.vim` 0.2.0 (named pipes are written to ~/.local/share/thcon/ instead of ~/Library/Application Support/thcon/)
 
 ## [v0.4.1] - 2021-01-19
 ### Fixed:
