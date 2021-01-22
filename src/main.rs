@@ -1,5 +1,6 @@
 use std::vec::Vec;
 use std::path::PathBuf;
+use std::env;
 
 use clap::{Arg, App, crate_version};
 use rayon::prelude::*;
@@ -42,10 +43,11 @@ fn main() -> std::io::Result<()> {
     let is_verbose = matches.is_present("verbose");
 
     let config_path: PathBuf = [
-            dirs::config_dir().unwrap().to_str().unwrap(),
+            thcon::dirs::config().unwrap().to_str().unwrap(),
             "thcon",
             "thcon.toml"
         ].iter().collect();
+
     if is_verbose {
         println!("reading config from '{:?}'", config_path);
     }
