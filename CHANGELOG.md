@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Fixed:
 * VSCode: preserve comma in settings.json if one is present
+* Silence unused import during build on non-mac platforms
 
 ## [v0.4.2] - 2021-01-22
 ### Changed:

@@ -1,3 +1,4 @@
+#[cfg(mac)]
 use std::env;
 use std::path::PathBuf;
 
