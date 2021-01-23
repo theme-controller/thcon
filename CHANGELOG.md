@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v0.4.3] - 2021-01-23
 ### Fixed:
 * VSCode: preserve comma in settings.json if one is present
 * Silence unused import during build on non-mac platforms
