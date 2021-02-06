@@ -7,6 +7,8 @@ use crate::app::plasma;
 use crate::app::vscode;
 use crate::app::alacritty;
 use crate::app::vim;
+#[cfg(mac)]
+use crate::app::iterm2;
 use serde::Deserialize;
 
 #[derive(Debug,Deserialize)]
@@ -22,4 +24,6 @@ pub struct Config {
     pub alacritty: Option<alacritty::Config>,
     pub vim: Option<vim::Config>,
     pub nvim: Option<vim::Config>,
+    #[cfg(mac)]
+    pub iterm2: Option<iterm2::Config>
 }
