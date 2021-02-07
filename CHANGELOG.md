@@ -9,6 +9,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * Support for changing [iTerm2](https://iterm2.com) profiles
 
+### Changed:
+* Updated dependencies
+
 ## [v0.4.3] - 2021-01-23
 ### Fixed:
 * VSCode: preserve comma in settings.json if one is present
