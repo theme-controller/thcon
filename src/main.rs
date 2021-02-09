@@ -4,12 +4,10 @@ use std::env;
 
 use clap::{Arg, App, crate_version};
 use rayon::prelude::*;
-use indicatif::{ProgressBar,ProgressStyle};
 
 use thcon::Operation;
 use thcon::app;
 use thcon::Config;
-use thcon::Themeable;
 
 use std::fs;
 
@@ -49,7 +47,7 @@ fn main() -> std::io::Result<()> {
         ].iter().collect();
 
     if is_verbose {
-        println!("reading config from '{:?}'", config_path);
+        eprintln!("reading config from '{:?}'", config_path);
     }
 
     let config = fs::read_to_string(config_path).unwrap_or_default();
@@ -67,11 +65,8 @@ fn main() -> std::io::Result<()> {
         None => app::all_names()
     };
 
-    let pb = ProgressBar::new(app_names.len() as u64)
-        .with_style(ProgressStyle::default_bar());
-
     app_names.par_iter().for_each(|name| {
-        let app: Box<dyn Themeable> = match app::get(name) {
+        let app = match app::get(name) {
             None => {
                 return;
             },
@@ -80,17 +75,13 @@ fn main() -> std::io::Result<()> {
 
         if app.has_config(&config) {
             if is_verbose {
-                pb.println(format!("{}ing {}", operation, name));
+                eprintln!("{}ing {}", operation, name);
             }
             app.switch(&config, &operation).unwrap();
         } else if is_verbose {
-            pb.println(format!("skipping {} (not configured)", name));
+            eprintln!("skipping {} (not configured)", name);
         }
-
-        pb.inc(1);
     });
-
-    pb.finish_and_clear();
 
     Ok(())
 }
