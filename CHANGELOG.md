@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Removed:
+* Removed progress bar from output, since this application usually takes < 0.5 seconds to complete.
+
 ## [v0.5.0] - 2021-02-08
 ### Added:
 * Support for changing [iTerm2](https://iterm2.com) profiles
