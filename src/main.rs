@@ -47,6 +47,20 @@ fn main() -> std::io::Result<()> {
 
     let is_verbose = matches.is_present("verbose");
 
+    let (operation, subcommand) = match matches.subcommand() {
+        ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
+        ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
+        _ => {
+            eprintln!("CLI validation allowed this command, but it isn't actually supported.");
+            process::exit(exitcode::SOFTWARE);
+        }
+    };
+
+    let app_names: Vec<&str> = match subcommand.values_of("app") {
+        Some(apps) => apps.collect(),
+        None => app::all_names()
+    };
+
     let config_path: PathBuf = [
             thcon::dirs::config().unwrap().to_str().unwrap(),
             "thcon",
@@ -74,20 +88,6 @@ fn main() -> std::io::Result<()> {
             eprintln!("Encountered invalid TOML in config from {} at {}", config_path, e);
             process::exit(exitcode::CONFIG);
         }
-    };
-
-    let (operation, subcommand) = match matches.subcommand() {
-        ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
-        ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
-        _ => {
-            eprintln!("CLI validation allowed this command, but it isn't actually supported.");
-            process::exit(exitcode::SOFTWARE);
-        }
-    };
-
-    let app_names: Vec<&str> = match subcommand.values_of("app") {
-        Some(apps) => apps.collect(),
-        None => app::all_names()
     };
 
     app_names.par_iter().for_each(|name| {
