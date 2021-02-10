@@ -1,6 +1,8 @@
 use std::vec::Vec;
 use std::path::PathBuf;
 use std::env;
+use std::io;
+use std::process;
 
 use clap::{Arg, App, crate_version};
 use rayon::prelude::*;
@@ -50,8 +52,24 @@ fn main() -> std::io::Result<()> {
         eprintln!("reading config from '{:?}'", config_path);
     }
 
-    let config = fs::read_to_string(config_path).unwrap_or_default();
-    let config: Config = toml::from_str(config.as_str())?;
+    let config = fs::read_to_string(&config_path).unwrap_or_else(|e| {
+        let config_path = config_path.to_str().unwrap();
+        match e.kind() {
+            io::ErrorKind::NotFound => eprintln!("Could not find config file at {}", config_path),
+            io::ErrorKind::PermissionDenied => eprintln!("Could not read config file from {}", config_path),
+            _ => eprintln!("Unexpected error while reading config from {}: {}", e, config_path),
+        };
+        process::exit(exitcode::CONFIG);
+    });
+
+    let config: Config = match toml::from_str(config.as_str()) {
+        Ok(config) => config,
+        Err(e) => {
+            let config_path = config_path.to_str().unwrap();
+            eprintln!("Encountered invalid TOML in config from {} at {}", config_path, e);
+            process::exit(exitcode::CONFIG);
+        }
+    };
 
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),

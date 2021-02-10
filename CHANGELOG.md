@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Fixed:
+* No longer panics when `thcon.toml` doesn't exist or is invalid TOML
+
 ### Removed:
 * Removed progress bar with and without `--verbose`.  `thcon` tends to run fast enough to not warrant a progress bar.
 
