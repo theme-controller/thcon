@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Fixed:
 * No longer panics when `thcon.toml` doesn't exist or is invalid TOML
+* No longer panics when no or invalid subcommand provided at commandline
 
 ### Removed:
 * Removed progress bar with and without `--verbose`.  `thcon` tends to run fast enough to not warrant a progress bar.

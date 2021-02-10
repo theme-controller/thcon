@@ -4,7 +4,7 @@ use std::env;
 use std::io;
 use std::process;
 
-use clap::{Arg, App, crate_version};
+use clap::{Arg, App, AppSettings, SubCommand, crate_version};
 use rayon::prelude::*;
 
 use thcon::Operation;
@@ -17,24 +17,29 @@ fn main() -> std::io::Result<()> {
     let matches = App::new("thcon")
                     .version(crate_version!())
                     .author("Sean Barag <sean@barag.org>")
+                    .setting(AppSettings::SubcommandRequiredElseHelp)
                     .arg(Arg::with_name("verbose")
                             .short("v")
                             .long("verbose")
                             .help("Enables verbose output")
                     )
-                    .subcommand(App::new("light")
+                    .subcommand(SubCommand::with_name("light")
                                 .display_order(1001)
                                 .about("switches to light mode")
                                 .arg(Arg::with_name("app")
                                      .help("Application(s) to switch to light mode")
+                                     .possible_values(&app::all_names())
+                                     .hide_possible_values(true)
                                      .multiple(true)
                                  )
                     )
-                    .subcommand(App::new("dark")
+                    .subcommand(SubCommand::with_name("dark")
                                 .display_order(1000)
                                 .about("switches to dark mode")
                                 .arg(Arg::with_name("app")
                                      .help("Application(s) to switch to dark mode")
+                                     .possible_values(&app::all_names())
+                                     .hide_possible_values(true)
                                      .multiple(true)
                                  )
                     )
@@ -74,8 +79,10 @@ fn main() -> std::io::Result<()> {
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
         ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
-        (other, Some(_)) => panic!("Invalid subcommand name {}", other),
-        _ => panic!("Could not find subcommand")
+        _ => {
+            eprintln!("CLI validation allowed this command, but it isn't actually supported.");
+            process::exit(exitcode::SOFTWARE);
+        }
     };
 
     let app_names: Vec<&str> = match subcommand.values_of("app") {
