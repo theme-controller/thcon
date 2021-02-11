@@ -7,6 +7,7 @@ pub mod plasma;
 pub mod vscode;
 pub mod vim;
 pub mod alacritty;
+pub mod sublime_text;
 
 #[cfg(mac)]
 pub mod macos;
@@ -24,6 +25,7 @@ pub use vscode::VSCode;
 pub use alacritty::Alacritty;
 pub use vim::Vim;
 pub use vim::Neovim;
+pub use sublime_text::SublimeText;
 
 #[cfg(mac)]
 pub use macos::MacOS;
@@ -49,6 +51,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "alacritty" => Some(Box::new(Alacritty {})),
         "vim" => Some(Box::new(Vim {})),
         "nvim" => Some(Box::new(Neovim {})),
+        "sublime-text" => Some(Box::new(SublimeText {})),
         _ => None,
     }
 }
@@ -69,5 +72,6 @@ pub fn all_names() -> Vec<&'static str> {
         "macos",
         #[cfg(mac)]
         "iterm2",
+        "sublime-text",
     )
 }
