@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v0.6.0] - 2021-02-12
 ### Added:
 * Support for changing [Sublime Text 3](https://sublimetext.com) color schemes and themes
 
