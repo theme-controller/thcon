@@ -32,10 +32,18 @@ pub fn data() -> Option<PathBuf> {
 
 #[cfg(not(mac))]
 pub fn config() -> Option<PathBuf> {
-    dirs::config_dir()
+    ::dirs::config_dir()
 }
 
 #[cfg(not(mac))]
 pub fn data() -> Option<PathBuf> {
-    dirs::data_dir()
+    ::dirs::data_dir()
+}
+
+pub fn temp() -> PathBuf {
+    #[cfg(not(windows))]
+    return PathBuf::from("/tmp");
+
+    #[cfg(windows)]
+    todo!();
 }

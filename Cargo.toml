@@ -5,6 +5,7 @@ authors = ["Sean Barag <sean@barag.org>"]
 description = "A configurable theme controller that switches multiple apps between light and dark mode"
 edition = "2018"
 license = "MIT OR Apache-2.0"
+default-run = "thcon"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -25,6 +26,9 @@ exitcode = "1.1.2"
 
 [target.'cfg(not(windows))'.dependencies]
 xdg = "2.2.0"
+async-std = "1.9.0"
+signal-hook = "0.3.4"
+signal-hook-async-std = "0.2.1"
 
 [target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
 dbus = "0.9.0"
