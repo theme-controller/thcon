@@ -11,6 +11,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ### Changed:
 * vim: Use `thcon-listen` for IPC transport
+* iterm2: Use `thcon-listen` for IPC transport
 
 ## [v0.6.0] - 2021-02-12
 ### Added:

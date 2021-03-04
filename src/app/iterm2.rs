@@ -24,15 +24,15 @@
 
 use std::error::Error;
 use std::io;
-use std::fs;
-use std::path::PathBuf;
+use std::io::Write;
+use std::os::unix::net::UnixStream;
 
 use serde::{Serialize, Deserialize};
 
 use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::dirs;
+use crate::sockets;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
@@ -71,17 +71,12 @@ impl Themeable for Iterm2 {
             Operation::Lighten => &config.light
         };
         let wire_format = WireConfig{ profile: profile_name.to_string() };
-        let payload = serde_json::to_string(&wire_format)? + "\n";
+        let payload = serde_json::to_vec(&wire_format).unwrap_or_default();
 
-        let pipe_name: PathBuf = [
-            dirs::data().unwrap().to_str().unwrap(),
-            "thcon",
-            "iterm2",
-        ].iter().collect();
-
-        match pipe_name.exists() {
-            true => Ok(fs::write(pipe_name, &payload).unwrap_or(())),
-            false => Ok(())
+        let addr = sockets::socket_addr("iterm2", false);
+        if let Ok(mut stream) = UnixStream::connect(&addr) {
+            stream.write_all(&payload).unwrap_or(())
         }
+        Ok(())
     }
 }
