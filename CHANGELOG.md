@@ -9,6 +9,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * New `thcon-listen` binary for use with app-specific plugins
 
+### Changed:
+* vim: Use `thcon-listen` for IPC transport
+
 ## [v0.6.0] - 2021-02-12
 ### Added:
 * Support for changing [Sublime Text 3](https://sublimetext.com) color schemes and themes

@@ -1,36 +1,36 @@
 //! Switches [vim](https://vim.org) and [Neovim](https://neovim.org) colorschemes (and other arbitrary settings)
-//! 
+//!
 //! ## Usage: Windows
 //! Windows is not yet supported, but `vim`/`nvim` under WSL should work just fine.
-//! 
+//!
 //! ## Usage: macOS & Linux
 //! Install [thcon.vim](https://github.com/sjbarag/thcon.vim) via your `.vimrc` or `init.vim`
 //! according to its README, adding both the relevant line for your plugin manager and `call
 //! thcon#listen()`.
-//! 
+//!
 //! In your `thcon.toml`, define light and dark themes. All values within 'dark' and 'light' are
 //! optional (blank values cause no changes):
-//! 
+//!
 //! ```toml
 //! [vim]
 //! light.colorscheme = "shine"
 //! dark.colorscheme = "blue"
-//! 
+//!
 //! [vim.light]
 //! colorscheme = "shine"
-//! 
+//!
 //! [vim.light.set]
 //! background = "light"
-//! 
+//!
 //! [vim.dark]
 //! colorscheme = "blue"
-//! 
+//!
 //! [vim.dark.set]
 //! background = "dark"
 //! ```
-//! 
+//!
 //! or:
-//! 
+//!
 //! ```toml
 //! [neovim]
 //! dark.colorscheme = "default"
@@ -40,9 +40,9 @@
 //! light.set.background = "light"
 //! light.let."g:lightline" = { colorscheme = "ayu_light" }
 //! ```
-//! 
+//!
 //! Feel free to use whichever syntax you prefer (or any other), as long as it's valid TOML.
-//! 
+//!
 //! ## `thcon.toml` Schema
 //! Section: `vim` or `nvim`
 //!
@@ -58,11 +58,12 @@
 //! | dark.set | table | Set of key/value pairs to apply with `:set` in dark mode | (none) |
 //! | dark.setglobal | table | Set of key/value pairs to apply with `:setglobal` in dark mode | (none) |
 //! | dark.let | table | Set of key/value pairs to apply with `:let` in dark mode | (none) |
-//! 
+//!
 
 
 use std::error::Error;
 use std::io;
+use std::io::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 
@@ -72,7 +73,7 @@ use serde_json::{Value as JsonValue, Map};
 use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::dirs;
+use crate::sockets;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
@@ -93,12 +94,9 @@ trait ControlledVim {
     /// The name of the thcon.toml section to read.
     const SECTION_NAME: &'static str;
     /// Returns the path where thcon.vim's named pipes for this variant are stored.
-    fn pipes_dir() -> PathBuf {
-        [
-            dirs::data().unwrap().to_str().unwrap(),
-            "thcon",
-            Self::SECTION_NAME
-        ].iter().collect()
+    fn sock_dir() -> PathBuf {
+        let addr = sockets::socket_addr(Self::SECTION_NAME, true);
+        PathBuf::from(addr.parent().unwrap())
     }
     /// Returns an `Option<Config>` for this variant's parsed section in thcon.toml.
     fn extract_config(thcon_config: &ThconConfig) -> &Option<Config>;
@@ -162,26 +160,27 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) 
         Operation::Darken => &config.dark,
         Operation::Lighten => &config.light
     };
-    let payload = serde_json::to_string(payload)? + "\n";
+    let payload = serde_json::to_vec(payload).unwrap_or_default();
 
-
-    let pipes_dir = V::pipes_dir();
-    let pipes = match fs::read_dir(pipes_dir) {
-        Ok(pipes) => Ok(Some(pipes)),
+    let sock_dir = V::sock_dir();
+    let sockets = match fs::read_dir(sock_dir) {
+        Ok(sockets) => Ok(Some(sockets)),
         Err(e) => match e.kind() {
             io::ErrorKind::NotFound => Ok(None),
             _ => Err(Box::new(e) as Box<dyn Error>)
         }
     };
 
-    pipes.map(|pipes| {
-        match pipes {
+    sockets.map(|sockets| {
+        match sockets {
             None => (),
-            Some(pipes) => {
-                for pipe in pipes {
-                    pipe.map(|pipe| {
-                        fs::write(pipe.path(), &payload).unwrap_or(());
-                    }).unwrap_or(());
+            Some(sockets) => {
+                for sock in sockets {
+                    if sock.is_err() { continue; }
+                    let sock = sock.unwrap().path();
+                    if let Ok(mut stream) = std::os::unix::net::UnixStream::connect(&sock) {
+                        stream.write_all(&payload).unwrap_or(())
+                    }
                 }
             }
         }
