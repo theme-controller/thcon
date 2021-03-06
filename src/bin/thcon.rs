@@ -50,10 +50,7 @@ fn main() -> std::io::Result<()> {
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
         ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
-        _ => {
-            eprintln!("CLI validation allowed this command, but it isn't actually supported.");
-            process::exit(exitcode::SOFTWARE);
-        }
+        _ => unreachable!()
     };
 
     let app_names: Vec<&str> = match subcommand.values_of("app") {
