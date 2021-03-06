@@ -65,15 +65,14 @@ fn main() -> std::io::Result<()> {
         ].iter().collect();
 
     if is_verbose {
-        eprintln!("reading config from '{:?}'", config_path);
+        eprintln!("reading config from {}", config_path.display());
     }
 
     let config = fs::read_to_string(&config_path).unwrap_or_else(|e| {
-        let config_path = config_path.to_str().unwrap();
         match e.kind() {
-            io::ErrorKind::NotFound => eprintln!("Could not find config file at {}", config_path),
-            io::ErrorKind::PermissionDenied => eprintln!("Could not read config file from {}", config_path),
-            _ => eprintln!("Unexpected error while reading config from {}: {}", e, config_path),
+            io::ErrorKind::NotFound => eprintln!("Could not find config file at {}", config_path.display()),
+            io::ErrorKind::PermissionDenied => eprintln!("Could not read config file from {}", config_path.display()),
+            _ => eprintln!("Unexpected error while reading config from {}: {}", e, config_path.display()),
         };
         process::exit(exitcode::CONFIG);
     });
@@ -81,8 +80,7 @@ fn main() -> std::io::Result<()> {
     let config: Config = match toml::from_str(config.as_str()) {
         Ok(config) => config,
         Err(e) => {
-            let config_path = config_path.to_str().unwrap();
-            eprintln!("Encountered invalid TOML in config from {} at {}", config_path, e);
+            eprintln!("Encountered invalid TOML in config from {} at {}", config_path.display(), e);
             process::exit(exitcode::CONFIG);
         }
     };
