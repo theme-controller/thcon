@@ -111,8 +111,6 @@ impl Themeable for SublimeText {
             None => preferences_path(),
         };
 
-        println!("SEttings_path = {:?}", settings_path);
-
         let settings = fs::read_to_string(&settings_path).unwrap_or_default();
         let mut settings: JsonValue = serde_json::from_str(&settings).unwrap_or_default();
         if let Some(color_scheme) = &section.color_scheme {
