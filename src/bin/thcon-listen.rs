@@ -118,6 +118,9 @@ fn main() -> Result<()> {
                     ).arg(Arg::with_name("per_process")
                             .long("per-process")
                             .help("Creates a connection unique to this process, rather than one connection for the entire app")
+                    ).arg(Arg::with_name("no_replace")
+                            .long("no-replace")
+                            .help("Exits if a socket already exists, instead of replacing the socket")
                     ).arg(Arg::with_name("name")
                             .help("The name of the app listening to this connection")
                             .takes_value(true)
@@ -154,6 +157,13 @@ fn main() -> Result<()> {
         }
 
         if sock_path.exists() {
+            if argv.is_present("no_replace") {
+                eprintln!(
+                    "Found pre-existing socket {} with --no-replace.  Exiting.",
+                    sock_path.display()
+                );
+                process::exit(exitcode::OK);
+            }
             if is_verbose {
                 eprintln!("Removing pre-existing (stale?) socket {}", sock_path.display());
             }

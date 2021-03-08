@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added:
+* New `--no-replace` CLI arg to `thcon-listen`, to exit cleanly when pre-existing sockets are detected
+
 ### Changed:
 * Moved `src/main.rs` to `src/bin/thcon.rs` to better align with `thcon-listen` binary
 
