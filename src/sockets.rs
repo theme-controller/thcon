@@ -14,9 +14,7 @@ use std::process;
 /// # use thcon::sockets::socket_addr;
 /// assert_eq!(
 ///     socket_addr("foo", false),
-///     dirs::home_dir()
-///         .unwrap()
-///         .join(".local/share/thcon/foo.sock"),
+///     PathBuf::from("/tmp/thcon/foo.sock"),
 /// )
 /// ```
 ///
@@ -27,9 +25,7 @@ use std::process;
 /// let pid = std::process::id().to_string();
 /// assert_eq!(
 ///     socket_addr("bar", true),
-///     dirs::home_dir()
-///         .unwrap()
-///         .join(format!(".local/share/thcon/bar/{}.sock", pid)),
+///     PathBuf::from("/tmp/thcon/bar/{}.sock", pid),
 /// )
 /// ```
 pub fn socket_addr(app_name: &str, include_pid: bool) -> PathBuf {
@@ -48,9 +44,7 @@ pub fn socket_addr(app_name: &str, include_pid: bool) -> PathBuf {
 #[test]
 fn app_without_pid() {
     assert_eq!(
-        dirs::home_dir()
-            .unwrap()
-            .join(".local/share/thcon/some_app.sock"),
+        PathBuf::from("/tmp/thcon/some_app.sock"),
         socket_addr("some_app", false),
     )
 }
@@ -60,9 +54,7 @@ fn app_without_pid() {
 fn app_with_pid() {
     let pid = process::id().to_string();
     assert_eq!(
-        dirs::home_dir()
-            .unwrap()
-            .join(format!(".local/share/thcon/some_app/{}.sock", pid)),
+        PathBuf::from(format!("/tmp/thcon/some_app/{}.sock", pid)),
         socket_addr("some_app", true),
     )
 }
