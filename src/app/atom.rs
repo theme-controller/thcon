@@ -22,6 +22,7 @@
 
 use std::error::Error;
 use std::io;
+use std::fs;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
@@ -72,10 +73,30 @@ impl Themeable for Atom {
         };
         let payload = serde_json::to_vec(&wire_format).unwrap_or_default();
 
-        let addr = sockets::socket_addr("atom", false);
-        if let Ok(mut stream) = UnixStream::connect(&addr) {
-            stream.write_all(&payload).unwrap_or(())
-        }
-        Ok(())
+        let sock_dir = sockets::socket_addr("atom", true);
+        let sock_dir = sock_dir.parent().unwrap();
+
+        let sockets = match fs::read_dir(sock_dir) {
+            Ok(sockets) => Ok(Some(sockets)),
+            Err(e) => match e.kind() {
+                io::ErrorKind::NotFound => Ok(None),
+                _ => Err(Box::new(e) as Box<dyn Error>)
+            }
+        };
+
+        sockets.map(|sockets| {
+            match sockets {
+                None => (),
+                Some(sockets) => {
+                    for sock in sockets {
+                        if sock.is_err() { continue; }
+                        let sock = sock.unwrap().path();
+                        if let Ok(mut stream) = UnixStream::connect(&sock) {
+                            stream.write_all(&payload).unwrap_or(())
+                        }
+                    }
+                }
+            }
+        })
     }
 }
