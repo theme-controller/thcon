@@ -8,6 +8,8 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Added:
 * Support for [Atom](https://atom.io) via an [app-side plugin](https://github.com/theme-controller/thcon-atom)
+* Writes vim/nvim rc file to disk so new instances use previously-applied settings.  Requires
+  [thcon.vim](https://github.com/theme-controller/thcon.vim) v0.4.0 (at least commit 39b6d82 (v0.4.0, 2021-03-24))
 
 ## [v0.8.0 - 2021-03-07]
 ### Added:
