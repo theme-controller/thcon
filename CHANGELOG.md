@@ -11,6 +11,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 * Writes vim/nvim rc file to disk so new instances use previously-applied settings.  Requires
   [thcon.vim](https://github.com/theme-controller/thcon.vim) v0.4.0 (at least commit 39b6d82 (v0.4.0, 2021-03-24))
 
+### Removed
+* Build-time dependency on `indicatif` crate
+
 ## [v0.8.0 - 2021-03-07]
 ### Added:
 * New `--no-replace` CLI arg to `thcon-listen`, to exit cleanly when pre-existing sockets are detected
