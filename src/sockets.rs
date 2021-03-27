@@ -12,6 +12,7 @@ use std::process;
 ///
 /// ```no_run
 /// # use thcon::sockets::socket_addr;
+/// # use std::path::PathBuf;
 /// assert_eq!(
 ///     socket_addr("foo", false),
 ///     PathBuf::from("/tmp/thcon/foo.sock"),
@@ -22,10 +23,11 @@ use std::process;
 ///
 /// ```no_run
 /// # use thcon::sockets::socket_addr;
+/// # use std::path::PathBuf;
 /// let pid = std::process::id().to_string();
 /// assert_eq!(
 ///     socket_addr("bar", true),
-///     PathBuf::from("/tmp/thcon/bar/{}.sock", pid),
+///     PathBuf::from(format!("/tmp/thcon/bar/{}.sock", pid)),
 /// )
 /// ```
 pub fn socket_addr(app_name: &str, include_pid: bool) -> PathBuf {
