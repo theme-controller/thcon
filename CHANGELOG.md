@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v0.9.0 - 2021-03-30]
 ### Added:
 * Support for [Atom](https://atom.io) via an [app-side plugin](https://github.com/theme-controller/thcon-atom)
 * Writes vim/nvim rc file to disk so new instances use previously-applied settings.  Requires
