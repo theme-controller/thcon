@@ -67,6 +67,7 @@ use std::io::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 
+use log::{error,debug,trace};
 use serde::{Serialize, Deserialize};
 use serde_json::{Value as JsonValue, Map};
 
@@ -214,17 +215,8 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) 
     let config = match V::extract_config(config) {
         Some(section) => section,
         None => {
-            return Err(
-                Box::new(
-                    io::Error::new(
-                        io::ErrorKind::NotFound,
-                        format!(
-                            "Couldn't find [{}] section in thcon.toml",
-                            V::SECTION_NAME
-                        )
-                    )
-                )
-            )
+            error!("Couldn't find [{}] section in thcon.toml", V::SECTION_NAME);
+            return Ok(());
         }
     };
 
@@ -235,10 +227,12 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) 
 
     let rc_dir = crate::dirs::data().unwrap().join("thcon/");
     if !rc_dir.exists() {
+        debug!("Creating socket rc directory at {}", rc_dir.display());
         fs::create_dir_all(&rc_dir)?;
     }
 
     let rc_path = &rc_dir.join(V::RC_NAME);
+    debug!("Writing config to {}", rc_path.display());
     fs::write(&rc_path, payload.to_vimrc()).unwrap();
 
     let wire_payload = WirePayload{ rc_file: rc_path.to_str().unwrap_or_default().to_string() };
@@ -248,7 +242,10 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) 
     let sockets = match fs::read_dir(sock_dir) {
         Ok(sockets) => Ok(Some(sockets)),
         Err(e) => match e.kind() {
-            io::ErrorKind::NotFound => Ok(None),
+            io::ErrorKind::NotFound => {
+                trace!("Found no {} sockets to write to", V::SECTION_NAME);
+                Ok(None)
+            },
             _ => Err(Box::new(e) as Box<dyn Error>)
         }
     };
@@ -261,6 +258,7 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) 
                     if sock.is_err() { continue; }
                     let sock = sock.unwrap().path();
                     if let Ok(mut stream) = std::os::unix::net::UnixStream::connect(&sock) {
+                        trace!("Writing to socket at {}", &sock.display());
                         stream.write_all(&wire_payload).unwrap_or(())
                     }
                 }
