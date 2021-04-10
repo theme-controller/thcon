@@ -30,8 +30,9 @@ use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
 use std::error::Error;
-use std::io;
 use std::process::{Command,Stdio};
+
+use log::error;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -51,14 +52,8 @@ impl Themeable for Plasma {
         let config = match &config.plasma {
             Some(plasma) => plasma,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [plasma] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [plasma] section in thcon.toml");
+                return Ok(());
             }
         };
 
