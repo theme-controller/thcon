@@ -26,6 +26,7 @@ use std::fs;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
+use log::{error, trace};
 use serde::{Deserialize, Serialize};
 
 use crate::config::Config as ThconConfig;
@@ -57,10 +58,8 @@ impl Themeable for Atom {
         let config = match &config.atom {
             Some(config) => config,
             None => {
-                return Err(Box::new(io::Error::new(
-                    io::ErrorKind::NotFound,
-                    format!("Couldn't find [atom] section in thcon.toml"),
-                )))
+                error!("Couldn't find [atom] section in thcon.toml");
+                return Ok(())
             }
         };
 
@@ -79,7 +78,10 @@ impl Themeable for Atom {
         let sockets = match fs::read_dir(sock_dir) {
             Ok(sockets) => Ok(Some(sockets)),
             Err(e) => match e.kind() {
-                io::ErrorKind::NotFound => Ok(None),
+                io::ErrorKind::NotFound => {
+                    trace!("Found no sockets to write to");
+                    Ok(None)
+                },
                 _ => Err(Box::new(e) as Box<dyn Error>)
             }
         };
@@ -92,6 +94,7 @@ impl Themeable for Atom {
                         if sock.is_err() { continue; }
                         let sock = sock.unwrap().path();
                         if let Ok(mut stream) = UnixStream::connect(&sock) {
+                            trace!("Writing to socket at {}", &sock.display());
                             stream.write_all(&payload).unwrap_or(())
                         }
                     }

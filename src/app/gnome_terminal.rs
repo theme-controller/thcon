@@ -2,16 +2,16 @@ use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
-use xml::reader::{EventReader, XmlEvent};
-
 use std::vec::Vec;
-use std::io;
 use std::error::Error;
 use std::time::Duration;
+
 use dbus::blocking::Connection;
 use dbus::arg::Variant;
 use dbus::arg::Dict;
+use log::{error, debug};
 use serde::Deserialize;
+use xml::reader::{EventReader, XmlEvent};
 
 #[derive(Debug,Deserialize)]
 pub struct Config {
@@ -93,14 +93,8 @@ impl Themeable for GnomeTerminal {
         let config = match &config.gnome_terminal {
             Some(gnome_terminal) => gnome_terminal,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [plasma] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [gnome_terminal] section in thcon.toml");
+                return Ok(());
             }
         };
 
@@ -109,10 +103,17 @@ impl Themeable for GnomeTerminal {
             Operation::Lighten => &config.light,
         };
 
-        for window_id in self.get_window_ids()?.iter() {
-            self.set_profile(window_id, &theme)?;
+        if let Ok(windows) = self.get_window_ids() {
+            debug!(
+                "Found {} {}",
+                windows.len(),
+                if windows.len() == 1 { "window" } else { "windows" },
+            );
+            for window_id in windows.iter() {
+                self.set_profile(window_id, &theme)?;
+            }
         }
 
-        Result::Ok(())
+        Ok(())
     }
 }

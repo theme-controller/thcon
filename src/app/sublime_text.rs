@@ -42,13 +42,13 @@
 
 use std::error::Error;
 use std::fs::{self,OpenOptions};
-use std::io;
 use std::path::PathBuf;
 
 use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
+use log::{error, debug, warn};
 use serde::{Serialize,Deserialize};
 use serde_json::ser::{PrettyFormatter, Serializer};
 use serde_json::Value as JsonValue;
@@ -90,14 +90,8 @@ impl Themeable for SublimeText {
         let config = match &config.sublime_text {
             Some(subl) => subl,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "COuldn't find [sublime-text] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [sublime-text] section in thcon.toml");
+                return Ok(());
             }
         };
 
@@ -110,6 +104,11 @@ impl Themeable for SublimeText {
             Some(pathstr) => PathBuf::from(pathstr),
             None => preferences_path(),
         };
+
+        debug!(
+            "Reading/writing Preferences.sublime-settings at {}",
+            &settings_path.display()
+        );
 
         let settings = fs::read_to_string(&settings_path).unwrap_or_default();
         let mut settings: JsonValue = serde_json::from_str(&settings).unwrap_or_default();
@@ -124,13 +123,18 @@ impl Themeable for SublimeText {
                 .read(true)
                 .write(true)
                 .truncate(true)
-                .open(settings_path);
+                .open(&settings_path);
         if let Ok(file) = maybe_settings_file {
             // sublime-text uses four-space indents for its Preferences.sublime-settings file
             // so set up a custom formatter and serializer to match that style
             let formatter = PrettyFormatter::with_indent(b"    ");
             let mut serializer = Serializer::with_formatter(file, formatter);
             settings.serialize(&mut serializer).unwrap();
+        } else {
+            warn!(
+                "Could not find Preferences.sublime-settings at {}",
+                &settings_path.display()
+            );
         }
 
         Ok(())
