@@ -62,13 +62,13 @@
 use std::error::Error;
 use std::fs;
 use std::env;
-use std::io;
 use std::path::PathBuf;
 
 use crate::themeable::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
+use log::{error, debug};
 use serde::Deserialize;
 use regex::{Captures,Regex};
 
@@ -90,14 +90,8 @@ impl Themeable for Alacritty {
         let config = match &config.alacritty {
             Some(alacritty) => alacritty,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [alacritty] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [alacritty] section in thcon.toml");
+                return Ok(());
             }
         };
 
@@ -115,29 +109,32 @@ impl Themeable for Alacritty {
                     None => format!("{}; consider adding `config` property to `[alacritty]` section of `thcon.toml`", couldnt_find),
                 };
 
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            message
-                        )
-                    )
-                );
+                error!("{}", message);
+                return Ok(());
             }
         };
 
-        let theme_regex = Regex::new(r#"^(?P<prefix>"?colors"?\s*:\s*"?)(?P<v>[^\s]+)(?P<suffix>"?,?\s*#\s*thcon:replace-line)"#)?;
-        let settings = fs::read_to_string(&alacritty_yaml)?;
-        let modified_lines: Vec<String> = settings.lines().map(|line| {
-            theme_regex.replace(line, |caps: &Captures| {
-                format!("{}*{}{}", &caps["prefix"], theme, &caps["suffix"])
-            }).into_owned()
-        }).collect();
-        let settings = modified_lines.join("\n");
+        debug!("Reading/writing alacritty.yml at {}", alacritty_yaml.display());
 
-        fs::write(&alacritty_yaml, settings).map_err(|err| {
-            Box::new(err) as Box<dyn Error>
-        })
+        match fs::read_to_string(&alacritty_yaml) {
+            Ok(settings) => {
+                let theme_regex = Regex::new(r#"^(?P<prefix>"?colors"?\s*:\s*"?)(?P<v>[^\s]+)(?P<suffix>"?,?\s*#\s*thcon:replace-line)"#)?;
+                let modified_lines: Vec<String> = settings.lines().map(|line| {
+                    theme_regex.replace(line, |caps: &Captures| {
+                        format!("{}*{}{}", &caps["prefix"], theme, &caps["suffix"])
+                    }).into_owned()
+                }).collect();
+                let settings = modified_lines.join("\n");
+
+                fs::write(&alacritty_yaml, settings).map_err(|err| {
+                    Box::new(err) as Box<dyn Error>
+                })
+            },
+            Err(e) => {
+                error!("Unable to read settings: {}", e);
+                Err(Box::new(e))
+            }
+        }
     }
 }
 
