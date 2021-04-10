@@ -6,6 +6,8 @@ use std::process;
 
 use clap::{Arg, App, AppSettings, SubCommand, crate_version};
 use rayon::prelude::*;
+use log::{error, info, trace, LevelFilter};
+use env_logger::TimestampPrecision;
 
 use thcon::Operation;
 use thcon::app;
@@ -20,6 +22,7 @@ fn main() -> std::io::Result<()> {
                     .setting(AppSettings::SubcommandRequiredElseHelp)
                     .arg(Arg::with_name("verbose")
                             .short("v")
+                            .multiple(true)
                             .long("verbose")
                             .help("Enables verbose output")
                     )
@@ -45,7 +48,19 @@ fn main() -> std::io::Result<()> {
                     )
                     .get_matches();
 
-    let is_verbose = matches.is_present("verbose");
+    env_logger::builder()
+        .format_timestamp_millis()
+        .filter_level(match matches.occurrences_of("verbose") {
+            0 => LevelFilter::Warn,
+            1 => LevelFilter::Info,
+            2 => LevelFilter::Debug,
+            _ => LevelFilter::Trace,
+        })
+        .format_timestamp(match matches.occurrences_of("verbose") {
+            0 | 1 => None,
+            _ => Some(TimestampPrecision::Millis)
+        })
+        .init();
 
     let (operation, subcommand) = match matches.subcommand() {
         ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
@@ -64,15 +79,13 @@ fn main() -> std::io::Result<()> {
             "thcon.toml"
         ].iter().collect();
 
-    if is_verbose {
-        eprintln!("reading config from {}", config_path.display());
-    }
+    trace!("reading config from {}", config_path.display());
 
     let config = fs::read_to_string(&config_path).unwrap_or_else(|e| {
         match e.kind() {
-            io::ErrorKind::NotFound => eprintln!("Could not find config file at {}", config_path.display()),
-            io::ErrorKind::PermissionDenied => eprintln!("Could not read config file from {}", config_path.display()),
-            _ => eprintln!("Unexpected error while reading config from {}: {}", e, config_path.display()),
+            io::ErrorKind::NotFound => error!("Could not find config file at {}", config_path.display()),
+            io::ErrorKind::PermissionDenied => error!("Could not read config file from {}", config_path.display()),
+            _ => error!("Unexpected error while reading config from {}: {}", e, config_path.display()),
         };
         process::exit(exitcode::CONFIG);
     });
@@ -80,7 +93,7 @@ fn main() -> std::io::Result<()> {
     let config: Config = match toml::from_str(config.as_str()) {
         Ok(config) => config,
         Err(e) => {
-            eprintln!("Encountered invalid TOML in config from {} at {}", config_path.display(), e);
+            error!("Encountered invalid TOML in config from {} at {}", config_path.display(), e);
             process::exit(exitcode::CONFIG);
         }
     };
@@ -94,12 +107,10 @@ fn main() -> std::io::Result<()> {
         };
 
         if app.has_config(&config) {
-            if is_verbose {
-                eprintln!("{}ing {}", operation, name);
-            }
+            info!("{}ing {}", operation, name);
             app.switch(&config, &operation).unwrap();
-        } else if is_verbose {
-            eprintln!("skipping {} (not configured)", name);
+        } else {
+            info!("skipping {} (not configured)", name);
         }
     });
 

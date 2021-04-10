@@ -13,6 +13,8 @@ default-run = "thcon"
 cfg_aliases = "0.1.1"
 
 [dependencies]
+log = "0.4"
+env_logger = "0.8.3"
 clap = "2.33.3"
 xml-rs = "0.8"
 rayon = "1.4.1"
