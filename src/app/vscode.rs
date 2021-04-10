@@ -45,10 +45,10 @@
 
 use std::error::Error;
 use std::fs;
-use std::io;
 use std::path::PathBuf;
 
 use regex::{Captures,Regex};
+use log::{error, debug};
 
 use crate::themeable::Themeable;
 use crate::operation::Operation;
@@ -85,14 +85,8 @@ impl Themeable for VSCode {
         let config = match &config.vscode {
             Some(vscode) => vscode,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [vscode] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [vscode] section in thcon.toml");
+                return Ok(());
             }
         };
 
@@ -101,11 +95,20 @@ impl Themeable for VSCode {
             Operation::Lighten => &config.light,
         };
 
-        let settings = fs::read_to_string(self.settings_json_path())?;
-        let settings = replace_color_theme(&settings, theme);
-        fs::write(self.settings_json_path(), settings).map_err(|err| {
-            Box::new(err) as Box<dyn Error>
-        })
+        let settings_path = self.settings_json_path();
+        debug!("Reading/writing settings.json at {}", &settings_path.display());
+        match fs::read_to_string(self.settings_json_path()) {
+            Ok(settings) => {
+                let settings = replace_color_theme(&settings, theme);
+                fs::write(self.settings_json_path(), settings).map_err(|err| {
+                    Box::new(err) as Box<dyn Error>
+                })
+            },
+            Err(e) => {
+                error!("Unable to read settings: {}", e);
+                Err(Box::new(e))
+            }
+        }
     }
 }
 
