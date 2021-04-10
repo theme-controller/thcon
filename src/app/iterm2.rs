@@ -27,6 +27,7 @@ use std::io;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
+use log::{error, trace};
 use serde::{Serialize, Deserialize};
 
 use crate::themeable::Themeable;
@@ -55,14 +56,8 @@ impl Themeable for Iterm2 {
         let config = match &config.iterm2 {
             Some(iterm2) => iterm2,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [iterm2] section in thcon.toml",
-                        )
-                    )
-                )
+                error!("Couldn't find [iterm2] section in thcon.toml");
+                Ok(())
             }
         };
 
@@ -75,6 +70,7 @@ impl Themeable for Iterm2 {
 
         let addr = sockets::socket_addr("iterm2", false);
         if let Ok(mut stream) = UnixStream::connect(&addr) {
+            trace!("Writing to socket at {}", &addr.display());
             stream.write_all(&payload).unwrap_or(())
         }
         Ok(())
