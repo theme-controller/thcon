@@ -26,13 +26,15 @@ use crate::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 
-use xml::reader::{EventReader, XmlEvent};
-
 use std::error::Error;
 use std::io;
 use std::time::Duration;
+
 use dbus::blocking::Connection;
+use log::{error, debug, trace};
 use serde::Deserialize;
+use xml::reader::{EventReader, XmlEvent};
+
 
 #[derive(Debug,Deserialize)]
 pub struct Config {
@@ -58,6 +60,12 @@ impl Konsole {
         let konsoles: Vec<String> = names.into_iter().filter(|name| {
             name.as_str().starts_with("org.kde.konsole-")
         }).collect();
+
+        trace!(
+            "Found {} {}",
+            konsoles.len(),
+            if konsoles.len() == 1 { "service" } else { "services" },
+        );
 
         Ok(konsoles)
     }
@@ -95,6 +103,12 @@ impl Konsole {
             }
         }
 
+        trace!(
+            "Found {} {} in service {}",
+            session_ids.len(),
+            if session_ids.len() == 1 { "session" } else { "sessions" },
+            service_id
+        );
         Ok(session_ids)
     }
 
@@ -115,21 +129,17 @@ impl Themeable for Konsole {
         let config = match &config.konsole {
             Some(konsole) => konsole,
             None => {
-                return Err(
-                    Box::new(
-                        io::Error::new(
-                            io::ErrorKind::NotFound,
-                            "Couldn't find [plasma] section in thcon.toml"
-                        )
-                    )
-                );
+                error!("Couldn't find [plasma] section in thcon.toml");
+                return Ok(());
             }
         };
 
-        let sessions: Vec<(String, Vec<String>)> = self.get_services()?.into_iter()
-            .map(|session| {
-                let session_ids = self.get_session_ids(&session).unwrap();
-                (session, session_ids)
+        let mut total_sessions = 0;
+        let services: Vec<(String, Vec<String>)> = self.get_services()?.into_iter()
+            .map(|service| {
+                let session_ids = self.get_session_ids(&service).unwrap();
+                total_sessions += session_ids.len();
+                (service, session_ids)
             })
             .collect();
 
@@ -137,7 +147,23 @@ impl Themeable for Konsole {
             Operation::Darken => &config.dark,
             Operation::Lighten => &config.light,
         };
-        for (service_id, session_ids) in sessions.iter() {
+
+        if services.len() == 1 {
+            debug!(
+                "Found {} {}",
+                total_sessions,
+                if total_sessions == 1 { "session" } else { "sessions" },
+            );
+        } else {
+            debug!(
+                "Found {} {} across {} services", 
+                total_sessions,
+                if total_sessions == 1 { "session" } else { "sessions" },
+                services.len(),
+            );
+        }
+
+        for (service_id, session_ids) in services.iter() {
             for session_id in session_ids.iter() {
                 self.set_profile_name(service_id, session_id, &theme)?;
             }
