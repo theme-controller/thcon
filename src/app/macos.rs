@@ -1,3 +1,9 @@
+//! Switches between Light and Dark [appearances](https://support.apple.com/en-us/HT208976) in macOS.
+//!
+//! ## Usage
+//! There's no configuration required!  `thcon dark` will always enable dark mode on macOS, and
+//! `thcon light` will disable it.
+
 use crate::Themeable;
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
