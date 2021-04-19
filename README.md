@@ -1,6 +1,16 @@
 # thcon
 Switches multiple apps between light and dark mode
 
+## Goal
+Sometimes it's bright.  Sometime's it's dark.  Switching between light and dark themes in your terminals, your editor(s), your desktop environment, and all your other apps is a pain.  `thcon` aims to be a near universal theme controller driven by a single config file, letting you switch themes in all your apps with one command.
+
+## Naming
+`thcon` is short for "THeme CONtroller", pronounced like [the English word "thicken"](https://en.wiktionary.org/wiki/thicken).  The name was chosen from a misunderstanding of [pkcon](http://manpages.ubuntu.com/manpages/trusty/man1/pkcon.1.html) as "PacKage CONtroller", and was maintained despite `pkcon` actually being a "PackageKit CONsole client".
+
+Feel free to pretend this less embarrassing explanation is the truth:
+
+> `thcon` (pronounced like [the English word "thicken"](https://en.wiktionary.org/wiki/thicken)) comes from the use of a [roux to thicken a sauce](https://en.wikipedia.org/wiki/Roux) while cooking, and is a play on the fact that a roux can cooked to either a light or dark color.  A roux thickens your sauce and can be light or dark; `thcon` makes your apps light or dark.  Perhaps it should have been called `roux`.
+
 ## License
 
 Licensed under either of
