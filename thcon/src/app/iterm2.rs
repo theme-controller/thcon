@@ -23,22 +23,25 @@
 //! | `light` | string | The name of the profile to use in light mode | (none) |
 
 use std::error::Error;
-use std::io;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
-use log::{error, trace};
+use log::trace;
 use serde::{Serialize, Deserialize};
 
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 use crate::sockets;
+use crate::Disableable;
+use crate::AppConfig;
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     dark: String,
     light: String,
+    #[serde(default)]
+    disabled: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -48,17 +51,16 @@ pub struct WireConfig {
 
 pub struct Iterm2;
 impl Themeable for Iterm2 {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.iterm2.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.iterm2.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.iterm2 {
-            Some(iterm2) => iterm2,
-            None => {
-                error!("Couldn't find [iterm2] section in thcon.toml");
-                Ok(())
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("iterm2"))),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Enabled => config.iterm2.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let profile_name = match operation {

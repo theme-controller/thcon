@@ -2,56 +2,56 @@
 //!
 //! Since alacritty is configured via [yaml](https://yaml.org/), using anchors and aliases is the
 //! simplest way of managing color schemes.
-//! 
+//!
 //! ## Usage
 //! In your `alacritty.yml`, define your colors
-//! 
+//!
 //! ```yaml
 //! # define your color themes:
-//! 
+//!
 //! solarized: &solarized_dark
 //!   #         ^^^^^^^^^^^^^^ - use this name in thcon.toml
 //!   primary:
 //!     background: '0x002b36'
 //!     foreground: '0x839496'
 //!   # ... the normal contents of a `colors` object
-//! 
+//!
 //! light_solarized: &solarized_light:
 //!   #               ^^^^^^^^^^^^^^^ - use this name in thcon.toml
 //!   primary:
 //!     background: '0xfdf6e3'
 //!     foreground: '0x586e75'
-//! 
+//!
 //! # then choose your color scheme one last time:
 //! colors: *solarized_light # thcon:replace-line
-//! 
+//!
 //! # thcon will manage the line ending in `thcon:replace-line`
 //! # to swap alacritty color schemes
 //! ```
-//! 
+//!
 //! In your `thcon.toml`, define light and dark themes based on the `&anchor`s defined above:
-//! 
+//!
 //! ```toml
 //! [alacritty]
 //! dark = "solarized_dark"
 //! light = "solarized_light"
-//! 
+//!
 //! # optionally, tell thcon where your alacritty config is stored
 //! config = "/path/to/alacritty.yml"
 //! ```
-//! 
+//!
 //! ## `thcon.toml` Schema
 //! Section: `alacritty`
-//! 
+//!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
 //! | `dark` | string | The YAML anchor (declared in `alacritty.yml`) used for dark mode | (none) |
 //! | `light` | string | The YAML anchor (declared in `alacritty.yml`) used for light mode | (none) |
 //! | `config` | string | Absolute path to your `alacritty.yml` file | (see below) |
-//! 
+//!
 //! ### Default value for `config`
 //! Thcon checks all default locations that `alacritty` [defines for alacritty.yml](https://github.com/alacritty/alacritty#configuration):
-//! 
+//!
 //! * Windows: `%APPDATA%\alacritty\alacritty.yml`
 //! * Other platforms:
 //!   1. `$XDG_CONFIG_HOME/alacritty/alacritty.yml`
@@ -64,35 +64,39 @@ use std::fs;
 use std::env;
 use std::path::PathBuf;
 
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
 use log::{error, debug};
 use serde::Deserialize;
 use regex::{Captures,Regex};
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: String,
     dark: String,
     config: Option<String>,
+    #[serde(default)]
+    disabled: bool,
 }
 
-pub struct Alacritty;
+#[derive(Debug, Deserialize)]
+pub struct Alacritty {}
 
 impl Themeable for Alacritty {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.alacritty.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.alacritty.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.alacritty {
-            Some(alacritty) => alacritty,
-            None => {
-                error!("Couldn't find [alacritty] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("alacritty"))),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Enabled => config.alacritty.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let theme = match operation {

@@ -44,21 +44,25 @@ use std::error::Error;
 use std::fs::{self,OpenOptions};
 use std::path::PathBuf;
 
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigState, ConfigError, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
-use log::{error, debug, warn};
+use log::{debug, warn};
 use serde::{Serialize,Deserialize};
 use serde_json::ser::{PrettyFormatter, Serializer};
 use serde_json::Value as JsonValue;
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: ConfigSection,
     dark: ConfigSection,
     #[serde(rename = "preferences")]
     preferences_file: Option<String>,
+    #[serde(default)]
+    disabled: bool,
 }
 
 #[derive(Debug, Deserialize)]
@@ -82,17 +86,16 @@ fn preferences_path() -> PathBuf {
 pub struct SublimeText;
 
 impl Themeable for SublimeText {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.sublime_text.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.sublime_text {
-            Some(subl) => subl,
-            None => {
-                error!("Couldn't find [sublime-text] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("sublime_text"))),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Enabled => config.sublime_text.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let section = match operation {

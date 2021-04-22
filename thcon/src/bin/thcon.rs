@@ -12,6 +12,7 @@ use env_logger::TimestampPrecision;
 use thcon::Operation;
 use thcon::app;
 use thcon::Config;
+use thcon::ConfigState;
 
 use std::fs;
 
@@ -67,6 +68,7 @@ fn main() -> std::io::Result<()> {
         _ => unreachable!()
     };
 
+    let has_explicit_apps = subcommand.values_of("app").unwrap_or_default().len() > 0;
     let app_names: Vec<&str> = match subcommand.values_of("app") {
         Some(apps) => apps.collect(),
         None => app::all_names()
@@ -105,11 +107,23 @@ fn main() -> std::io::Result<()> {
             Some(app) => app,
         };
 
-        if app.has_config(&config) {
-            info!("{}ing {}", operation, name);
-            app.switch(&config, &operation).unwrap();
-        } else {
-            info!("skipping {} (not configured)", name);
+        match app.config_state(&config) {
+            ConfigState::NoDefault => {
+                if has_explicit_apps {
+                    error!("skipping {} (needs manual configuration)", name);
+                } else {
+                    info!("skipping {} (needs manual configuration)", name);
+                }
+            },
+            ConfigState::Disabled => info!("skipping {} (disabled)", name),
+            ConfigState::Default => {
+                info!("{}ing {} (default configuration)", operation, name);
+                app.switch(&config, &operation).unwrap()
+            },
+            ConfigState::Enabled => {
+                info!("{}ing {}", operation, name);
+                app.switch(&config, &operation).unwrap()
+            }
         }
     });
 

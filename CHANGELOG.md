@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+* Allow apps to be disabled with `disabled = true` in their config section
 
 ## [v0.9.0 - 2021-03-30]
 ### Added:

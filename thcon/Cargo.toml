@@ -1,0 +1,40 @@
+[package]
+name = "thcon"
+version = "0.9.0"
+authors = ["Sean Barag <sean@barag.org>"]
+description = "A configurable theme controller that switches multiple apps between light and dark mode"
+edition = "2018"
+license = "MIT OR Apache-2.0"
+default-run = "thcon"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+cfg_aliases = "0.1.1"
+
+[dependencies]
+thcon_trait = { path = "../thcon_trait" }
+thcon_macro = { path = "../thcon_macro" }
+log = "0.4"
+env_logger = "0.8.3"
+clap = "2.33.3"
+xml-rs = "0.8"
+rayon = "1.4.1"
+dirs = "3.0.1"
+regex = "1"
+serde = { version = "1.0.117", features = ["derive"] }
+serde_json = "1.0.61"
+toml = "0.5.7"
+exitcode = "1.1.2"
+either = { version = "1.6.1", features = ["serde"] }
+thiserror = "1.0.25"
+
+[target.'cfg(not(windows))'.dependencies]
+xdg = "2.2.0"
+async-std = "1.9.0"
+signal-hook = "0.3.4"
+signal-hook-async-std = "0.2.1"
+
+[target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
+dbus = "0.9.0"
+gio = "0.9.1"

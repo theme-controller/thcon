@@ -26,21 +26,25 @@ use std::fs;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
-use log::{error, trace};
+use log::trace;
 use serde::{Deserialize, Serialize};
 
-use crate::config::Config as ThconConfig;
+use crate::{config::Config as ThconConfig};
 use crate::operation::Operation;
 use crate::sockets;
-use crate::themeable::Themeable;
+use crate::themeable::{Themeable, ConfigState, ConfigError};
+use crate::Disableable;
+use crate::AppConfig;
 
 #[derive(Debug, Deserialize)]
 pub struct Atom {}
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     dark: Vec<String>,
     light: Vec<String>,
+    #[serde(default)]
+    disabled: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -50,17 +54,16 @@ pub struct WireConfig {
 }
 
 impl Themeable for Atom {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.atom.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.atom.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.atom {
-            Some(config) => config,
-            None => {
-                error!("Couldn't find [atom] section in thcon.toml");
-                return Ok(())
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("atom"))),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Enabled => config.atom.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let themes = match operation {

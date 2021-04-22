@@ -26,35 +26,38 @@
 //! | `light` | string | The theme package name to use in light mode | (none) |
 
 use crate::Themeable;
+use crate::themeable::{ConfigError, ConfigState};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
 use std::error::Error;
 use std::process::{Command,Stdio};
 
-use log::error;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: String,
     dark: String,
+    #[serde(default)]
+    disabled: bool,
 }
 
 pub struct Plasma;
 
 impl Themeable for Plasma {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.plasma.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.plasma.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.plasma {
-            Some(plasma) => plasma,
-            None => {
-                error!("Couldn't find [plasma] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("plasma"))),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Enabled => config.plasma.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let theme = match operation {

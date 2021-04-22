@@ -67,19 +67,23 @@ use std::io::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 
-use log::{error,debug,trace};
+use log::{debug, trace};
 use serde::{Serialize, Deserialize};
 use serde_json::{Value as JsonValue, Map};
 
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 use crate::sockets;
+use crate::Disableable;
+use crate::AppConfig;
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     dark: ConfigSection,
     light: ConfigSection,
+    #[serde(default)]
+    disabled: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -171,6 +175,7 @@ trait ControlledVim {
     }
     /// Returns an `Option<Config>` for this variant's parsed section in thcon.toml.
     fn extract_config(thcon_config: &ThconConfig) -> &Option<Config>;
+
 }
 
 pub struct Vim;
@@ -182,12 +187,13 @@ impl ControlledVim for Vim {
     }
 }
 impl Themeable for Vim {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        Vim::extract_config(config).is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.vim.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        anyvim_switch::<Vim>(config, operation)
+        let config_state = self.config_state(&config);
+        anyvim_switch::<Vim>(config, config_state, operation)
     }
 }
 
@@ -199,25 +205,26 @@ impl ControlledVim for Neovim {
         &thcon_config.nvim
     }
 }
+
 impl Themeable for Neovim {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        Neovim::extract_config(config).is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.nvim.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        anyvim_switch::<Neovim>(config, operation)
+        let config_state = self.config_state(&config);
+        anyvim_switch::<Neovim>(config, config_state, operation)
     }
 }
 
 /// Switches settings and colorscheme in a `vim`-agnostic way.
 /// Returns unit result if successful, otherwise the causing error.
-fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-    let config = match V::extract_config(config) {
-        Some(section) => section,
-        None => {
-            error!("Couldn't find [{}] section in thcon.toml", V::SECTION_NAME);
-            return Ok(());
-        }
+fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    let config = match config_state {
+        ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig(V::SECTION_NAME))),
+        ConfigState::Default => unreachable!(),
+        ConfigState::Disabled => return Ok(()),
+        ConfigState::Enabled => V::extract_config(&config).as_ref().unwrap().unwrap_inner_left(),
     };
 
     let payload = match operation {

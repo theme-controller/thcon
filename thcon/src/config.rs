@@ -9,6 +9,8 @@ use crate::app::alacritty;
 use crate::app::vim;
 #[cfg(mac)]
 use crate::app::iterm2;
+#[cfg(mac)]
+use crate::app::macos;
 use crate::app::sublime_text;
 use crate::app::atom;
 use serde::Deserialize;
@@ -28,6 +30,8 @@ pub struct Config {
     pub nvim: Option<vim::Config>,
     #[cfg(mac)]
     pub iterm2: Option<iterm2::Config>,
+    #[cfg(mac)]
+    pub macos: Option<macos::Config>,
     #[serde(rename = "sublime-text")]
     pub sublime_text: Option<sublime_text::Config>,
     pub atom: Option<atom::Config>,

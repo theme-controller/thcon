@@ -50,17 +50,21 @@ use std::path::PathBuf;
 use regex::{Captures,Regex};
 use log::{error, debug};
 
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigState, ConfigError, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct Config {
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: String,
     dark: String,
     config: Option<String>,
+    #[serde(default)]
+    disabled: bool,
 }
 
 pub struct VSCode;
@@ -77,17 +81,16 @@ impl VSCode {
 }
 
 impl Themeable for VSCode {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.vscode.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.vscode.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.vscode {
-            Some(vscode) => vscode,
-            None => {
-                error!("Couldn't find [vscode] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("vscode"))),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Enabled => config.vscode.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let theme = match operation {

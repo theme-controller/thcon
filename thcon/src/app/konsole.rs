@@ -22,23 +22,26 @@
 //! | `dark` | string | The name of the profile (case-sensitive) to use in dark mode | (none) |
 //! | `light` | string | The name of the profile (case-sensitive) to use in light mode | (none) |
 
-use crate::Themeable;
+use crate::{Themeable, themeable::{ConfigError, ConfigState}};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
 use std::error::Error;
 use std::time::Duration;
 
 use dbus::blocking::Connection;
-use log::{error, debug, trace};
+use log::{debug, trace};
 use serde::Deserialize;
 use xml::reader::{EventReader, XmlEvent};
 
-
-#[derive(Debug,Deserialize)]
-pub struct Config {
+#[derive(Debug,Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: String,
     dark: String,
+    #[serde(default)]
+    disabled: bool,
 }
 
 pub struct Konsole {
@@ -157,24 +160,23 @@ impl Konsole {
             proxy.method_call("org.kde.konsole.Window", "setDefaultProfile", (profile_name,)).map_err(|e| e.into())
         } else {
             trace!("Found no Konsole windows; can't set default profile.");
-            return Ok(());
+            Ok(())
         }
 
     }
 }
 
 impl Themeable for Konsole {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.konsole.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.konsole.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.konsole {
-            Some(konsole) => konsole,
-            None => {
-                error!("Couldn't find [plasma] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("konsole"))),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Enabled => config.konsole.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let mut total_sessions = 0;
@@ -199,7 +201,7 @@ impl Themeable for Konsole {
             );
         } else {
             debug!(
-                "Found {} {} across {} services", 
+                "Found {} {} across {} services",
                 total_sessions,
                 if total_sessions == 1 { "session" } else { "sessions" },
                 services.len(),

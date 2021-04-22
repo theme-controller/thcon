@@ -1,6 +1,8 @@
-use crate::themeable::Themeable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::Disableable;
+use crate::AppConfig;
 
 use std::vec::Vec;
 use std::error::Error;
@@ -14,10 +16,12 @@ use log::{error, debug};
 use serde::Deserialize;
 use xml::reader::{EventReader, XmlEvent};
 
-#[derive(Debug,Deserialize)]
-pub struct Config {
+#[derive(Debug,Deserialize, Disableable, AppConfig)]
+pub struct _Config {
     light: String,
-    dark: String
+    dark: String,
+    #[serde(default)]
+    disabled: bool,
 }
 
 pub struct GnomeTerminal {
@@ -86,17 +90,16 @@ impl GnomeTerminal {
 }
 
 impl Themeable for GnomeTerminal {
-    fn has_config(&self, config: &ThconConfig) -> bool {
-        config.gnome_terminal.is_some()
+    fn config_state(&self, config: &ThconConfig) -> ConfigState {
+        ConfigState::with_manual_config(config.gnome_terminal.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
-        let config = match &config.gnome_terminal {
-            Some(gnome_terminal) => gnome_terminal,
-            None => {
-                error!("Couldn't find [gnome_terminal] section in thcon.toml");
-                return Ok(());
-            }
+        let config = match self.config_state(config) {
+            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("gnome_terminal"))),
+            ConfigState::Default => unreachable!(),
+            ConfigState::Disabled => return Ok(()),
+            ConfigState::Enabled => config.gnome_terminal.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let theme = match operation {
