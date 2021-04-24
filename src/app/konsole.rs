@@ -117,6 +117,50 @@ impl Konsole {
 
         Ok(())
     }
+
+    fn set_default_profile(&self, service_id: &str, profile_name: &str) -> Result<(), Box<dyn Error>>  {
+        // grab the ID of the first encountered window
+        let proxy = self.dbus.with_proxy(service_id, "/Windows", Duration::from_millis(2500));
+        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;
+
+        let parser = EventReader::from_str(&xml);
+        let mut depth = 0;
+
+        let mut window_id: Option<String> = None;
+
+        for e in parser {
+            match e {
+                Ok(XmlEvent::StartElement { name, attributes, .. }) => {
+                    if depth == 1 && name.local_name == "node" {
+                        window_id = attributes.into_iter()
+                            .find_map(|attr| {
+                                if attr.name.local_name == "name" {
+                                    Some(attr.value)
+                                } else {
+                                    None
+                                }
+                            });
+                    }
+                    depth += 1;
+                },
+                Ok(XmlEvent::EndElement {..}) => depth -= 1,
+                Err(e) => {
+                    return Err(Box::new(e));
+                },
+                _ => {}
+            }
+        }
+
+        if let Some(window_id) = window_id {
+            trace!( "Found first window ID {}", window_id);
+            let proxy = self.dbus.with_proxy(service_id, format!("/Windows/{}", window_id), Duration::from_millis(2500));
+            proxy.method_call("org.kde.konsole.Window", "setDefaultProfile", (profile_name,)).map_err(|e| e.into())
+        } else {
+            trace!("Found no Konsole windows; can't set default profile.");
+            return Ok(());
+        }
+
+    }
 }
 
 impl Themeable for Konsole {
@@ -166,6 +210,10 @@ impl Themeable for Konsole {
             for session_id in session_ids.iter() {
                 self.set_profile_name(service_id, session_id, &theme)?;
             }
+        }
+
+        if let Some((session, _)) = services.get(0) {
+            self.set_default_profile(session, &theme)?;
         }
 
         Ok(())
