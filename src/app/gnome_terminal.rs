@@ -6,6 +6,7 @@ use std::vec::Vec;
 use std::error::Error;
 use std::time::Duration;
 
+use gio::SettingsExt;
 use dbus::blocking::Connection;
 use dbus::arg::Variant;
 use dbus::arg::Dict;
@@ -112,6 +113,12 @@ impl Themeable for GnomeTerminal {
             for window_id in windows.iter() {
                 self.set_profile(window_id, &theme)?;
             }
+        }
+
+        let gsettings = gio::Settings::new("org.gnome.Terminal.ProfilesList");
+        match gsettings.set_string("default", &theme) {
+            Ok(_) => gio::Settings::sync(),
+            Err(e) => error!("Unable to set default profile: {}", e),
         }
 
         Ok(())

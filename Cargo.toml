@@ -33,3 +33,4 @@ signal-hook-async-std = "0.2.1"
 
 [target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
 dbus = "0.9.0"
+gio = "0.9.1"
