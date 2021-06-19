@@ -221,7 +221,7 @@ impl Themeable for Neovim {
 /// Returns unit result if successful, otherwise the causing error.
 fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<(), Box<dyn Error>> {
     let config = match config_state {
-        ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig(V::SECTION_NAME))),
+        ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("alacritty"))),
         ConfigState::Default => unreachable!(),
         ConfigState::Disabled => return Ok(()),
         ConfigState::Enabled => V::extract_config(&config).as_ref().unwrap().unwrap_inner_left(),

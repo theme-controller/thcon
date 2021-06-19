@@ -27,8 +27,8 @@
 //!
 //! ```toml
 //! [vscode]
-//! dark = "Default Dark+"   # the default dark theme
-//! light = "Default Light+" # the default light theme
+//! dark = "Solarized Dark"
+//! light = "Solarized Light"
 //!
 //! # optionally, tell thcon where your settings.json is stored
 //! config = "/path/to/settings.json"
@@ -39,8 +39,8 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
-//! | `dark` | string | The theme to use in dark mode | (none) |
-//! | `light` | string | The theme to use in light mode | (none) |
+//! | `dark` | string | The theme to use in dark mode | Default Dark+ |
+//! | `light` | string | The theme to use in light mode | Default Light+ |
 //! | `config` | string | Absolute path to your `settings.json` file | `~/.config/Code/User/settings.json` |
 
 use std::error::Error;
@@ -50,7 +50,7 @@ use std::path::PathBuf;
 use regex::{Captures,Regex};
 use log::{error, debug};
 
-use crate::themeable::{ConfigState, ConfigError, Themeable};
+use crate::themeable::{ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 use crate::Disableable;
@@ -65,6 +65,17 @@ pub struct _Config {
     config: Option<String>,
     #[serde(default)]
     disabled: bool,
+}
+
+impl Default for _Config {
+    fn default() -> Self {
+        Self {
+            light: "Default Light+".to_string(),
+            dark: "Default Dark+".to_string(),
+            config: None,
+            disabled: false,
+        }
+    }
 }
 
 pub struct VSCode;
@@ -82,14 +93,16 @@ impl VSCode {
 
 impl Themeable for VSCode {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_manual_config(config.vscode.as_ref().map(|c| c.inner.as_ref()))
+        ConfigState::with_default_config(config.vscode.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let default_config = _Config::default();
+
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("vscode"))),
+            ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
-            ConfigState::Default => unreachable!(),
+            ConfigState::Default => &default_config,
             ConfigState::Enabled => config.vscode.as_ref().unwrap().unwrap_inner_left(),
         };
 

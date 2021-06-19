@@ -17,8 +17,8 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
-//! | `dark` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | (none) |
-//! | `light` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | (none) |
+//! | `dark` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-dark-ui", "one-dark-syntax"]` |
+//! | `light` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-light-ui", "one-light-syntax"]` |
 
 use std::error::Error;
 use std::io;
@@ -29,10 +29,10 @@ use std::os::unix::net::UnixStream;
 use log::trace;
 use serde::{Deserialize, Serialize};
 
-use crate::{config::Config as ThconConfig};
+use crate::{config::Config as ThconConfig, themeable::ConfigState};
 use crate::operation::Operation;
 use crate::sockets;
-use crate::themeable::{Themeable, ConfigState, ConfigError};
+use crate::themeable::Themeable;
 use crate::Disableable;
 use crate::AppConfig;
 
@@ -47,6 +47,16 @@ pub struct _Config {
     disabled: bool,
 }
 
+impl Default for _Config {
+    fn default() -> Self {
+        Self {
+            dark: vec!("one-dark-ui", "one-dark-syntax").iter().map(|s| s.to_string()).collect(),
+            light: vec!("one-light-ui", "one-light-syntax").iter().map(|s| s.to_string()).collect(),
+            disabled: false,
+        }
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct WireConfig {
     #[serde(rename = "core.themes")]
@@ -55,14 +65,16 @@ pub struct WireConfig {
 
 impl Themeable for Atom {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_manual_config(config.atom.as_ref().map(|c| c.inner.as_ref()))
+        ConfigState::with_default_config(config.atom.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let default_config = _Config::default();
+
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("atom"))),
+            ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
-            ConfigState::Default => unreachable!(),
+            ConfigState::Default => &default_config,
             ConfigState::Enabled => config.atom.as_ref().unwrap().unwrap_inner_left(),
         };
 

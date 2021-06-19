@@ -1,8 +1,8 @@
 //! Switches between Light and Dark [appearances](https://support.apple.com/en-us/HT208976) in macOS.
 //!
 //! ## Usage
-//! There's no configuration required!  `thcon dark` will always enable dark mode on macOS, and
-//! `thcon light` will disable it, but it _can_ be disabled with `disabled = true`.
+//! There's no configuration required!  `thcon dark` will enable dark mode on macOS, and
+//! `thcon light` will disable it, but this behavior can be disabled with `disabled = true`.
 
 use crate::themeable::{ConfigState, Themeable};
 use crate::operation::Operation;
@@ -21,17 +21,11 @@ pub struct _Config {
     disabled: bool,
 }
 
-impl Default for _Config {
-    fn default() -> Self {
-        Self { disabled: false }
-    }
-}
-
 pub struct MacOS;
 
 impl Themeable for MacOS {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_default_config(either!(()))
+        ConfigState::with_default_config(config.macos.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {

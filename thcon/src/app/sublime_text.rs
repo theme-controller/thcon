@@ -32,19 +32,19 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
-//! | light | table | Settings to apply in light mode | (none) |
-//! | light.color_scheme | string | The `color_scheme` to use in light mode | (none) |
-//! | light.theme | string | The `theme` to use in light mode | (none) |
-//! | dark | table | Settings to apply in dark mode | (none) |
-//! | light.color_scheme | string | The `color_scheme` to use in dark mode | (none) |
-//! | light.theme | string | The `theme` to use in dark mode | (none) |
+//! | light | table | Settings to apply in light mode | |
+//! | light.color_scheme | string | The `color_scheme` to use in light mode | `Packages/Color Scheme - Default/Celeste.sublime-color-scheme` |
+//! | light.theme | string | The `theme` to use in light mode | `Adaptive.sublime-theme` |
+//! | dark | table | Settings to apply in dark mode | |
+//! | light.color_scheme | string | The `color_scheme` to use in dark mode | `Packages/Color Scheme - Default/Monokai.sublime-color-scheme` |
+//! | light.theme | string | The `theme` to use in dark mode | `Default.sublime-theme` |
 //! | sublime-settings | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
 
 use std::error::Error;
 use std::fs::{self,OpenOptions};
 use std::path::PathBuf;
 
-use crate::themeable::{ConfigState, ConfigError, Themeable};
+use crate::themeable::{ConfigState, Themeable};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 use crate::Disableable;
@@ -71,6 +71,23 @@ pub struct ConfigSection {
     theme: Option<String>,
 }
 
+impl Default for _Config {
+    fn default() -> Self {
+        Self {
+            light: ConfigSection {
+                color_scheme: Some("Packages/Color Scheme - Default/Celeste.sublime-color-scheme".to_string()),
+                theme: Some("Adaptive.sublime-theme".to_string()),
+            },
+            dark: ConfigSection {
+                color_scheme: Some("Packages/Color Scheme - Default/Monokai.sublime-color-scheme".to_string()),
+                theme: Some("Default.sublime-theme".to_string()),
+            },
+            preferences_file: None,
+            disabled: false,
+        }
+    }
+}
+
 fn preferences_path() -> PathBuf {
     [
         dirs::config_dir().unwrap().to_str().unwrap(),
@@ -87,14 +104,16 @@ pub struct SublimeText;
 
 impl Themeable for SublimeText {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_manual_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
+        ConfigState::with_default_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let default_config = _Config::default();
+
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("sublime_text"))),
+            ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
-            ConfigState::Default => unreachable!(),
+            ConfigState::Default => &default_config,
             ConfigState::Enabled => config.sublime_text.as_ref().unwrap().unwrap_inner_left(),
         };
 

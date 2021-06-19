@@ -22,11 +22,10 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
-//! | `dark` | string | The theme package name to use in dark mode | (none) |
-//! | `light` | string | The theme package name to use in light mode | (none) |
+//! | `dark` | string | The theme package name to use in dark mode | `org.kde.breezedark.desktop` |
+//! | `light` | string | The theme package name to use in light mode | `org.kde.breeze.desktop` |
 
-use crate::Themeable;
-use crate::themeable::{ConfigError, ConfigState};
+use crate::{Themeable, themeable::ConfigState};
 use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
 use crate::Disableable;
@@ -45,18 +44,30 @@ pub struct _Config {
     disabled: bool,
 }
 
+impl Default for _Config {
+    fn default() -> Self {
+        Self {
+            light: "org.kde.breeze.desktop".to_string(),
+            dark: "org.kde.breezedark.desktop".to_string(),
+            disabled: false
+        }
+    }
+}
+
 pub struct Plasma;
 
 impl Themeable for Plasma {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_manual_config(config.plasma.as_ref().map(|c| c.inner.as_ref()))
+        ConfigState::with_default_config(config.plasma.as_ref().map(|c| c.inner.as_ref()))
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+        let default_config = _Config::default();
+
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("plasma"))),
+            ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
-            ConfigState::Default => unreachable!(),
+            ConfigState::Default => &default_config,
             ConfigState::Enabled => config.plasma.as_ref().unwrap().unwrap_inner_left(),
         };
 
