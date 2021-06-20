@@ -6,6 +6,7 @@ description = "A configurable theme controller that switches multiple apps betwe
 edition = "2018"
 license = "MIT OR Apache-2.0"
 default-run = "thcon"
+repository = "https://github.com/theme-controller/thcon"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

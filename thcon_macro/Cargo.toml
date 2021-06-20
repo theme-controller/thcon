@@ -5,6 +5,7 @@ authors = ["Sean Barag <sean@barag.org>"]
 description = "Procedural macros used by the `thcon` crate"
 edition = "2018"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/theme-controller/thcon"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
