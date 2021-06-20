@@ -2,7 +2,9 @@
 name = "thcon_macro"
 version = "0.1.0"
 authors = ["Sean Barag <sean@barag.org>"]
+description = "Procedural macros used by the `thcon` crate"
 edition = "2018"
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
