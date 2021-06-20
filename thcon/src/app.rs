@@ -3,6 +3,8 @@ pub mod konsole;
 #[cfg(dbus)]
 pub mod gnome_terminal;
 #[cfg(dbus)]
+pub mod gtk;
+#[cfg(dbus)]
 pub mod plasma;
 pub mod vscode;
 pub mod vim;
@@ -20,6 +22,8 @@ pub mod iterm2;
 pub use konsole::Konsole;
 #[cfg(dbus)]
 pub use gnome_terminal::GnomeTerminal;
+#[cfg(dbus)]
+pub use gtk::Gtk;
 #[cfg(dbus)]
 pub use plasma::Plasma;
 pub use vscode::VSCode;
@@ -44,6 +48,8 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         #[cfg(dbus)]
         "gnome-terminal" => Some(Box::new(GnomeTerminal::default())),
         #[cfg(dbus)]
+        "gtk" => Some(Box::new(Gtk {})),
+        #[cfg(dbus)]
         "plasma" => Some(Box::new(Plasma {})),
         #[cfg(mac)]
         "macos" => Some(Box::new(MacOS {})),
@@ -67,6 +73,8 @@ pub fn all_names() -> Vec<&'static str> {
         "vscode",
         #[cfg(dbus)]
         "gnome-terminal",
+        #[cfg(dbus)]
+        "gtk",
         #[cfg(dbus)]
         "konsole",
         #[cfg(dbus)]
