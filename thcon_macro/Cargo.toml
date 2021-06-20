@@ -12,7 +12,7 @@ license = "MIT OR Apache-2.0"
 proc-macro = true
 
 [dependencies]
-thcon_trait = { path = "../thcon_trait" }
+thcon_trait = { version = "0.1.0", path = "../thcon_trait" }
 syn = "1.0.72"
 quote = "1.0.9"
 proc-macro2 = "1.0.26"
