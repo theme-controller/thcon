@@ -3,6 +3,8 @@ use crate::app::konsole;
 #[cfg(dbus)]
 use crate::app::gnome_terminal;
 #[cfg(dbus)]
+use crate::app::gtk;
+#[cfg(dbus)]
 use crate::app::plasma;
 use crate::app::vscode;
 use crate::app::alacritty;
@@ -24,6 +26,8 @@ pub struct Config {
     #[cfg(dbus)]
     #[serde(rename = "gnome-terminal")]
     pub gnome_terminal: Option<gnome_terminal::Config>,
+    #[cfg(dbus)]
+    pub gtk: Option<gtk::Config>,
     pub vscode: Option<vscode::Config>,
     pub alacritty: Option<alacritty::Config>,
     pub vim: Option<vim::Config>,
