@@ -16,9 +16,10 @@ pub mod atom;
 
 #[cfg(mac)]
 pub mod macos;
-
 #[cfg(mac)]
 pub mod iterm2;
+#[cfg(mac)]
+pub mod terminal_dot_app;
 
 #[cfg(dbus)]
 pub use konsole::Konsole;
@@ -41,6 +42,8 @@ pub use atom::Atom;
 pub use macos::MacOS;
 #[cfg(mac)]
 pub use iterm2::Iterm2;
+#[cfg(mac)]
+pub use terminal_dot_app::TerminalDotApp;
 
 use std::option::Option;
 use crate::themeable::Themeable;
@@ -59,6 +62,8 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "plasma" => Some(Box::new(Plasma {})),
         #[cfg(mac)]
         "macos" => Some(Box::new(MacOS {})),
+        #[cfg(mac)]
+        "terminal-app" => Some(Box::new(TerminalDotApp {})),
         #[cfg(mac)]
         "iterm2" => Some(Box::new(Iterm2 {})),
         "vscode" => Some(Box::new(VSCode {})),
@@ -81,6 +86,7 @@ pub fn all_names() -> Vec<&'static str> {
         #[cfg(mac)] "iterm2",
         #[cfg(dbus)] "konsole",
         #[cfg(mac)] "macos",
+        #[cfg(mac)] "terminal-app",
         "nvim",
         #[cfg(dbus)] "plasma",
         "sublime-text",

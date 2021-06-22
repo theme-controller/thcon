@@ -15,6 +15,8 @@ use crate::app::vim;
 use crate::app::iterm2;
 #[cfg(mac)]
 use crate::app::macos;
+#[cfg(mac)]
+use crate::app::terminal_dot_app;
 use crate::app::sublime_text;
 use crate::app::atom;
 use serde::Deserialize;
@@ -41,6 +43,9 @@ pub struct Config {
     pub iterm2: Option<iterm2::Config>,
     #[cfg(mac)]
     pub macos: Option<macos::Config>,
+    #[cfg(mac)]
+    #[serde(rename = "terminal-app")]
+    pub terminal_dot_app: Option<terminal_dot_app::Config>,
     #[serde(rename = "sublime-text")]
     pub sublime_text: Option<sublime_text::Config>,
     pub atom: Option<atom::Config>,
