@@ -1,6 +1,8 @@
 #[cfg(dbus)]
 pub mod konsole;
 #[cfg(dbus)]
+pub mod gnome_shell;
+#[cfg(dbus)]
 pub mod gnome_terminal;
 #[cfg(dbus)]
 pub mod gtk;
@@ -20,6 +22,8 @@ pub mod iterm2;
 
 #[cfg(dbus)]
 pub use konsole::Konsole;
+#[cfg(dbus)]
+pub use gnome_shell::GnomeShell;
 #[cfg(dbus)]
 pub use gnome_terminal::GnomeTerminal;
 #[cfg(dbus)]
@@ -46,6 +50,8 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         #[cfg(dbus)]
         "konsole" => Some(Box::new(Konsole::default())),
         #[cfg(dbus)]
+        "gnome-shell" => Some(Box::new(GnomeShell {})),
+        #[cfg(dbus)]
         "gnome-terminal" => Some(Box::new(GnomeTerminal::default())),
         #[cfg(dbus)]
         "gtk" => Some(Box::new(Gtk {})),
@@ -69,6 +75,7 @@ pub fn all_names() -> Vec<&'static str> {
     vec!(
         "alacritty",
         "atom",
+        #[cfg(dbus)] "gnome-shell",
         #[cfg(dbus)] "gnome-terminal",
         #[cfg(dbus)] "gtk",
         #[cfg(mac)] "iterm2",

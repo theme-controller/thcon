@@ -1,6 +1,8 @@
 #[cfg(dbus)]
 use crate::app::konsole;
 #[cfg(dbus)]
+use crate::app::gnome_shell;
+#[cfg(dbus)]
 use crate::app::gnome_terminal;
 #[cfg(dbus)]
 use crate::app::gtk;
@@ -23,6 +25,9 @@ pub struct Config {
     pub plasma: Option<plasma::Config>,
     #[cfg(dbus)]
     pub konsole: Option<konsole::Config>,
+    #[cfg(dbus)]
+    #[serde(rename = "gnome-shell")]
+    pub gnome_shell: Option<gnome_shell::Config>,
     #[cfg(dbus)]
     #[serde(rename = "gnome-terminal")]
     pub gnome_terminal: Option<gnome_terminal::Config>,
