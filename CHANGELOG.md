@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Added:
 * GTK theme switching
+* GNOME Shell user theme switching
 
 ## [v0.10.0 - 2021-06-20]
 ### Added:
