@@ -11,6 +11,8 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ### Fixed:
 * Documented `disabled` property in app schemas (supported since v0.10.0)
+* Corrected documented KDE Konsole section name in `thcon.toml`.  `konsole` was always supported, but the documentation
+  was wrong
 
 ## [v0.11.0 - 2021-06-28]
 ### Added:

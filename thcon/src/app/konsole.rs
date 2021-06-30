@@ -15,7 +15,7 @@
 //! Konsole is not available on Windows or macOS.
 //!
 //! ## `thcon.toml` Schema
-//! Section: `plasma`
+//! Section: `konsole`
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
