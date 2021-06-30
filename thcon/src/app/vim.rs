@@ -48,6 +48,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | light | table | Settings to apply in light mode | (none) |
 //! | light.colorscheme | string | The colorscheme to apply in light mode | (none) |
 //! | light.set | table | Set of key/value pairs to apply with `:set` in light mode | (none) |

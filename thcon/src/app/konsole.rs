@@ -19,6 +19,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The name of the profile (case-sensitive) to use in dark mode | (none) |
 //! | `light` | string | The name of the profile (case-sensitive) to use in light mode | (none) |
 

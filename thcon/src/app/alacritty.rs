@@ -45,6 +45,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The YAML anchor (declared in `alacritty.yml`) used for dark mode | (none) |
 //! | `light` | string | The YAML anchor (declared in `alacritty.yml`) used for light mode | (none) |
 //! | `config` | string | Absolute path to your `alacritty.yml` file | (see below) |

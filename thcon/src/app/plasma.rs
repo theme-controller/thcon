@@ -22,6 +22,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The theme package name to use in dark mode | `org.kde.breezedark.desktop` |
 //! | `light` | string | The theme package name to use in light mode | `org.kde.breeze.desktop` |
 

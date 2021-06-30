@@ -17,6 +17,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-dark-ui", "one-dark-syntax"]` |
 //! | `light` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-light-ui", "one-light-syntax"]` |
 

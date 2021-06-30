@@ -25,6 +25,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | ------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The name of the theme (case-sensitive) to apply in dark mode | `Adwaita-dark` |
 //! | `light` | string | The name of the theme (case-sensitive) to apply in light mode | `Adwaita` |
 //!

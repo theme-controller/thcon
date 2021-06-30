@@ -32,6 +32,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | light | table | Settings to apply in light mode | |
 //! | light.color_scheme | string | The `color_scheme` to use in light mode | `Packages/Color Scheme - Default/Celeste.sublime-color-scheme` |
 //! | light.theme | string | The `theme` to use in light mode | `Adaptive.sublime-theme` |

@@ -21,6 +21,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The name of the profile to use in dark mode | Pro |
 //! | `light` | string | The name of the profile to use in light mode | Basic |
 

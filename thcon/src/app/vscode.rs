@@ -39,6 +39,7 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 //! | `dark` | string | The theme to use in dark mode | Default Dark+ |
 //! | `light` | string | The theme to use in light mode | Default Light+ |
 //! | `config` | string | Absolute path to your `settings.json` file | `~/.config/Code/User/settings.json` |

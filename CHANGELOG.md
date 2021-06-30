@@ -9,6 +9,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * Terminal.app profile switching
 
+### Fixed:
+* Documented `disabled` property in app schemas (supported since v0.10.0)
+
 ## [v0.11.0 - 2021-06-28]
 ### Added:
 * GTK theme switching
