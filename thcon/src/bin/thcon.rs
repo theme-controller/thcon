@@ -84,11 +84,19 @@ fn main() -> std::io::Result<()> {
 
     let config = fs::read_to_string(&config_path).unwrap_or_else(|e| {
         match e.kind() {
-            io::ErrorKind::NotFound => error!("Could not find config file at {}", config_path.display()),
-            io::ErrorKind::PermissionDenied => error!("Could not read config file from {}", config_path.display()),
-            _ => error!("Unexpected error while reading config from {}: {}", e, config_path.display()),
-        };
-        process::exit(exitcode::CONFIG);
+            io::ErrorKind::NotFound => {
+                info!("Could not find config file at {}; using defaults", config_path.display());
+                "".to_string()
+            },
+            io::ErrorKind::PermissionDenied => {
+                error!("Could not read config file from {}", config_path.display());
+                process::exit(exitcode::CONFIG);
+            },
+            _ => {
+                error!("Unexpected error while reading config from {}: {}", e, config_path.display());
+                process::exit(exitcode::CONFIG);
+            }
+        }
     });
 
     let config: Config = match toml::from_str(config.as_str()) {
