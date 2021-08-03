@@ -1,3 +1,4 @@
 .temp
 .cache
 node_modules
+.vuepress
