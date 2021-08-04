@@ -12,6 +12,7 @@ module.exports = {
             text: 'Cross-Platform',
             children: [
               '/app/alacritty.md',
+              '/app/atom.md',
               '/app/sublime-text.md',
               '/app/vscode.md',
               '/app/vim.md'
