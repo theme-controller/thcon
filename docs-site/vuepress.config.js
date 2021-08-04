@@ -41,5 +41,7 @@ module.exports = {
     repo: 'https://github.com/theme-controller/thcon',
     repoLabel: 'GitHub',
     docsDir: 'docs-site/docs',
+    contributors: false,
+    lastUpdated: false,
   }
 };
