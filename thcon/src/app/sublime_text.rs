@@ -32,14 +32,14 @@
 //!
 //! | Key | Type | Description | Default |
 //! | --- | ---- | ----------- | -------- |
-//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
-//! | light | table | Settings to apply in light mode | |
-//! | light.color_scheme | string | The `color_scheme` to use in light mode | `Packages/Color Scheme - Default/Celeste.sublime-color-scheme` |
-//! | light.theme | string | The `theme` to use in light mode | `Adaptive.sublime-theme` |
-//! | dark | table | Settings to apply in dark mode | |
-//! | light.color_scheme | string | The `color_scheme` to use in dark mode | `Packages/Color Scheme - Default/Monokai.sublime-color-scheme` |
-//! | light.theme | string | The `theme` to use in dark mode | `Default.sublime-theme` |
-//! | sublime-settings | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
+//! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `true` |
+//! | `light` | table | Settings to apply in light mode | |
+//! | `light.color_scheme` | string | The `color_scheme` to use in light mode | `Packages/Color Scheme - Default/Celeste.sublime-color-scheme` |
+//! | `light.theme` | string | The `theme` to use in light mode | `Adaptive.sublime-theme` |
+//! | `dark` | table | Settings to apply in dark mode | |
+//! | `light.color_scheme` | string | The `color_scheme` to use in dark mode | `Packages/Color Scheme - Default/Monokai.sublime-color-scheme` |
+//! | `light.theme` | string | The `theme` to use in dark mode | `Default.sublime-theme` |
+//! | `preferences` | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
 
 use std::error::Error;
 use std::fs::{self,OpenOptions};
