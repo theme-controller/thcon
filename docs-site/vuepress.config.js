@@ -13,7 +13,8 @@ module.exports = {
             children: [
               '/app/alacritty.md',
               '/app/atom.md',
-              '/app/sublime-text.md',
+              '/app/sublime-text-3.md',
+              '/app/sublime-text-4.md',
               '/app/vscode.md',
               '/app/vim.md'
             ],
