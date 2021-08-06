@@ -1,7 +1,10 @@
+const path = require('path');
+
 module.exports = {
   lang: 'en-US',
   title: 'thcon',
   description: 'A configurable theme-controller',
+  theme: path.resolve(__dirname, '.vuepress/theme'),
   themeConfig: {
     navbar: [
       'guide.md',
@@ -45,5 +48,7 @@ module.exports = {
     docsDir: 'docs-site/docs',
     contributors: false,
     lastUpdated: false,
-  }
+  },
+footer: `<img src="/images/powered-by-vercel.svg" alt="Powered by Vercel"/>`,
+footerHtml: true
 };

@@ -16,4 +16,6 @@ features:
   details: A single TOML config file describes all your themes.
 - title: Gets Out of Your Way
   details: One command switches as many apps as possible so you can stay focused.
+footer: <img src="/images/powered-by-vercel.svg" alt="Powered by Vercel"/>
+footerHtml: true
 ---

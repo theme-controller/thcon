@@ -1,4 +1,6 @@
 # thcon docs-site
+![Powered by Vercel](./docs/.vuepress/public/images/powered-by-vercel.svg)
+
 Documentation web page for `thcon`, built with [VuePress](https://v2.vuepress.vuejs.org/).  The markdown files that turn into served HTML pages are located in [./docs](./docs).
 
 ## Prerequisites
@@ -14,4 +16,4 @@ yarn docs:dev
 ```
 
 ## Deployment
-TODO: This site isn't deployed anywhere yet.
+The generated site will automatically be deployed to [Vercel](https://vercel.com?utm_source=theme-controller&utm_campaign=oss) when a commit is pushed to `main`.
