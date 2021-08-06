@@ -8,8 +8,6 @@ title: Atom
 [Atom](https://atom.io) includes a light and dark theme by default, but requires [a plugin](https://github.com/theme-controller/thcon-atom) to interact with `thcon`.
 :::
 
-Switches between [Atom](https://atom.io) UI and editor themes in all windows and tabs.
-
 ## Usage
 First, ensure you've installed [thcon-atom](https://github.com/theme-controller/thcon-atom):
 
