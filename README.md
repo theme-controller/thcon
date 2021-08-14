@@ -35,4 +35,5 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Sponsorship
 [Vercel](https://vercel.com?utm_source=theme-controller&utm_campaign=oss) is kind enough to sponsor web hosting for this project's documentation.  Thanks, y'all!
-![Powered by Vercel](./docs/.vuepress/public/images/powered-by-vercel.svg)
+
+![Powered by Vercel](./docs-site/docs/.vuepress/public/images/powered-by-vercel.svg)

@@ -2,7 +2,9 @@
   <Layout>
     <template #page-bottom>
       <div id="footer-container">
-        <img src="/images/powered-by-vercel.svg" alt="Powered by Vercel"/>
+        <a href="https://vercel.com?utm_source=theme-controller&utm_campaign=oss">
+          <img src="/images/powered-by-vercel.svg" alt="Powered by Vercel"/>
+        </a>
       </div>
     </template>
   </Layout>
