@@ -62,7 +62,6 @@
 
 use std::error::Error;
 use std::fs;
-use std::env;
 use std::path::PathBuf;
 
 use crate::themeable::{ConfigError, ConfigState, Themeable};
@@ -71,6 +70,7 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
+use anyhow::{Context, Result};
 use log::{error, debug};
 use serde::Deserialize;
 use regex::{Captures,Regex};
@@ -92,9 +92,9 @@ impl Themeable for Alacritty {
         ConfigState::with_manual_config(config.alacritty.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("alacritty"))),
+            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("alacritty").into()),
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.alacritty.as_ref().unwrap().unwrap_inner_left(),
@@ -121,7 +121,8 @@ impl Themeable for Alacritty {
 
         debug!("Reading/writing alacritty.yml at {}", alacritty_yaml.display());
 
-        match fs::read_to_string(&alacritty_yaml) {
+        match fs::read_to_string(&alacritty_yaml)
+            .with_context(|| format!("Unable to read settings from {}", &alacritty_yaml.display())) {
             Ok(settings) => {
                 let theme_regex = Regex::new(r#"^(?P<prefix>"?colors"?\s*:\s*"?)(?P<v>[^\s]+)(?P<suffix>"?,?\s*#\s*thcon:replace-line)"#)?;
                 let modified_lines: Vec<String> = settings.lines().map(|line| {
@@ -131,13 +132,12 @@ impl Themeable for Alacritty {
                 }).collect();
                 let settings = modified_lines.join("\n");
 
-                fs::write(&alacritty_yaml, settings).map_err(|err| {
-                    Box::new(err) as Box<dyn Error>
-                })
+                fs::write(&alacritty_yaml, settings)
+                    .with_context(|| format!("Unable to write settings to {}", &alacritty_yaml.display()))
             },
             Err(e) => {
                 error!("Unable to read settings: {}", e);
-                Err(Box::new(e))
+                Err(e)
             }
         }
     }

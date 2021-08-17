@@ -23,6 +23,9 @@ pub mod iterm2;
 #[cfg(mac)]
 pub mod terminal_dot_app;
 
+#[cfg(windows)]
+pub mod windows;
+
 #[cfg(dbus)]
 pub use konsole::Konsole;
 #[cfg(dbus)]
@@ -49,6 +52,9 @@ pub use macos::MacOS;
 pub use iterm2::Iterm2;
 #[cfg(mac)]
 pub use terminal_dot_app::TerminalDotApp;
+
+#[cfg(windows)]
+pub use windows::Windows;
 
 use std::option::Option;
 use crate::themeable::Themeable;
@@ -80,6 +86,8 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "sublime-text" => Some(Box::new(SublimeText {})),
         #[cfg(not(windows))]
         "atom" => Some(Box::new(Atom {})),
+        #[cfg(windows)]
+        "windows" => Some(Box::new(Windows {})),
         _ => None,
     }
 }
@@ -100,5 +108,6 @@ pub fn all_names() -> Vec<&'static str> {
         "sublime-text",
         #[cfg(not(windows))] "vim",
         "vscode",
+        #[cfg(windows)] "windows",
     )
 }

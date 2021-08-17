@@ -1,7 +1,6 @@
-use std::error::Error;
-
 use thiserror::Error;
 use either::Either;
+use anyhow::Result;
 
 use crate::config::Config as ThconConfig;
 use crate::operation::Operation;
@@ -9,7 +8,7 @@ use thcon_trait::{Disableable, Disabled};
 
 pub trait Themeable {
     fn config_state(&self, config: &ThconConfig) -> ConfigState;
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>>;
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()>;
 }
 
 #[derive(PartialEq, Eq)]

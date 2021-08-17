@@ -21,6 +21,9 @@ use crate::app::terminal_dot_app;
 use crate::app::sublime_text;
 #[cfg(not(windows))]
 use crate::app::atom;
+#[cfg(windows)]
+use crate::app::windows;
+
 use serde::Deserialize;
 
 #[derive(Debug,Deserialize)]
@@ -54,4 +57,6 @@ pub struct Config {
     pub sublime_text: Option<sublime_text::Config>,
     #[cfg(not(windows))]
     pub atom: Option<atom::Config>,
+    #[cfg(windows)]
+    pub windows: Option<windows::Config>,
 }

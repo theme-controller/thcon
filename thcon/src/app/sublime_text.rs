@@ -51,6 +51,7 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
+use anyhow::Result;
 use log::{debug, warn};
 use serde::{Serialize,Deserialize};
 use serde_json::ser::{PrettyFormatter, Serializer};
@@ -108,7 +109,7 @@ impl Themeable for SublimeText {
         ConfigState::with_default_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {

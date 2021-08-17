@@ -29,6 +29,7 @@ toml = "0.5.7"
 exitcode = "1.1.2"
 either = { version = "1.6.1", features = ["serde"] }
 thiserror = "1.0.25"
+anyhow = "1.0"
 cfg-if = "1.0.0"
 
 [target.'cfg(not(windows))'.dependencies]
@@ -40,3 +41,6 @@ signal-hook-async-std = "0.2.1"
 [target.'cfg(any(target_os="linux",target_os="freebsd",target_os="dragonfly",target_os="openbsd",target_os="netbsd"))'.dependencies]
 dbus = "0.9.0"
 gio = "0.9.1"
+
+[target.'cfg(windows)'.dependencies]
+winreg = { version = "0.9", features = ["transactions"] }
