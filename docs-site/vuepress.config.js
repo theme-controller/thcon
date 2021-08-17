@@ -25,8 +25,8 @@ module.exports = {
           {
             text: 'macOS',
             children: [
+              '/app/iterm2.md',
               '/app/macos.md',
-              '/app/iterm.md',
               '/app/terminal-app.md',
             ],
           },
