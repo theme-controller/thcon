@@ -10,6 +10,7 @@ use crate::app::gtk;
 use crate::app::plasma;
 use crate::app::vscode;
 use crate::app::alacritty;
+#[cfg(not(windows))]
 use crate::app::vim;
 #[cfg(mac)]
 use crate::app::iterm2;
@@ -18,6 +19,7 @@ use crate::app::macos;
 #[cfg(mac)]
 use crate::app::terminal_dot_app;
 use crate::app::sublime_text;
+#[cfg(not(windows))]
 use crate::app::atom;
 use serde::Deserialize;
 
@@ -37,7 +39,9 @@ pub struct Config {
     pub gtk: Option<gtk::Config>,
     pub vscode: Option<vscode::Config>,
     pub alacritty: Option<alacritty::Config>,
+    #[cfg(not(windows))]
     pub vim: Option<vim::Config>,
+    #[cfg(not(windows))]
     pub nvim: Option<vim::Config>,
     #[cfg(mac)]
     pub iterm2: Option<iterm2::Config>,
@@ -48,5 +52,6 @@ pub struct Config {
     pub terminal_dot_app: Option<terminal_dot_app::Config>,
     #[serde(rename = "sublime-text")]
     pub sublime_text: Option<sublime_text::Config>,
+    #[cfg(not(windows))]
     pub atom: Option<atom::Config>,
 }

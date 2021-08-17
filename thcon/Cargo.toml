@@ -29,6 +29,7 @@ toml = "0.5.7"
 exitcode = "1.1.2"
 either = { version = "1.6.1", features = ["serde"] }
 thiserror = "1.0.25"
+cfg-if = "1.0.0"
 
 [target.'cfg(not(windows))'.dependencies]
 xdg = "2.2.0"

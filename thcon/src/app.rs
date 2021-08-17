@@ -9,9 +9,11 @@ pub mod gtk;
 #[cfg(dbus)]
 pub mod plasma;
 pub mod vscode;
+#[cfg(not(windows))]
 pub mod vim;
 pub mod alacritty;
 pub mod sublime_text;
+#[cfg(not(windows))]
 pub mod atom;
 
 #[cfg(mac)]
@@ -33,9 +35,12 @@ pub use gtk::Gtk;
 pub use plasma::Plasma;
 pub use vscode::VSCode;
 pub use alacritty::Alacritty;
+#[cfg(not(windows))]
 pub use vim::Vim;
+#[cfg(not(windows))]
 pub use vim::Neovim;
 pub use sublime_text::SublimeText;
+#[cfg(not(windows))]
 pub use atom::Atom;
 
 #[cfg(mac)]
@@ -68,9 +73,12 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
         "iterm2" => Some(Box::new(Iterm2 {})),
         "vscode" => Some(Box::new(VSCode {})),
         "alacritty" => Some(Box::new(Alacritty {})),
+        #[cfg(not(windows))]
         "vim" => Some(Box::new(Vim {})),
+        #[cfg(not(windows))]
         "nvim" => Some(Box::new(Neovim {})),
         "sublime-text" => Some(Box::new(SublimeText {})),
+        #[cfg(not(windows))]
         "atom" => Some(Box::new(Atom {})),
         _ => None,
     }
@@ -79,7 +87,7 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
 pub fn all_names() -> Vec<&'static str> {
     vec!(
         "alacritty",
-        "atom",
+        #[cfg(not(windows))] "atom",
         #[cfg(dbus)] "gnome-shell",
         #[cfg(dbus)] "gnome-terminal",
         #[cfg(dbus)] "gtk",
@@ -87,10 +95,10 @@ pub fn all_names() -> Vec<&'static str> {
         #[cfg(dbus)] "konsole",
         #[cfg(mac)] "macos",
         #[cfg(mac)] "terminal-app",
-        "nvim",
+        #[cfg(not(windows))]"nvim",
         #[cfg(dbus)] "plasma",
         "sublime-text",
-        "vim",
+        #[cfg(not(windows))] "vim",
         "vscode",
     )
 }
