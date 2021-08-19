@@ -30,16 +30,14 @@
 //! | `light` | string | The name of the theme (case-sensitive) to apply in light mode | `Adwaita` |
 //!
 
-use std::error::Error;
-
 use crate::config::Config as ThconConfig;
 use crate::operation::Operation;
 use crate::themeable::{ConfigState, Themeable};
 use crate::AppConfig;
 use crate::Disableable;
 
+use anyhow::{Context, Result};
 use gio::SettingsExt;
-use log::error;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
@@ -67,7 +65,7 @@ impl Themeable for Gtk {
         ConfigState::with_default_config(config.gtk.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {
@@ -83,11 +81,8 @@ impl Themeable for Gtk {
         };
 
         let gsettings = gio::Settings::new("org.gnome.desktop.interface");
-        match gsettings.set_string("gtk-theme", &theme) {
-            Ok(_) => gio::Settings::sync(),
-            Err(e) => error!("Unable to apply GTK theme: {}", e),
-        };
-
-        Ok(())
+        gsettings.set_string("gtk-theme", &theme)
+            .map(|_| gio::Settings::sync())
+            .with_context(|| format!("Unable to apply GTK theme '{}'", theme))
     }
 }
