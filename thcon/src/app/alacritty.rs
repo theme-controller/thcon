@@ -154,6 +154,8 @@ impl Themeable for Alacritty {
 /// 4. $HOME/.alacritty.yml
 #[cfg(not(windows))]
 fn alacritty_config() -> Option<PathBuf> {
+    use std::env;
+
     // Try using XDG location by default.
     xdg::BaseDirectories::with_prefix("alacritty")
         .ok()
