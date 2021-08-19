@@ -21,12 +21,12 @@
 //! | `dark` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-dark-ui", "one-dark-syntax"]` |
 //! | `light` | array of strings | The themes to apply in dark mode, as shown in `config.cson` | `["one-light-ui", "one-light-syntax"]` |
 
-use std::error::Error;
 use std::io;
 use std::fs;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
+use anyhow::{Context, Result};
 use log::trace;
 use serde::{Deserialize, Serialize};
 
@@ -69,7 +69,7 @@ impl Themeable for Atom {
         ConfigState::with_default_config(config.atom.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {
@@ -91,31 +91,33 @@ impl Themeable for Atom {
         let sock_dir = sockets::socket_addr("atom", true);
         let sock_dir = sock_dir.parent().unwrap();
 
-        let sockets = match fs::read_dir(sock_dir) {
+        let sockets  = match fs::read_dir(sock_dir) {
             Ok(sockets) => Ok(Some(sockets)),
             Err(e) => match e.kind() {
                 io::ErrorKind::NotFound => {
                     trace!("Found no sockets to write to");
                     Ok(None)
                 },
-                _ => Err(Box::new(e) as Box<dyn Error>)
+                _ => Err(e)
             }
-        };
+        }?;
 
-        sockets.map(|sockets| {
-            match sockets {
-                None => (),
-                Some(sockets) => {
-                    for sock in sockets {
-                        if sock.is_err() { continue; }
-                        let sock = sock.unwrap().path();
-                        if let Ok(mut stream) = UnixStream::connect(&sock) {
-                            trace!("Writing to socket at {}", &sock.display());
-                            stream.write_all(&payload).unwrap_or(())
-                        }
+
+        match sockets {
+            None => (),
+            Some(sockets) => {
+                for sock in sockets {
+                    if sock.is_err() { continue; }
+                    let sock = sock.unwrap().path();
+                    if let Ok(mut stream) = UnixStream::connect(&sock) {
+                        trace!("Writing to socket at {}", &sock.display());
+                        stream.write_all(&payload)
+                            .with_context(|| format!("Unable to write to socket at {}", sock.display()))?;
                     }
                 }
             }
-        })
+        };
+
+        Ok(())
     }
 }
