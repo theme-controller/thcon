@@ -41,7 +41,6 @@
 //! | `light.theme` | string | The `theme` to use in dark mode | `Default.sublime-theme` |
 //! | `preferences` | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
 
-use std::error::Error;
 use std::fs::{self,OpenOptions};
 use std::path::PathBuf;
 
