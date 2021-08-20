@@ -29,9 +29,9 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
-use std::error::Error;
 use std::time::Duration;
 
+use anyhow::{Context, Result};
 use dbus::blocking::Connection;
 use log::{debug, trace};
 use serde::Deserialize;
@@ -56,9 +56,10 @@ impl Default for Konsole {
 }
 
 impl Konsole {
-    fn get_services(&self) -> Result<Vec<String>, Box<dyn Error>> {
+    fn get_services(&self) -> Result<Vec<String>> {
         let proxy = self.dbus.with_proxy("org.freedesktop.DBus", "/", Duration::from_millis(2500));
-        let (names,): (Vec<String>,) = proxy.method_call("org.freedesktop.DBus", "ListNames", ())?;
+        let (names,): (Vec<String>,) = proxy.method_call("org.freedesktop.DBus", "ListNames", ())
+            .context("Unable to retrieve konsole windows from DBus")?;
 
         let konsoles: Vec<String> = names.into_iter().filter(|name| {
             name.as_str().starts_with("org.kde.konsole-")
@@ -73,9 +74,10 @@ impl Konsole {
         Ok(konsoles)
     }
 
-    fn get_session_ids(&self, service_id: &str) -> Result<Vec<String>, Box<dyn Error>> {
+    fn get_session_ids(&self, service_id: &str) -> Result<Vec<String>> {
         let proxy = self.dbus.with_proxy(service_id, "/Sessions", Duration::from_millis(2500));
-        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;
+        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
+            .with_context(|| format!("Unable to get konsole session ids for DBus service '{}'", service_id))?;
 
         let parser = EventReader::from_str(&xml);
         let mut depth = 0;
@@ -100,7 +102,7 @@ impl Konsole {
                 },
                 Ok(XmlEvent::EndElement {..}) => depth -= 1,
                 Err(e) => {
-                    return Err(Box::new(e));
+                    return Err(e.into());
                 },
                 _ => {}
             }
@@ -115,17 +117,18 @@ impl Konsole {
         Ok(session_ids)
     }
 
-    fn set_profile_name(&self, service_id: &str, session_id: &str, profile_name: &str) -> Result<(), Box<dyn Error>> {
+    fn set_profile_name(&self, service_id: &str, session_id: &str, profile_name: &str) -> Result<()> {
         let proxy = self.dbus.with_proxy(service_id, format!("/Sessions/{}", session_id), Duration::from_millis(2500));
         let _: () = proxy.method_call("org.kde.konsole.Session", "setProfile", (profile_name,))?;
 
         Ok(())
     }
 
-    fn set_default_profile(&self, service_id: &str, profile_name: &str) -> Result<(), Box<dyn Error>>  {
+    fn set_default_profile(&self, service_id: &str, profile_name: &str) -> Result<()>  {
         // grab the ID of the first encountered window
         let proxy = self.dbus.with_proxy(service_id, "/Windows", Duration::from_millis(2500));
-        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;
+        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
+            .with_context(|| format!("Unable to retreive window for DBus service '{}", service_id))?;
 
         let parser = EventReader::from_str(&xml);
         let mut depth = 0;
@@ -149,21 +152,22 @@ impl Konsole {
                 },
                 Ok(XmlEvent::EndElement {..}) => depth -= 1,
                 Err(e) => {
-                    return Err(Box::new(e));
+                    return Err(e.into());
                 },
                 _ => {}
             }
         }
 
         if let Some(window_id) = window_id {
-            trace!( "Found first window ID {}", window_id);
+            trace!("Found first window ID {}", window_id);
             let proxy = self.dbus.with_proxy(service_id, format!("/Windows/{}", window_id), Duration::from_millis(2500));
-            proxy.method_call("org.kde.konsole.Window", "setDefaultProfile", (profile_name,)).map_err(|e| e.into())
+            proxy.method_call("org.kde.konsole.Window", "setDefaultProfile", (profile_name,))
+                .context("asdfasdf")?;
         } else {
             trace!("Found no Konsole windows; can't set default profile.");
-            Ok(())
         }
 
+        Ok(())
     }
 }
 
@@ -172,9 +176,9 @@ impl Themeable for Konsole {
         ConfigState::with_manual_config(config.konsole.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("konsole"))),
+            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("konsole").into()),
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.konsole.as_ref().unwrap().unwrap_inner_left(),
