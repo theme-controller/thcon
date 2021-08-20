@@ -60,7 +60,6 @@
 //!   3. `$HOME/.config/alacritty/alacritty.yml`
 //!   4. `$HOME/.alacritty.yml`
 
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
