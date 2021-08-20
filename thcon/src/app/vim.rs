@@ -61,8 +61,6 @@
 //! | dark.let | table | Set of key/value pairs to apply with `:let` in dark mode | (none) |
 //!
 
-
-use std::error::Error;
 use std::io;
 use std::io::prelude::*;
 use std::fs;
