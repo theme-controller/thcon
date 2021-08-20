@@ -44,11 +44,9 @@
 //! | `light` | string | The theme to use in light mode | Default Light+ |
 //! | `config` | string | Absolute path to your `settings.json` file | `~/.config/Code/User/settings.json` |
 
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
-use anyhow::anyhow;
 use anyhow::{Context, Result};
 use log::{error, debug};
 use regex::{Captures,Regex};
