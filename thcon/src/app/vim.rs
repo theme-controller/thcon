@@ -68,6 +68,7 @@ use std::io::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 
+use anyhow::{Context, Result};
 use log::{debug, trace};
 use serde::{Serialize, Deserialize};
 use serde_json::{Value as JsonValue, Map};
@@ -192,7 +193,7 @@ impl Themeable for Vim {
         ConfigState::with_manual_config(config.vim.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config_state = self.config_state(&config);
         anyvim_switch::<Vim>(config, config_state, operation)
     }
@@ -212,7 +213,7 @@ impl Themeable for Neovim {
         ConfigState::with_manual_config(config.nvim.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config_state = self.config_state(&config);
         anyvim_switch::<Neovim>(config, config_state, operation)
     }
@@ -220,9 +221,9 @@ impl Themeable for Neovim {
 
 /// Switches settings and colorscheme in a `vim`-agnostic way.
 /// Returns unit result if successful, otherwise the causing error.
-fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<(), Box<dyn Error>> {
+fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<()> {
     let config = match config_state {
-        ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("alacritty"))),
+        ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("alacritty").into()),
         ConfigState::Default => unreachable!(),
         ConfigState::Disabled => return Ok(()),
         ConfigState::Enabled => V::extract_config(&config).as_ref().unwrap().unwrap_inner_left(),
@@ -254,25 +255,26 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigSta
                 trace!("Found no {} sockets to write to", V::SECTION_NAME);
                 Ok(None)
             },
-            _ => Err(Box::new(e) as Box<dyn Error>)
+            _ => Err(e)
         }
-    };
+    }?;
 
-    sockets.map(|sockets| {
-        match sockets {
-            None => (),
-            Some(sockets) => {
-                for sock in sockets {
-                    if sock.is_err() { continue; }
-                    let sock = sock.unwrap().path();
-                    if let Ok(mut stream) = std::os::unix::net::UnixStream::connect(&sock) {
-                        trace!("Writing to socket at {}", &sock.display());
-                        stream.write_all(&wire_payload).unwrap_or(())
-                    }
+    match sockets {
+        None => (),
+        Some(sockets) => {
+            for sock in sockets {
+                if sock.is_err() { continue; }
+                let sock = sock.unwrap().path();
+                if let Ok(mut stream) = std::os::unix::net::UnixStream::connect(&sock) {
+                    trace!("Writing to socket at {}", &sock.display());
+                    stream.write_all(&wire_payload)
+                        .with_context(|| format!("Unable to write to socket at {}", sock.display()))?;
                 }
             }
         }
-    })
+    };
+
+    Ok(())
 }
 
 
