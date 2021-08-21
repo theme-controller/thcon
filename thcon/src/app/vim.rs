@@ -221,7 +221,7 @@ impl Themeable for Neovim {
 /// Returns unit result if successful, otherwise the causing error.
 fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<()> {
     let config = match config_state {
-        ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("alacritty").into()),
+        ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig(V::SECTION_NAME).into()),
         ConfigState::Default => unreachable!(),
         ConfigState::Disabled => return Ok(()),
         ConfigState::Enabled => V::extract_config(&config).as_ref().unwrap().unwrap_inner_left(),
@@ -263,11 +263,11 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigSta
             for sock in sockets {
                 if sock.is_err() { continue; }
                 let sock = sock.unwrap().path();
-                if let Ok(mut stream) = std::os::unix::net::UnixStream::connect(&sock) {
-                    trace!("Writing to socket at {}", &sock.display());
-                    stream.write_all(&wire_payload)
-                        .with_context(|| format!("Unable to write to socket at {}", sock.display()))?;
-                }
+                let mut stream = std::os::unix::net::UnixStream::connect(&sock)
+                    .with_context(|| format!("Unable to connect to to socket at '{}'", sock.display()))?;
+                trace!("Writing to socket at {}", &sock.display());
+                stream.write_all(&wire_payload)
+                    .with_context(|| format!("Unable to write to socket at {}", sock.display()))?;
             }
         }
     };
