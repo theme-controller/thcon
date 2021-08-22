@@ -26,16 +26,14 @@
 //! | `light` | string | The name of the theme (case-sensitive) to apply in light mode | (none) |
 //!
 
-use std::error::Error;
-
 use crate::config::Config as ThconConfig;
 use crate::operation::Operation;
 use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::AppConfig;
 use crate::Disableable;
 
+use anyhow::{Context, Result};
 use gio::SettingsExt;
-use log::error;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
@@ -53,11 +51,9 @@ impl Themeable for GnomeShell {
         ConfigState::with_manual_config(config.gnome_shell.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => {
-                return Err(Box::from(ConfigError::RequiresManualConfig("gnome_shell")))
-            }
+            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("gnome_shell").into()),
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.gnome_shell.as_ref().unwrap().unwrap_inner_left(),
@@ -69,11 +65,8 @@ impl Themeable for GnomeShell {
         };
 
         let gsettings = gio::Settings::new("org.gnome.shell.extensions.user-theme");
-        match gsettings.set_string("name", &theme) {
-            Ok(_) => gio::Settings::sync(),
-            Err(e) => error!("Unable to apply GNOME Shell user theme: {}", e),
-        };
-
-        Ok(())
+        gsettings.set_string("name", &theme)
+            .map(|_| gio::Settings::sync())
+            .with_context(|| format!("Unable to apply GNOME Shell user theme '{}'", theme))
     }
 }

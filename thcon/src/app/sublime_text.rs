@@ -41,7 +41,6 @@
 //! | `light.theme` | string | The `theme` to use in dark mode | `Default.sublime-theme` |
 //! | `preferences` | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
 
-use std::error::Error;
 use std::fs::{self,OpenOptions};
 use std::path::PathBuf;
 
@@ -51,6 +50,7 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
+use anyhow::Result;
 use log::{debug, warn};
 use serde::{Serialize,Deserialize};
 use serde_json::ser::{PrettyFormatter, Serializer};
@@ -108,7 +108,7 @@ impl Themeable for SublimeText {
         ConfigState::with_default_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {

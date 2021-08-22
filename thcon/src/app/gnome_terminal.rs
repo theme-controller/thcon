@@ -5,14 +5,14 @@ use crate::Disableable;
 use crate::AppConfig;
 
 use std::vec::Vec;
-use std::error::Error;
 use std::time::Duration;
 
-use gio::SettingsExt;
+use anyhow::{Context, Result};
 use dbus::blocking::Connection;
 use dbus::arg::Variant;
 use dbus::arg::Dict;
-use log::{error, debug};
+use gio::SettingsExt;
+use log::debug;
 use serde::Deserialize;
 use xml::reader::{EventReader, XmlEvent};
 
@@ -35,9 +35,10 @@ impl Default for GnomeTerminal {
 }
 
 impl GnomeTerminal {
-    fn get_window_ids(&self) -> Result<Vec<String>, Box<dyn Error>> {
+    fn get_window_ids(&self) -> Result<Vec<String>> {
         let proxy = self.dbus.with_proxy("org.gnome.Terminal", "/org/gnome/Terminal/window", Duration::from_millis(2500));
-        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())?;
+        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
+            .context("Unable to retrieve gnome-terminal windows from DBus")?;
 
         let parser = EventReader::from_str(&xml);
         let mut depth = 0;
@@ -62,7 +63,7 @@ impl GnomeTerminal {
                 },
                 Ok(XmlEvent::EndElement {..}) => depth -= 1,
                 Err(e) => {
-                    return Err(Box::new(e));
+                    return Err(e.into());
                 },
                 _ => {}
             }
@@ -71,7 +72,7 @@ impl GnomeTerminal {
         Ok(window_ids)
     }
 
-    fn set_profile(&self, window_id: &str, profile_id: &str) -> Result<(), Box<dyn Error>> {
+    fn set_profile(&self, window_id: &str, profile_id: &str) -> Result<()> {
         let proxy = self.dbus.with_proxy(
             "org.gnome.Terminal",
             format!("/org/gnome/Terminal/window/{}", window_id),
@@ -83,7 +84,7 @@ impl GnomeTerminal {
             "org.gtk.Actions",
             "SetState",
             ("profile", Variant(profile_id), asv)
-        )?;
+        ).with_context(|| format!("Unable to apply profile '{}' for gnome-terminal window '{}'", profile_id, window_id))?;
 
         Ok(())
     }
@@ -94,9 +95,9 @@ impl Themeable for GnomeTerminal {
         ConfigState::with_manual_config(config.gnome_terminal.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("gnome_terminal"))),
+            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("gnome_terminal").into()),
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.gnome_terminal.as_ref().unwrap().unwrap_inner_left(),
@@ -119,11 +120,8 @@ impl Themeable for GnomeTerminal {
         }
 
         let gsettings = gio::Settings::new("org.gnome.Terminal.ProfilesList");
-        match gsettings.set_string("default", &theme) {
-            Ok(_) => gio::Settings::sync(),
-            Err(e) => error!("Unable to set default profile: {}", e),
-        }
-
-        Ok(())
+        gsettings.set_string("default", &theme)
+            .map(|_| gio::Settings::sync())
+            .with_context(|| format!("Unable to set default gnome-terminal profile '{}'", theme))
     }
 }

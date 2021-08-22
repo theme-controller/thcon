@@ -44,12 +44,13 @@
 //! | `light` | string | The theme to use in light mode | Default Light+ |
 //! | `config` | string | Absolute path to your `settings.json` file | `~/.config/Code/User/settings.json` |
 
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
-use regex::{Captures,Regex};
+use anyhow::{Context, Result};
 use log::{error, debug};
+use regex::{Captures,Regex};
+use serde::Deserialize;
 
 use crate::themeable::{ConfigState, Themeable};
 use crate::operation::Operation;
@@ -57,7 +58,6 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
-use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
@@ -97,7 +97,7 @@ impl Themeable for VSCode {
         ConfigState::with_default_config(config.vscode.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {
@@ -114,18 +114,18 @@ impl Themeable for VSCode {
 
         let settings_path = self.settings_json_path();
         debug!("Reading/writing settings.json at {}", &settings_path.display());
-        match fs::read_to_string(self.settings_json_path()) {
-            Ok(settings) => {
-                let settings = replace_color_theme(&settings, theme);
-                fs::write(self.settings_json_path(), settings).map_err(|err| {
-                    Box::new(err) as Box<dyn Error>
-                })
-            },
-            Err(e) => {
-                error!("Unable to read settings: {}", e);
-                Err(Box::new(e))
+        match fs::read_to_string(self.settings_json_path())
+            .with_context(|| format!("Unable to read settings from {}", &settings_path.display())) {
+                Ok(settings) => {
+                    let settings = replace_color_theme(&settings, theme);
+                    fs::write(self.settings_json_path(), settings)
+                        .with_context(|| format!("Unable to write settings to {}", &settings_path.display()))
+                },
+                Err(e) => {
+                    error!("Unable to read settings: {}", e);
+                    Err(e)
+                }
             }
-        }
     }
 }
 

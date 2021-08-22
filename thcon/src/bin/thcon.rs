@@ -4,6 +4,7 @@ use std::env;
 use std::io;
 use std::process;
 
+use anyhow::{anyhow, Result};
 use clap::{Arg, App, AppSettings, SubCommand, crate_version};
 use rayon::prelude::*;
 use log::{error, info, trace, LevelFilter};
@@ -16,7 +17,7 @@ use thcon::ConfigState;
 
 use std::fs;
 
-fn main() -> std::io::Result<()> {
+fn main() -> Result<()> {
     let matches = App::new("thcon")
                     .version(crate_version!())
                     .author("Sean Barag <sean@barag.org>")
@@ -107,10 +108,10 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    app_names.par_iter().for_each(|name| {
+    let has_errors = app_names.par_iter().map(|&name| {
         let app = match app::get(name) {
             None => {
-                return;
+                return Ok(());
             },
             Some(app) => app,
         };
@@ -118,22 +119,43 @@ fn main() -> std::io::Result<()> {
         match app.config_state(&config) {
             ConfigState::NoDefault => {
                 if has_explicit_apps {
-                    error!("skipping {} (needs manual configuration)", name);
+                    error!(target: name, "skipping (needs manual configuration)");
+                    Err(anyhow!("skipping {} (needs manual configuration)", name))
                 } else {
-                    info!("skipping {} (needs manual configuration)", name);
+                    info!(target: name, "skipping (needs manual configuration)");
+                    Ok(())
                 }
             },
-            ConfigState::Disabled => info!("skipping {} (disabled)", name),
+            ConfigState::Disabled => {
+                info!(target: name, "skipping (disabled)");
+                Ok(())
+            },
             ConfigState::Default => {
-                info!("{}ing {} (default configuration)", operation, name);
-                app.switch(&config, &operation).unwrap()
+                info!(target: name, "{}ing (default configuration)", operation);
+                let res = app.switch(&config, &operation);
+                if let Err(ref e) = res {
+                    error!(target: name, "{:#}", e);
+                }
+                res
             },
             ConfigState::Enabled => {
-                info!("{}ing {}", operation, name);
-                app.switch(&config, &operation).unwrap()
+                info!(target: name, "{}ing", operation);
+                let res = app.switch(&config, &operation);
+                if let Err(ref e) = res {
+                    error!(target: name, "{:#}", e);
+                }
+                res
             }
         }
-    });
+    })
+        // collect into a serialized iterator to ensure all computations complete
+        .collect::<Vec<_>>().iter()
+        // check for errors in any result
+        .any(|r| r.is_err());
 
-    Ok(())
+    if has_errors {
+        Err(anyhow!("Unable to switch themes"))
+    } else {
+        Ok(())
+    }
 }

@@ -32,9 +32,10 @@ use crate::config::Config as ThconConfig;
 use crate::Disableable;
 use crate::AppConfig;
 
-use std::error::Error;
 use std::process::{Command,Stdio};
 
+use anyhow::anyhow;
+use anyhow::{Context, Result};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
@@ -62,7 +63,7 @@ impl Themeable for Plasma {
         ConfigState::with_default_config(config.plasma.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let default_config = _Config::default();
 
         let config = match self.config_state(config) {
@@ -82,8 +83,13 @@ impl Themeable for Plasma {
             .arg("--apply")
             .arg(theme)
             .status()
-            .expect("Failed to execute `lookandfeeltool`");
-
-        Ok(())
+            .with_context(|| format!("Failed to execute 'lookandfeeltool --apply {}'", theme))
+            .and_then(|status| {
+                if status.success() {
+                    Ok(())
+                } else {
+                    Err(anyhow!("Failed to execute 'lookandfeeltool --apply {}'", theme))
+                }
+            })
     }
 }
