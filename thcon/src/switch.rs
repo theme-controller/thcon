@@ -1,10 +1,14 @@
+use std::time::Instant;
+
 use anyhow::{Result, anyhow};
-use log::{error, info};
+use log::{error, info, trace};
 
 use crate::{Config, ConfigState, Operation};
 use crate::app;
 
 pub fn switch(config: &Config, name: &str, was_requested: bool, operation: &Operation) -> Result<()> {
+    let start = Instant::now();
+
     let app = match app::get(name) {
         None => {
             return Ok(());
@@ -16,14 +20,17 @@ pub fn switch(config: &Config, name: &str, was_requested: bool, operation: &Oper
         ConfigState::NoDefault => {
             if was_requested {
                 error!(target: name, "skipping (needs manual configuration)");
+                trace!(target: name, "completed in {} ms", (Instant::now() - start).as_millis());
                 Err(anyhow!("skipping {} (needs manual configuration)", name))
             } else {
                 info!(target: name, "skipping (needs manual configuration)");
+                trace!(target: name, "completed in {} ms", (Instant::now() - start).as_millis());
                 Ok(())
             }
         },
         ConfigState::Disabled => {
             info!(target: name, "skipping (disabled)");
+            trace!(target: name, "completed in {} ms", (Instant::now() - start).as_millis());
             Ok(())
         },
         ConfigState::Default => {
@@ -32,6 +39,7 @@ pub fn switch(config: &Config, name: &str, was_requested: bool, operation: &Oper
             if let Err(ref e) = res {
                 error!(target: name, "{:#}", e);
             }
+            trace!(target: name, "completed in {} ms", (Instant::now() - start).as_millis());
             res
         },
         ConfigState::Enabled => {
@@ -40,6 +48,7 @@ pub fn switch(config: &Config, name: &str, was_requested: bool, operation: &Oper
             if let Err(ref e) = res {
                 error!(target: name, "{:#}", e);
             }
+            trace!(target: name, "completed in {} ms", (Instant::now() - start).as_millis());
             res
         }
     }
