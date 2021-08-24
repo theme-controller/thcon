@@ -18,6 +18,7 @@ thcon_trait = { version = "0.1.0", path = "../thcon_trait" }
 thcon_macro = { version = "0.1.0", path = "../thcon_macro" }
 log = "0.4"
 env_logger = "0.9.0"
+pretty_env_logger = "0.4.0"
 clap = "2.33.3"
 xml-rs = "0.8"
 rayon = "1.4.1"

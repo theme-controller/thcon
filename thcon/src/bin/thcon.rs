@@ -8,7 +8,6 @@ use anyhow::{anyhow, Result};
 use clap::{Arg, App, AppSettings, SubCommand, crate_version};
 use rayon::prelude::*;
 use log::{error, info, trace, LevelFilter};
-use env_logger::TimestampPrecision;
 
 use thcon::Operation;
 use thcon::app;
@@ -50,16 +49,15 @@ fn main() -> Result<()> {
                     )
                     .get_matches();
 
-    env_logger::builder()
-        .filter_level(match matches.occurrences_of("verbose") {
+    let verbosity = matches.occurrences_of("verbose");
+    match verbosity {
+        0 | 1 => pretty_env_logger::formatted_builder(),
+        _ => pretty_env_logger::formatted_timed_builder(),
+    }.filter_level(match verbosity {
             0 => LevelFilter::Warn,
             1 => LevelFilter::Info,
             2 => LevelFilter::Debug,
             _ => LevelFilter::Trace,
-        })
-        .format_timestamp(match matches.occurrences_of("verbose") {
-            0 | 1 => None,
-            _ => Some(TimestampPrecision::Millis)
         })
         .init();
 
