@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added:
+* Per-application timing is printed when run with `-vvv` (trace-level verbosity)
+
 ### Fixed:
 * No longer requires `thcon.toml` to exist on-disk for `thcon` to run
 
