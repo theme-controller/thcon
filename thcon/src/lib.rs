@@ -16,3 +16,6 @@ pub use themeable::{Themeable, ConfigState};
 pub use thcon_trait::Disableable;
 pub use thcon_macro::Disableable;
 pub use thcon_macro::AppConfig;
+
+mod switch;
+pub use switch::switch;
