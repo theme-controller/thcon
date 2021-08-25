@@ -9,10 +9,7 @@ use clap::{crate_version, App, AppSettings, Arg, SubCommand};
 use log::{error, info, trace, LevelFilter};
 use rayon::prelude::*;
 
-use thcon::app;
-use thcon::Config;
-use thcon::ConfigState;
-use thcon::Operation;
+use thcon::{app, Config, Operation};
 
 use std::fs;
 
@@ -125,46 +122,7 @@ fn main() -> Result<()> {
 
     let has_errors = app_names
         .par_iter()
-        .map(|&name| {
-            let app = match app::get(name) {
-                None => {
-                    return Ok(());
-                }
-                Some(app) => app,
-            };
-
-            match app.config_state(&config) {
-                ConfigState::NoDefault => {
-                    if has_explicit_apps {
-                        error!(target: name, "skipping (needs manual configuration)");
-                        Err(anyhow!("skipping {} (needs manual configuration)", name))
-                    } else {
-                        info!(target: name, "skipping (needs manual configuration)");
-                        Ok(())
-                    }
-                }
-                ConfigState::Disabled => {
-                    info!(target: name, "skipping (disabled)");
-                    Ok(())
-                }
-                ConfigState::Default => {
-                    info!(target: name, "{}ing (default configuration)", operation);
-                    let res = app.switch(&config, &operation);
-                    if let Err(ref e) = res {
-                        error!(target: name, "{:#}", e);
-                    }
-                    res
-                }
-                ConfigState::Enabled => {
-                    info!(target: name, "{}ing", operation);
-                    let res = app.switch(&config, &operation);
-                    if let Err(ref e) = res {
-                        error!(target: name, "{:#}", e);
-                    }
-                    res
-                }
-            }
-        })
+        .map(|&name| thcon::switch(&config, name, has_explicit_apps, &operation))
         // collect into a serialized iterator to ensure all computations complete
         .collect::<Vec<_>>()
         .iter()
