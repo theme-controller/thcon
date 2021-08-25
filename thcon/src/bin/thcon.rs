@@ -5,7 +5,7 @@ use std::io;
 use std::process;
 
 use anyhow::{anyhow, Result};
-use clap::{Arg, App, AppSettings, SubCommand, crate_version};
+use clap::{Arg, App, AppSettings, crate_version};
 use rayon::prelude::*;
 use log::{error, info, trace, LevelFilter};
 
@@ -19,32 +19,24 @@ fn main() -> Result<()> {
     let matches = App::new("thcon")
                     .version(crate_version!())
                     .author("Sean Barag <sean@barag.org>")
-                    .setting(AppSettings::SubcommandRequiredElseHelp)
+                    .setting(AppSettings::ArgRequiredElseHelp)
                     .arg(Arg::with_name("verbose")
                             .short("v")
                             .multiple(true)
                             .long("verbose")
                             .help("Enables verbose output")
                     )
-                    .subcommand(SubCommand::with_name("light")
-                                .display_order(101)
-                                .about("switches to light mode")
-                                .arg(Arg::with_name("app")
-                                     .help("Application(s) to switch to light mode")
-                                     .possible_values(&app::all_names())
-                                     .hide_possible_values(true)
-                                     .multiple(true)
-                                 )
+                    .arg(Arg::with_name("mode")
+                            .help("Dark mode or light mode?")
+                            .required(true)
+                            .possible_values(&["dark", "light"])
                     )
-                    .subcommand(SubCommand::with_name("dark")
-                                .display_order(100)
-                                .about("switches to dark mode")
-                                .arg(Arg::with_name("app")
-                                     .help("Application(s) to switch to dark mode")
-                                     .possible_values(&app::all_names())
-                                     .hide_possible_values(true)
-                                     .multiple(true)
-                                 )
+                    .arg(Arg::with_name("apps")
+                            .help("Application(s) to switch to <mode>")
+                            .required(false)
+                            .multiple(true)
+                            .next_line_help(true)
+                            .possible_values(&app::all_names())
                     )
                     .get_matches();
 
@@ -60,14 +52,14 @@ fn main() -> Result<()> {
         })
         .init();
 
-    let (operation, subcommand) = match matches.subcommand() {
-        ("light", Some(subcommand)) => (Operation::Lighten, subcommand),
-        ("dark", Some(subcommand)) => (Operation::Darken, subcommand),
+    let operation = match matches.value_of("mode") {
+        Some("dark") => Operation::Darken,
+        Some("light") => Operation::Lighten,
         _ => unreachable!()
     };
 
-    let has_explicit_apps = subcommand.values_of("app").unwrap_or_default().len() > 0;
-    let app_names: Vec<&str> = match subcommand.values_of("app") {
+    let has_explicit_apps = matches.is_present("apps");
+    let app_names = match matches.values_of("apps") {
         Some(apps) => apps.collect(),
         None => app::all_names()
     };
