@@ -12,6 +12,10 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Fixed:
 * No longer requires `thcon.toml` to exist on-disk for `thcon` to run
 
+### Changed:
+* `dark` and `light` are now positional arguments instead of subcommands, which better represents how `thcon` should be
+  used.
+
 ## [v0.12.0 - 2021-06-29]
 ### Added:
 * Terminal.app profile switching
