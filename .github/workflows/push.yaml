@@ -3,6 +3,11 @@
   "on": [
     "push"
   ],
+  "env": {
+    "CARGO_INCREMENTAL": 0,
+    "CI": 1,
+    "RUSTFLAGS": "-D warnings"
+  },
   "jobs": {
     "build": {
       "name": "Build: ${{ matrix.os }}",
