@@ -28,7 +28,7 @@ async fn remove_socket(sock_path: PathBuf, verbose: bool) -> Result<()> {
         }
     }
 
-    return Ok(());
+    Ok(())
 }
 
 async fn on_exit<'a>(signals: Signals, sock_path: PathBuf, verbose: bool) -> Result<()> {
@@ -86,7 +86,7 @@ async fn listen<'a>(sock_path: PathBuf, verbose: bool) -> Result<()> {
                 match stream.read_to_string(&mut request).await {
                     Ok(_) => {
                         let maybe_json: serde_json::Result<serde_json::Value> =
-                            serde_json::from_str(&request.trim());
+                            serde_json::from_str(request.trim());
                         if let Ok(json_input) = maybe_json {
                             println!("{}", json_input);
                         } else if verbose {
