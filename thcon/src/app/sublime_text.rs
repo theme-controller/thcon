@@ -41,18 +41,18 @@
 //! | `light.theme` | string | The `theme` to use in dark mode | `Default.sublime-theme` |
 //! | `preferences` | string | Absolute path to your `Preferences.sublime-settings` file | Default Sublime Text 3 locations: <ul><li>Linux/BSD: `~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings`</li><li>macOS: `~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings`</li></ul> |
 
-use std::fs::{self,OpenOptions};
+use std::fs::{self, OpenOptions};
 use std::path::PathBuf;
 
-use crate::themeable::{ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
+use crate::themeable::{ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 use anyhow::Result;
 use log::{debug, warn};
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::ser::{PrettyFormatter, Serializer};
 use serde_json::Value as JsonValue;
 
@@ -76,11 +76,15 @@ impl Default for _Config {
     fn default() -> Self {
         Self {
             light: ConfigSection {
-                color_scheme: Some("Packages/Color Scheme - Default/Celeste.sublime-color-scheme".to_string()),
+                color_scheme: Some(
+                    "Packages/Color Scheme - Default/Celeste.sublime-color-scheme".to_string(),
+                ),
                 theme: Some("Adaptive.sublime-theme".to_string()),
             },
             dark: ConfigSection {
-                color_scheme: Some("Packages/Color Scheme - Default/Monokai.sublime-color-scheme".to_string()),
+                color_scheme: Some(
+                    "Packages/Color Scheme - Default/Monokai.sublime-color-scheme".to_string(),
+                ),
                 theme: Some("Default.sublime-theme".to_string()),
             },
             preferences_file: None,
@@ -98,8 +102,10 @@ fn preferences_path() -> PathBuf {
         "sublime-text-3",
         "Packages",
         "User",
-        "Preferences.sublime-settings"
-    ].iter().collect()
+        "Preferences.sublime-settings",
+    ]
+    .iter()
+    .collect()
 }
 pub struct SublimeText;
 
@@ -143,10 +149,10 @@ impl Themeable for SublimeText {
         }
 
         let maybe_settings_file = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .truncate(true)
-                .open(&settings_path);
+            .read(true)
+            .write(true)
+            .truncate(true)
+            .open(&settings_path);
         if let Ok(file) = maybe_settings_file {
             // sublime-text uses four-space indents for its Preferences.sublime-settings file
             // so set up a custom formatter and serializer to match that style

@@ -81,7 +81,8 @@ impl Themeable for Gtk {
         };
 
         let gsettings = gio::Settings::new("org.gnome.desktop.interface");
-        gsettings.set_string("gtk-theme", &theme)
+        gsettings
+            .set_string("gtk-theme", &theme)
             .map(|_| gio::Settings::sync())
             .with_context(|| format!("Unable to apply GTK theme '{}'", theme))
     }

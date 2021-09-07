@@ -1,27 +1,27 @@
-#[cfg(dbus)]
-use crate::app::konsole;
+use crate::app::alacritty;
+use crate::app::atom;
 #[cfg(dbus)]
 use crate::app::gnome_shell;
 #[cfg(dbus)]
 use crate::app::gnome_terminal;
 #[cfg(dbus)]
 use crate::app::gtk;
-#[cfg(dbus)]
-use crate::app::plasma;
-use crate::app::vscode;
-use crate::app::alacritty;
-use crate::app::vim;
 #[cfg(mac)]
 use crate::app::iterm2;
+#[cfg(dbus)]
+use crate::app::konsole;
 #[cfg(mac)]
 use crate::app::macos;
+#[cfg(dbus)]
+use crate::app::plasma;
+use crate::app::sublime_text;
 #[cfg(mac)]
 use crate::app::terminal_dot_app;
-use crate::app::sublime_text;
-use crate::app::atom;
+use crate::app::vim;
+use crate::app::vscode;
 use serde::Deserialize;
 
-#[derive(Debug,Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct Config {
     #[cfg(dbus)]
     pub plasma: Option<plasma::Config>,

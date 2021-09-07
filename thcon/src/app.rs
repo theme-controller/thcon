@@ -1,5 +1,5 @@
-#[cfg(dbus)]
-pub mod konsole;
+pub mod alacritty;
+pub mod atom;
 #[cfg(dbus)]
 pub mod gnome_shell;
 #[cfg(dbus)]
@@ -7,22 +7,22 @@ pub mod gnome_terminal;
 #[cfg(dbus)]
 pub mod gtk;
 #[cfg(dbus)]
+pub mod konsole;
+#[cfg(dbus)]
 pub mod plasma;
-pub mod vscode;
-pub mod vim;
-pub mod alacritty;
 pub mod sublime_text;
-pub mod atom;
+pub mod vim;
+pub mod vscode;
 
-#[cfg(mac)]
-pub mod macos;
 #[cfg(mac)]
 pub mod iterm2;
 #[cfg(mac)]
+pub mod macos;
+#[cfg(mac)]
 pub mod terminal_dot_app;
 
-#[cfg(dbus)]
-pub use konsole::Konsole;
+pub use alacritty::Alacritty;
+pub use atom::Atom;
 #[cfg(dbus)]
 pub use gnome_shell::GnomeShell;
 #[cfg(dbus)]
@@ -30,23 +30,23 @@ pub use gnome_terminal::GnomeTerminal;
 #[cfg(dbus)]
 pub use gtk::Gtk;
 #[cfg(dbus)]
+pub use konsole::Konsole;
+#[cfg(dbus)]
 pub use plasma::Plasma;
-pub use vscode::VSCode;
-pub use alacritty::Alacritty;
-pub use vim::Vim;
-pub use vim::Neovim;
 pub use sublime_text::SublimeText;
-pub use atom::Atom;
+pub use vim::Neovim;
+pub use vim::Vim;
+pub use vscode::VSCode;
 
-#[cfg(mac)]
-pub use macos::MacOS;
 #[cfg(mac)]
 pub use iterm2::Iterm2;
 #[cfg(mac)]
+pub use macos::MacOS;
+#[cfg(mac)]
 pub use terminal_dot_app::TerminalDotApp;
 
-use std::option::Option;
 use crate::themeable::Themeable;
+use std::option::Option;
 
 pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
     match name {
@@ -77,20 +77,28 @@ pub fn get(name: &str) -> Option<Box<dyn Themeable>> {
 }
 
 pub fn all_names() -> Vec<&'static str> {
-    vec!(
+    vec![
         "alacritty",
         "atom",
-        #[cfg(dbus)] "gnome-shell",
-        #[cfg(dbus)] "gnome-terminal",
-        #[cfg(dbus)] "gtk",
-        #[cfg(mac)] "iterm2",
-        #[cfg(dbus)] "konsole",
-        #[cfg(mac)] "macos",
-        #[cfg(mac)] "terminal-app",
+        #[cfg(dbus)]
+        "gnome-shell",
+        #[cfg(dbus)]
+        "gnome-terminal",
+        #[cfg(dbus)]
+        "gtk",
+        #[cfg(mac)]
+        "iterm2",
+        #[cfg(dbus)]
+        "konsole",
+        #[cfg(mac)]
+        "macos",
+        #[cfg(mac)]
+        "terminal-app",
         "nvim",
-        #[cfg(dbus)] "plasma",
+        #[cfg(dbus)]
+        "plasma",
         "sublime-text",
         "vim",
         "vscode",
-    )
+    ]
 }

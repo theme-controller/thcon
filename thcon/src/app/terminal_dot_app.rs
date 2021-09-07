@@ -25,11 +25,11 @@
 //! | `dark` | string | The name of the profile to use in dark mode | Pro |
 //! | `light` | string | The name of the profile to use in light mode | Basic |
 
-use crate::themeable::{ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
+use crate::themeable::{ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 use std::error::Error;
 use std::process::Command;
@@ -68,7 +68,11 @@ impl Themeable for TerminalDotApp {
             ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Default => &default_config,
-            ConfigState::Enabled => config.terminal_dot_app.as_ref().unwrap().unwrap_inner_left(),
+            ConfigState::Enabled => config
+                .terminal_dot_app
+                .as_ref()
+                .unwrap()
+                .unwrap_inner_left(),
         };
 
         let profile_name = match operation {
@@ -79,7 +83,7 @@ impl Themeable for TerminalDotApp {
         Command::new("osascript")
             .arg("-e")
             .arg(format!(
-                    "tell application \"Terminal\"
+                "tell application \"Terminal\"
                       set new_settings to first settings set whose name is \"{}\"
 
                       set default settings to new_settings
@@ -87,8 +91,9 @@ impl Themeable for TerminalDotApp {
 
                       set current settings of every tab of every window to new_settings
                     end tell",
-                     profile_name
-            )).status()
+                profile_name
+            ))
+            .status()
             .expect("Failed to execute `osascript`");
 
         Ok(())

@@ -3,7 +3,7 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Operation {
     Darken,
-    Lighten
+    Lighten,
 }
 
 impl fmt::Display for Operation {

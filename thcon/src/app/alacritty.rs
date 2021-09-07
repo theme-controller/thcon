@@ -63,16 +63,16 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::themeable::{ConfigError, ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 use anyhow::{Context, Result};
-use log::{error, debug};
+use log::{debug, error};
+use regex::{Captures, Regex};
 use serde::Deserialize;
-use regex::{Captures,Regex};
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
@@ -93,7 +93,9 @@ impl Themeable for Alacritty {
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("alacritty").into()),
+            ConfigState::NoDefault => {
+                return Err(ConfigError::RequiresManualConfig("alacritty").into())
+            }
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.alacritty.as_ref().unwrap().unwrap_inner_left(),
@@ -118,22 +120,34 @@ impl Themeable for Alacritty {
             }
         };
 
-        debug!("Reading/writing alacritty.yml at {}", alacritty_yaml.display());
+        debug!(
+            "Reading/writing alacritty.yml at {}",
+            alacritty_yaml.display()
+        );
 
         match fs::read_to_string(&alacritty_yaml)
-            .with_context(|| format!("Unable to read settings from {}", &alacritty_yaml.display())) {
+            .with_context(|| format!("Unable to read settings from {}", &alacritty_yaml.display()))
+        {
             Ok(settings) => {
-                let theme_regex = Regex::new(r#"^(?P<prefix>"?colors"?\s*:\s*"?)(?P<v>[^\s]+)(?P<suffix>"?,?\s*#\s*thcon:replace-line)"#)?;
-                let modified_lines: Vec<String> = settings.lines().map(|line| {
-                    theme_regex.replace(line, |caps: &Captures| {
-                        format!("{}*{}{}", &caps["prefix"], theme, &caps["suffix"])
-                    }).into_owned()
-                }).collect();
+                let theme_regex = Regex::new(
+                    r#"^(?P<prefix>"?colors"?\s*:\s*"?)(?P<v>[^\s]+)(?P<suffix>"?,?\s*#\s*thcon:replace-line)"#,
+                )?;
+                let modified_lines: Vec<String> = settings
+                    .lines()
+                    .map(|line| {
+                        theme_regex
+                            .replace(line, |caps: &Captures| {
+                                format!("{}*{}{}", &caps["prefix"], theme, &caps["suffix"])
+                            })
+                            .into_owned()
+                    })
+                    .collect();
                 let settings = modified_lines.join("\n");
 
-                fs::write(&alacritty_yaml, settings)
-                    .with_context(|| format!("Unable to write settings to {}", &alacritty_yaml.display()))
-            },
+                fs::write(&alacritty_yaml, settings).with_context(|| {
+                    format!("Unable to write settings to {}", &alacritty_yaml.display())
+                })
+            }
             Err(e) => {
                 error!("Unable to read settings: {}", e);
                 Err(e)
@@ -185,5 +199,7 @@ fn alacritty_config() -> Option<PathBuf> {
 // https://github.com/alacritty/alacritty/blob/5a3bf69e3fd771271921f62219cdb8f920db39ee/alacritty/src/config/mod.rs#L236-L274
 #[cfg(windows)]
 fn alacritty_config() -> Option<PathBuf> {
-    dirs::config_dir().map(|path| path.join("alacritty\\alacritty.yml")).filter(|new| new.exists())
+    dirs::config_dir()
+        .map(|path| path.join("alacritty\\alacritty.yml"))
+        .filter(|new| new.exists())
 }

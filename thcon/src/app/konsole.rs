@@ -23,11 +23,14 @@
 //! | `dark` | string | The name of the profile (case-sensitive) to use in dark mode | (none) |
 //! | `light` | string | The name of the profile (case-sensitive) to use in light mode | (none) |
 
-use crate::{Themeable, themeable::{ConfigError, ConfigState}};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
 use crate::AppConfig;
+use crate::Disableable;
+use crate::{
+    themeable::{ConfigError, ConfigState},
+    Themeable,
+};
 
 use std::time::Duration;
 
@@ -37,7 +40,7 @@ use log::{debug, trace};
 use serde::Deserialize;
 use xml::reader::{EventReader, XmlEvent};
 
-#[derive(Debug,Deserialize, Disableable, AppConfig)]
+#[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
     light: String,
     dark: String,
@@ -51,59 +54,77 @@ pub struct Konsole {
 
 impl Default for Konsole {
     fn default() -> Self {
-        Self { dbus: Connection::new_session().unwrap(), }
+        Self {
+            dbus: Connection::new_session().unwrap(),
+        }
     }
 }
 
 impl Konsole {
     fn get_services(&self) -> Result<Vec<String>> {
-        let proxy = self.dbus.with_proxy("org.freedesktop.DBus", "/", Duration::from_millis(2500));
-        let (names,): (Vec<String>,) = proxy.method_call("org.freedesktop.DBus", "ListNames", ())
+        let proxy = self
+            .dbus
+            .with_proxy("org.freedesktop.DBus", "/", Duration::from_millis(2500));
+        let (names,): (Vec<String>,) = proxy
+            .method_call("org.freedesktop.DBus", "ListNames", ())
             .context("Unable to retrieve konsole windows from DBus")?;
 
-        let konsoles: Vec<String> = names.into_iter().filter(|name| {
-            name.as_str().starts_with("org.kde.konsole-")
-        }).collect();
+        let konsoles: Vec<String> = names
+            .into_iter()
+            .filter(|name| name.as_str().starts_with("org.kde.konsole-"))
+            .collect();
 
         trace!(
             "Found {} {}",
             konsoles.len(),
-            if konsoles.len() == 1 { "service" } else { "services" },
+            if konsoles.len() == 1 {
+                "service"
+            } else {
+                "services"
+            },
         );
 
         Ok(konsoles)
     }
 
     fn get_session_ids(&self, service_id: &str) -> Result<Vec<String>> {
-        let proxy = self.dbus.with_proxy(service_id, "/Sessions", Duration::from_millis(2500));
-        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
-            .with_context(|| format!("Unable to get konsole session ids for DBus service '{}'", service_id))?;
+        let proxy = self
+            .dbus
+            .with_proxy(service_id, "/Sessions", Duration::from_millis(2500));
+        let (xml,): (String,) = proxy
+            .method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
+            .with_context(|| {
+                format!(
+                    "Unable to get konsole session ids for DBus service '{}'",
+                    service_id
+                )
+            })?;
 
         let parser = EventReader::from_str(&xml);
         let mut depth = 0;
 
-        let mut session_ids: Vec<String> = vec!();
+        let mut session_ids: Vec<String> = vec![];
 
         for e in parser {
             match e {
-                Ok(XmlEvent::StartElement { name, attributes, .. }) => {
+                Ok(XmlEvent::StartElement {
+                    name, attributes, ..
+                }) => {
                     if depth == 1 && name.local_name == "node" {
-                        session_ids.extend( attributes.into_iter()
-                            .filter_map(|attr| {
-                                if attr.name.local_name == "name" {
-                                    Some(attr.value)
-                                } else {
-                                    None
-                                }
-                            })
-                        );
+                        session_ids.extend(attributes.into_iter().filter_map(|attr| {
+                            if attr.name.local_name == "name" {
+                                Some(attr.value)
+                            } else {
+                                None
+                            }
+                        }));
                     }
                     depth += 1;
-                },
-                Ok(XmlEvent::EndElement {..}) => depth -= 1,
+                }
+                Ok(XmlEvent::EndElement { .. }) => depth -= 1,
                 Err(e) => {
                     return Err(e.into());
-                },
+                }
                 _ => {}
             }
         }
@@ -111,24 +132,42 @@ impl Konsole {
         trace!(
             "Found {} {} in service {}",
             session_ids.len(),
-            if session_ids.len() == 1 { "session" } else { "sessions" },
+            if session_ids.len() == 1 {
+                "session"
+            } else {
+                "sessions"
+            },
             service_id
         );
         Ok(session_ids)
     }
 
-    fn set_profile_name(&self, service_id: &str, session_id: &str, profile_name: &str) -> Result<()> {
-        let proxy = self.dbus.with_proxy(service_id, format!("/Sessions/{}", session_id), Duration::from_millis(2500));
+    fn set_profile_name(
+        &self,
+        service_id: &str,
+        session_id: &str,
+        profile_name: &str,
+    ) -> Result<()> {
+        let proxy = self.dbus.with_proxy(
+            service_id,
+            format!("/Sessions/{}", session_id),
+            Duration::from_millis(2500),
+        );
         let _: () = proxy.method_call("org.kde.konsole.Session", "setProfile", (profile_name,))?;
 
         Ok(())
     }
 
-    fn set_default_profile(&self, service_id: &str, profile_name: &str) -> Result<()>  {
+    fn set_default_profile(&self, service_id: &str, profile_name: &str) -> Result<()> {
         // grab the ID of the first encountered window
-        let proxy = self.dbus.with_proxy(service_id, "/Windows", Duration::from_millis(2500));
-        let (xml,): (String,) = proxy.method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
-            .with_context(|| format!("Unable to retreive window for DBus service '{}", service_id))?;
+        let proxy = self
+            .dbus
+            .with_proxy(service_id, "/Windows", Duration::from_millis(2500));
+        let (xml,): (String,) = proxy
+            .method_call("org.freedesktop.DBus.Introspectable", "Introspect", ())
+            .with_context(|| {
+                format!("Unable to retreive window for DBus service '{}", service_id)
+            })?;
 
         let parser = EventReader::from_str(&xml);
         let mut depth = 0;
@@ -137,31 +176,41 @@ impl Konsole {
 
         for e in parser {
             match e {
-                Ok(XmlEvent::StartElement { name, attributes, .. }) => {
+                Ok(XmlEvent::StartElement {
+                    name, attributes, ..
+                }) => {
                     if depth == 1 && name.local_name == "node" {
-                        window_id = attributes.into_iter()
-                            .find_map(|attr| {
-                                if attr.name.local_name == "name" {
-                                    Some(attr.value)
-                                } else {
-                                    None
-                                }
-                            });
+                        window_id = attributes.into_iter().find_map(|attr| {
+                            if attr.name.local_name == "name" {
+                                Some(attr.value)
+                            } else {
+                                None
+                            }
+                        });
                     }
                     depth += 1;
-                },
-                Ok(XmlEvent::EndElement {..}) => depth -= 1,
+                }
+                Ok(XmlEvent::EndElement { .. }) => depth -= 1,
                 Err(e) => {
                     return Err(e.into());
-                },
+                }
                 _ => {}
             }
         }
 
         if let Some(window_id) = window_id {
             trace!("Found first window ID {}", window_id);
-            let proxy = self.dbus.with_proxy(service_id, format!("/Windows/{}", window_id), Duration::from_millis(2500));
-            proxy.method_call("org.kde.konsole.Window", "setDefaultProfile", (profile_name,))
+            let proxy = self.dbus.with_proxy(
+                service_id,
+                format!("/Windows/{}", window_id),
+                Duration::from_millis(2500),
+            );
+            proxy
+                .method_call(
+                    "org.kde.konsole.Window",
+                    "setDefaultProfile",
+                    (profile_name,),
+                )
                 .context("asdfasdf")?;
         } else {
             trace!("Found no Konsole windows; can't set default profile.");
@@ -178,14 +227,18 @@ impl Themeable for Konsole {
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("konsole").into()),
+            ConfigState::NoDefault => {
+                return Err(ConfigError::RequiresManualConfig("konsole").into())
+            }
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.konsole.as_ref().unwrap().unwrap_inner_left(),
         };
 
         let mut total_sessions = 0;
-        let services: Vec<(String, Vec<String>)> = self.get_services()?.into_iter()
+        let services: Vec<(String, Vec<String>)> = self
+            .get_services()?
+            .into_iter()
             .map(|service| {
                 let session_ids = self.get_session_ids(&service).unwrap();
                 total_sessions += session_ids.len();
@@ -202,13 +255,21 @@ impl Themeable for Konsole {
             debug!(
                 "Found {} {}",
                 total_sessions,
-                if total_sessions == 1 { "session" } else { "sessions" },
+                if total_sessions == 1 {
+                    "session"
+                } else {
+                    "sessions"
+                },
             );
         } else {
             debug!(
                 "Found {} {} across {} services",
                 total_sessions,
-                if total_sessions == 1 { "session" } else { "sessions" },
+                if total_sessions == 1 {
+                    "session"
+                } else {
+                    "sessions"
+                },
                 services.len(),
             );
         }

@@ -20,7 +20,11 @@ async fn remove_socket(sock_path: PathBuf, verbose: bool) -> Result<()> {
     if verbose {
         match result {
             Ok(_) => eprintln!("Succesfully removed socket at '{}'", sock_path.display()),
-            Err(e) => eprintln!("Failed to remove socket at '{}': {}", sock_path.display(), e),
+            Err(e) => eprintln!(
+                "Failed to remove socket at '{}': {}",
+                sock_path.display(),
+                e
+            ),
         }
     }
 
@@ -165,7 +169,10 @@ fn main() -> Result<()> {
                 process::exit(exitcode::OK);
             }
             if is_verbose {
-                eprintln!("Removing pre-existing (stale?) socket {}", sock_path.display());
+                eprintln!(
+                    "Removing pre-existing (stale?) socket {}",
+                    sock_path.display()
+                );
             }
             fs::remove_file(&sock_path).unwrap_or_default();
         }

@@ -61,22 +61,22 @@
 //! | dark.let | table | Set of key/value pairs to apply with `:let` in dark mode | (none) |
 //!
 
+use std::fs;
 use std::io;
 use std::io::prelude::*;
-use std::fs;
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use log::{debug, trace};
-use serde::{Serialize, Deserialize};
-use serde_json::{Value as JsonValue, Map};
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value as JsonValue};
 
-use crate::themeable::{ConfigError, ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::operation::Operation;
 use crate::sockets;
-use crate::Disableable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
@@ -99,7 +99,7 @@ impl ConfigSection {
     /// This works mostly because single-line JSON representations of non-booleans seem to be valid
     /// vimscript.
     fn to_vimrc(&self) -> String {
-        let mut contents: Vec<String> = vec!();
+        let mut contents: Vec<String> = vec![];
         if let Some(sets) = &self.set {
             for (key, val) in sets.iter() {
                 if val == true {
@@ -175,7 +175,6 @@ trait ControlledVim {
     }
     /// Returns an `Option<Config>` for this variant's parsed section in thcon.toml.
     fn extract_config(thcon_config: &ThconConfig) -> &Option<Config>;
-
 }
 
 pub struct Vim;
@@ -219,17 +218,26 @@ impl Themeable for Neovim {
 
 /// Switches settings and colorscheme in a `vim`-agnostic way.
 /// Returns unit result if successful, otherwise the causing error.
-fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigState, operation: &Operation) -> Result<()> {
+fn anyvim_switch<V: ControlledVim>(
+    config: &ThconConfig,
+    config_state: ConfigState,
+    operation: &Operation,
+) -> Result<()> {
     let config = match config_state {
-        ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig(V::SECTION_NAME).into()),
+        ConfigState::NoDefault => {
+            return Err(ConfigError::RequiresManualConfig(V::SECTION_NAME).into())
+        }
         ConfigState::Default => unreachable!(),
         ConfigState::Disabled => return Ok(()),
-        ConfigState::Enabled => V::extract_config(&config).as_ref().unwrap().unwrap_inner_left(),
+        ConfigState::Enabled => V::extract_config(&config)
+            .as_ref()
+            .unwrap()
+            .unwrap_inner_left(),
     };
 
     let payload = match operation {
         Operation::Darken => &config.dark,
-        Operation::Lighten => &config.light
+        Operation::Lighten => &config.light,
     };
 
     let rc_dir = crate::dirs::data().unwrap().join("thcon/");
@@ -242,7 +250,9 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigSta
     debug!("Writing config to {}", rc_path.display());
     fs::write(&rc_path, payload.to_vimrc()).unwrap();
 
-    let wire_payload = WirePayload{ rc_file: rc_path.to_str().unwrap_or_default().to_string() };
+    let wire_payload = WirePayload {
+        rc_file: rc_path.to_str().unwrap_or_default().to_string(),
+    };
     let wire_payload = serde_json::to_vec(&wire_payload).unwrap_or_default();
 
     let sock_dir = V::sock_dir();
@@ -252,21 +262,26 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigSta
             io::ErrorKind::NotFound => {
                 trace!("Found no {} sockets to write to", V::SECTION_NAME);
                 Ok(None)
-            },
-            _ => Err(e)
-        }
+            }
+            _ => Err(e),
+        },
     }?;
 
     match sockets {
         None => (),
         Some(sockets) => {
             for sock in sockets {
-                if sock.is_err() { continue; }
+                if sock.is_err() {
+                    continue;
+                }
                 let sock = sock.unwrap().path();
-                let mut stream = std::os::unix::net::UnixStream::connect(&sock)
-                    .with_context(|| format!("Unable to connect to to socket at '{}'", sock.display()))?;
+                let mut stream =
+                    std::os::unix::net::UnixStream::connect(&sock).with_context(|| {
+                        format!("Unable to connect to to socket at '{}'", sock.display())
+                    })?;
                 trace!("Writing to socket at {}", &sock.display());
-                stream.write_all(&wire_payload)
+                stream
+                    .write_all(&wire_payload)
                     .with_context(|| format!("Unable to write to socket at {}", sock.display()))?;
             }
         }
@@ -275,14 +290,10 @@ fn anyvim_switch<V: ControlledVim>(config: &ThconConfig, config_state: ConfigSta
     Ok(())
 }
 
-
 #[test]
 fn to_vimrc_empty_input() {
     let config = ConfigSection::default();
-    assert_eq!(
-        config.to_vimrc(),
-        "",
-    );
+    assert_eq!(config.to_vimrc(), "",);
 }
 
 #[test]
@@ -290,18 +301,33 @@ fn to_vimrc_all_sections() {
     use serde_json::json;
 
     let config = ConfigSection {
-        set: Some([
-                  ("background".to_string(), json!("dark")),
-                  ("number".to_string(), json!(true)),
-        ].iter().cloned().collect()),
-        setglobal: Some([
-                  ("tw".to_string(), json!(100)),
-                  ("relnum".to_string(), json!(false)),
-        ].iter().cloned().collect()),
-        r#let: Some([
-                  ("g:foo".to_string(), json!("new g:foo")),
-                  ("bar".to_string(), json!(5)),
-        ].iter().cloned().collect()),
+        set: Some(
+            [
+                ("background".to_string(), json!("dark")),
+                ("number".to_string(), json!(true)),
+            ]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
+        setglobal: Some(
+            [
+                ("tw".to_string(), json!(100)),
+                ("relnum".to_string(), json!(false)),
+            ]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
+        r#let: Some(
+            [
+                ("g:foo".to_string(), json!("new g:foo")),
+                ("bar".to_string(), json!(5)),
+            ]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
         colorscheme: Some("shine".to_string()),
     };
 
@@ -319,6 +345,7 @@ fn to_vimrc_all_sections() {
             "let bar=5",
             r#"let g:foo="new g:foo""#,
             "colorscheme shine",
-        ).join("\n"),
+        )
+        .join("\n"),
     );
 }

@@ -48,16 +48,15 @@ use std::fs;
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
-use log::{error, debug};
-use regex::{Captures,Regex};
+use log::{debug, error};
+use regex::{Captures, Regex};
 use serde::Deserialize;
 
-use crate::themeable::{ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
+use crate::themeable::{ConfigState, Themeable};
 use crate::AppConfig;
-
+use crate::Disableable;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
@@ -87,8 +86,10 @@ impl VSCode {
             dirs::config_dir().unwrap().to_str().unwrap(),
             "Code",
             "User",
-            "settings.json"
-        ].iter().collect()
+            "settings.json",
+        ]
+        .iter()
+        .collect()
     }
 }
 
@@ -113,32 +114,44 @@ impl Themeable for VSCode {
         };
 
         let settings_path = self.settings_json_path();
-        debug!("Reading/writing settings.json at {}", &settings_path.display());
+        debug!(
+            "Reading/writing settings.json at {}",
+            &settings_path.display()
+        );
         match fs::read_to_string(self.settings_json_path())
-            .with_context(|| format!("Unable to read settings from {}", &settings_path.display())) {
-                Ok(settings) => {
-                    let settings = replace_color_theme(&settings, theme);
-                    fs::write(self.settings_json_path(), settings)
-                        .with_context(|| format!("Unable to write settings to {}", &settings_path.display()))
-                },
-                Err(e) => {
-                    error!("Unable to read settings: {}", e);
-                    Err(e)
-                }
+            .with_context(|| format!("Unable to read settings from {}", &settings_path.display()))
+        {
+            Ok(settings) => {
+                let settings = replace_color_theme(&settings, theme);
+                fs::write(self.settings_json_path(), settings).with_context(|| {
+                    format!("Unable to write settings to {}", &settings_path.display())
+                })
             }
+            Err(e) => {
+                error!("Unable to read settings: {}", e);
+                Err(e)
+            }
+        }
     }
 }
 
 fn replace_color_theme(settings_json: &str, new_theme: &str) -> String {
-    let theme_regex = Regex::new(r#"^(?P<prefix>\s*"workbench.colorTheme"\s*:\s*)"(?P<v>.+)"(?P<suffix>,?\s*//\s*thcon:replace-line)"#);
+    let theme_regex = Regex::new(
+        r#"^(?P<prefix>\s*"workbench.colorTheme"\s*:\s*)"(?P<v>.+)"(?P<suffix>,?\s*//\s*thcon:replace-line)"#,
+    );
     match theme_regex {
         Err(_) => settings_json.to_owned(),
         Ok(theme_regex) => {
-            let modified_lines: Vec<String> = settings_json.lines().map(|line| {
-                theme_regex.replace(line, |caps: &Captures| {
-                    format!(r#"{}"{}"{}"#, &caps["prefix"], new_theme, &caps["suffix"])
-                }).into_owned()
-            }).collect();
+            let modified_lines: Vec<String> = settings_json
+                .lines()
+                .map(|line| {
+                    theme_regex
+                        .replace(line, |caps: &Captures| {
+                            format!(r#"{}"{}"{}"#, &caps["prefix"], new_theme, &caps["suffix"])
+                        })
+                        .into_owned()
+                })
+                .collect();
 
             modified_lines.join("\n")
         }

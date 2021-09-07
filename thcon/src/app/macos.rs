@@ -11,11 +11,11 @@
 //! | --- | ---- | ----------- | -------- |
 //! | `disabled` | boolean | `true` to disable theming of this app, otherwise `false` | `false` |
 
-use crate::themeable::{ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
+use crate::themeable::{ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 use std::error::Error;
 use std::process::Command;
@@ -51,11 +51,12 @@ impl Themeable for MacOS {
         Command::new("osascript")
             .arg("-e")
             .arg(format!(
-                    "tell app \"System Events\" to \
+                "tell app \"System Events\" to \
                      tell appearance preferences to \
                      set dark mode to {}",
-                     dark_mode
-            )).status()
+                dark_mode
+            ))
+            .status()
             .expect("Failed to execute `osascript`");
 
         Ok(())

@@ -53,7 +53,9 @@ impl Themeable for GnomeShell {
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(ConfigError::RequiresManualConfig("gnome_shell").into()),
+            ConfigState::NoDefault => {
+                return Err(ConfigError::RequiresManualConfig("gnome_shell").into())
+            }
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.gnome_shell.as_ref().unwrap().unwrap_inner_left(),
@@ -65,7 +67,8 @@ impl Themeable for GnomeShell {
         };
 
         let gsettings = gio::Settings::new("org.gnome.shell.extensions.user-theme");
-        gsettings.set_string("name", &theme)
+        gsettings
+            .set_string("name", &theme)
             .map(|_| gio::Settings::sync())
             .with_context(|| format!("Unable to apply GNOME Shell user theme '{}'", theme))
     }

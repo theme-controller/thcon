@@ -28,14 +28,14 @@ use std::io::Write;
 use std::os::unix::net::UnixStream;
 
 use log::trace;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::themeable::{ConfigError, ConfigState, Themeable};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
+use crate::operation::Operation;
 use crate::sockets;
-use crate::Disableable;
+use crate::themeable::{ConfigError, ConfigState, Themeable};
 use crate::AppConfig;
+use crate::Disableable;
 
 #[derive(Debug, Deserialize, Disableable, AppConfig)]
 pub struct _Config {
@@ -47,7 +47,7 @@ pub struct _Config {
 
 #[derive(Debug, Serialize)]
 pub struct WireConfig {
-    profile: String
+    profile: String,
 }
 
 pub struct Iterm2;
@@ -58,7 +58,9 @@ impl Themeable for Iterm2 {
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
         let config = match self.config_state(config) {
-            ConfigState::NoDefault => return Err(Box::from(ConfigError::RequiresManualConfig("iterm2"))),
+            ConfigState::NoDefault => {
+                return Err(Box::from(ConfigError::RequiresManualConfig("iterm2")))
+            }
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
             ConfigState::Enabled => config.iterm2.as_ref().unwrap().unwrap_inner_left(),
@@ -66,9 +68,11 @@ impl Themeable for Iterm2 {
 
         let profile_name = match operation {
             Operation::Darken => &config.dark,
-            Operation::Lighten => &config.light
+            Operation::Lighten => &config.light,
         };
-        let wire_format = WireConfig{ profile: profile_name.to_string() };
+        let wire_format = WireConfig {
+            profile: profile_name.to_string(),
+        };
         let payload = serde_json::to_vec(&wire_format).unwrap_or_default();
 
         let addr = sockets::socket_addr("iterm2", false);

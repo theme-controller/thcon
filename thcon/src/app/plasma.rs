@@ -26,13 +26,13 @@
 //! | `dark` | string | The theme package name to use in dark mode | `org.kde.breezedark.desktop` |
 //! | `light` | string | The theme package name to use in light mode | `org.kde.breeze.desktop` |
 
-use crate::{Themeable, themeable::ConfigState};
-use crate::operation::Operation;
 use crate::config::Config as ThconConfig;
-use crate::Disableable;
+use crate::operation::Operation;
 use crate::AppConfig;
+use crate::Disableable;
+use crate::{themeable::ConfigState, Themeable};
 
-use std::process::{Command,Stdio};
+use std::process::{Command, Stdio};
 
 use anyhow::anyhow;
 use anyhow::{Context, Result};
@@ -51,7 +51,7 @@ impl Default for _Config {
         Self {
             light: "org.kde.breeze.desktop".to_string(),
             dark: "org.kde.breezedark.desktop".to_string(),
-            disabled: false
+            disabled: false,
         }
     }
 }
@@ -88,7 +88,10 @@ impl Themeable for Plasma {
                 if status.success() {
                     Ok(())
                 } else {
-                    Err(anyhow!("Failed to execute 'lookandfeeltool --apply {}'", theme))
+                    Err(anyhow!(
+                        "Failed to execute 'lookandfeeltool --apply {}'",
+                        theme
+                    ))
                 }
             })
     }
