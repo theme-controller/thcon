@@ -1,0 +1,55 @@
+{
+  "name": "build",
+  "on": [
+    "commit"
+  ],
+  "jobs": {
+    "build": {
+      "name": "Build: ${{ matrix.os }}",
+      "runs-on": "${{ matrix.os }}",
+      "strategy": {
+        "matrix": {
+          "os": [
+            "macos-10.15",
+            "ubuntu-latest"
+          ]
+        }
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@v2"
+        },
+        {
+          "name": "Install toolchain",
+          "uses": "actions-rs/toolchain@v1",
+          "with": {
+            "toolchain": "stable",
+            "profile": "default"
+          }
+        },
+        {
+          "name": "build (debug)",
+          "uses": "actions-rs/cargo@v1",
+          "with": {
+            "command": "build"
+          }
+        },
+        {
+          "name": "check (rustfmt)",
+          "uses": "actions-rs/cargo@v1",
+          "with": {
+            "command": "fmt",
+            "args": "-- --check"
+          }
+        },
+        {
+          "name": "check (clippy)",
+          "uses": "actions-rs/cargo@v1",
+          "with": {
+            "command": "clippy"
+          }
+        }
+      ]
+    }
+  }
+}
