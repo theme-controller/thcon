@@ -23,10 +23,10 @@
 //! | `dark` | string | The name of the profile to use in dark mode | (none) |
 //! | `light` | string | The name of the profile to use in light mode | (none) |
 
-use std::error::Error;
 use std::io::Write;
 use std::os::unix::net::UnixStream;
 
+use anyhow::{Context, Result};
 use log::trace;
 use serde::{Deserialize, Serialize};
 
@@ -56,10 +56,10 @@ impl Themeable for Iterm2 {
         ConfigState::with_manual_config(config.iterm2.as_ref().map(|c| c.inner.as_ref()))
     }
 
-    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<(), Box<dyn Error>> {
+    fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
         let config = match self.config_state(config) {
             ConfigState::NoDefault => {
-                return Err(Box::from(ConfigError::RequiresManualConfig("iterm2")))
+                return Err(ConfigError::RequiresManualConfig("iterm2").into())
             }
             ConfigState::Default => unreachable!(),
             ConfigState::Disabled => return Ok(()),
@@ -78,8 +78,11 @@ impl Themeable for Iterm2 {
         let addr = sockets::socket_addr("iterm2", false);
         if let Ok(mut stream) = UnixStream::connect(&addr) {
             trace!("Writing to socket at {}", &addr.display());
-            stream.write_all(&payload).unwrap_or(())
+            stream
+                .write_all(&payload)
+                .with_context(|| format!("Unable to write to scoket at {}", addr.display()))?;
         }
+
         Ok(())
     }
 }
