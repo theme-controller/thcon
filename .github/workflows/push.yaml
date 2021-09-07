@@ -20,6 +20,11 @@
           "uses": "actions/checkout@v2"
         },
         {
+          "name": "Install system dependencies",
+          "if": "${{ startsWith(matrix.os, 'ubuntu') }}",
+          "run": "sudo apt install -y libdbus-1-dev libglib2.0-dev",
+        },
+        {
           "name": "Install toolchain",
           "uses": "actions-rs/toolchain@v1",
           "with": {
