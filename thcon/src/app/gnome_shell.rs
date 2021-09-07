@@ -68,7 +68,7 @@ impl Themeable for GnomeShell {
 
         let gsettings = gio::Settings::new("org.gnome.shell.extensions.user-theme");
         gsettings
-            .set_string("name", &theme)
+            .set_string("name", theme)
             .map(|_| gio::Settings::sync())
             .with_context(|| format!("Unable to apply GNOME Shell user theme '{}'", theme))
     }

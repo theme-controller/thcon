@@ -135,13 +135,13 @@ impl Themeable for GnomeTerminal {
                 },
             );
             for window_id in windows.iter() {
-                self.set_profile(window_id, &theme)?;
+                self.set_profile(window_id, theme)?;
             }
         }
 
         let gsettings = gio::Settings::new("org.gnome.Terminal.ProfilesList");
         gsettings
-            .set_string("default", &theme)
+            .set_string("default", theme)
             .map(|_| gio::Settings::sync())
             .with_context(|| format!("Unable to set default gnome-terminal profile '{}'", theme))
     }
