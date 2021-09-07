@@ -20,7 +20,7 @@ pub fn switch(
         Some(app) => app,
     };
 
-    match app.config_state(&config) {
+    match app.config_state(config) {
         ConfigState::NoDefault => {
             if was_requested {
                 error!(target: name, "skipping (needs manual configuration)");
@@ -51,7 +51,7 @@ pub fn switch(
         }
         ConfigState::Default => {
             info!(target: name, "{}ing (default configuration)", operation);
-            let res = app.switch(&config, &operation);
+            let res = app.switch(config, operation);
             if let Err(ref e) = res {
                 error!(target: name, "{:#}", e);
             }
@@ -64,7 +64,7 @@ pub fn switch(
         }
         ConfigState::Enabled => {
             info!(target: name, "{}ing", operation);
-            let res = app.switch(&config, &operation);
+            let res = app.switch(config, operation);
             if let Err(ref e) = res {
                 error!(target: name, "{:#}", e);
             }

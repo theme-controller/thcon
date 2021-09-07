@@ -276,12 +276,12 @@ impl Themeable for Konsole {
 
         for (service_id, session_ids) in services.iter() {
             for session_id in session_ids.iter() {
-                self.set_profile_name(service_id, session_id, &theme)?;
+                self.set_profile_name(service_id, session_id, theme)?;
             }
         }
 
         if let Some((session, _)) = services.get(0) {
-            self.set_default_profile(session, &theme)?;
+            self.set_default_profile(session, theme)?;
         }
 
         Ok(())
