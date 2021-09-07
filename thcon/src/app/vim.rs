@@ -191,7 +191,7 @@ impl Themeable for Vim {
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
-        let config_state = self.config_state(&config);
+        let config_state = self.config_state(config);
         anyvim_switch::<Vim>(config, config_state, operation)
     }
 }
@@ -211,7 +211,7 @@ impl Themeable for Neovim {
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
-        let config_state = self.config_state(&config);
+        let config_state = self.config_state(config);
         anyvim_switch::<Neovim>(config, config_state, operation)
     }
 }
@@ -229,7 +229,7 @@ fn anyvim_switch<V: ControlledVim>(
         }
         ConfigState::Default => unreachable!(),
         ConfigState::Disabled => return Ok(()),
-        ConfigState::Enabled => V::extract_config(&config)
+        ConfigState::Enabled => V::extract_config(config)
             .as_ref()
             .unwrap()
             .unwrap_inner_left(),
