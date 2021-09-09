@@ -1,7 +1,7 @@
 ---
 home: true
-heroText: thcon
-tagline: All your apps.  Dark or light.
+heroText: thcon (sounds like "thicken")
+tagline: All your apps, dark or light.
 actions:
 - text: Get Started
   link: /quick-start
