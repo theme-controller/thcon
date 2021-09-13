@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Added:
 * Per-application timing is printed when run with `-vvv` (trace-level verbosity)
+* Web-based documentation hosted at https://thcon.vercel.app
 
 ### Fixed:
 * No longer requires `thcon.toml` to exist on-disk for `thcon` to run
