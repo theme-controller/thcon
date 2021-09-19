@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [v0.13.0 - 2021-09-18]
 ### Added:
 * Per-application timing is printed when run with `-vvv` (trace-level verbosity)
 * Web-based documentation hosted at https://thcon.vercel.app
@@ -16,6 +18,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Changed:
 * `dark` and `light` are now positional arguments instead of subcommands, which better represents how `thcon` should be
   used.
+* Verbose output (`-v` through `-vvv`) is a bit more pretty
 
 ## [v0.12.0 - 2021-06-29]
 ### Added:
