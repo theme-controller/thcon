@@ -1,6 +1,6 @@
 [package]
 name = "thcon"
-version = "0.13.1"
+version = "0.13.2"
 authors = ["Sean Barag <sean@barag.org>"]
 edition = "2018"
 description = "A configurable theme controller that switches multiple apps between light and dark mode"
