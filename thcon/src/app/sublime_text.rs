@@ -62,8 +62,12 @@ pub struct _Config {
     dark: ConfigSection,
     #[serde(rename = "preferences")]
     preferences_file: Option<String>,
-    #[serde(default)]
+    #[serde(default = "is_disabled")]
     disabled: bool,
+}
+
+fn is_disabled() -> bool {
+    true
 }
 
 #[derive(Debug, Deserialize)]
@@ -88,7 +92,7 @@ impl Default for _Config {
                 theme: Some("Default.sublime-theme".to_string()),
             },
             preferences_file: None,
-            disabled: false,
+            disabled: true,
         }
     }
 }
@@ -111,16 +115,20 @@ pub struct SublimeText;
 
 impl Themeable for SublimeText {
     fn config_state(&self, config: &ThconConfig) -> ConfigState {
-        ConfigState::with_default_config(config.sublime_text.as_ref().map(|c| c.inner.as_ref()))
+        let config_state = ConfigState::with_default_config(
+            config.sublime_text.as_ref().map(|c| c.inner.as_ref()),
+        );
+        if config_state == ConfigState::Default {
+            return ConfigState::Disabled;
+        }
+        config_state
     }
 
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()> {
-        let default_config = _Config::default();
-
         let config = match self.config_state(config) {
             ConfigState::NoDefault => unreachable!(),
             ConfigState::Disabled => return Ok(()),
-            ConfigState::Default => &default_config,
+            ConfigState::Default => unreachable!(),
             ConfigState::Enabled => config.sublime_text.as_ref().unwrap().unwrap_inner_left(),
         };
 
@@ -167,5 +175,20 @@ impl Themeable for SublimeText {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::SublimeText;
+    use crate::themeable::Themeable;
+    use crate::{Config as ThconConfig, ConfigState};
+
+    #[test]
+    fn disabled_by_default() {
+        let st = SublimeText {};
+        let config: ThconConfig = serde_json::from_str("{}").unwrap();
+
+        assert_eq!(st.config_state(&config), ConfigState::Disabled);
     }
 }

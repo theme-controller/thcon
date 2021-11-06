@@ -11,7 +11,7 @@ pub trait Themeable {
     fn switch(&self, config: &ThconConfig, operation: &Operation) -> Result<()>;
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Debug)]
 pub enum ConfigState {
     NoDefault,
     Default,
