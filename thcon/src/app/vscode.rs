@@ -44,12 +44,11 @@
 //! | `light` | string | The theme to use in light mode | Default Light+ |
 //! | `config` | string | Absolute path to your `settings.json` file | `~/.config/Code/User/settings.json` |
 
-use std::{fs, io};
 use std::path::PathBuf;
+use std::{fs, io};
 
 use anyhow::{Context, Result};
-use anyhow::anyhow;
-use log::{debug, error};
+use log::debug;
 use regex::{Captures, Regex};
 use serde::Deserialize;
 
@@ -119,8 +118,7 @@ impl Themeable for VSCode {
             "Reading/writing settings.json at {}",
             &settings_path.display()
         );
-        match fs::read_to_string(self.settings_json_path())
-        {
+        match fs::read_to_string(self.settings_json_path()) {
             Ok(settings) => {
                 let settings = replace_color_theme(&settings, theme);
                 fs::write(self.settings_json_path(), settings).with_context(|| {
@@ -132,11 +130,10 @@ impl Themeable for VSCode {
                     // allow settings.json to not exist at all
                     Ok(())
                 } else {
-                    Err(
-                        anyhow::Error::new(e).context(format!(
-                            "Unable to read settings from {}", &settings_path.display()
-                        ))
-                    )
+                    Err(anyhow::Error::new(e).context(format!(
+                        "Unable to read settings from {}",
+                        &settings_path.display()
+                    )))
                 }
             }
         }
