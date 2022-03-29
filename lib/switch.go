@@ -4,14 +4,11 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/theme-controller/thcon/lib/apps"
+	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type Operation int
-
 const (
-	DarkMode Operation = iota
-	LightMode
-
 	verboseFlag  = "verbose"
 	progressFlag = "progress"
 )
@@ -19,14 +16,20 @@ const (
 var verbosity int
 var showProgress bool
 
-func Switch(mode Operation) error {
+func Switch(mode operation.Operation) error {
 	switch mode {
-	case DarkMode:
+	case operation.DarkMode:
 		fmt.Println("Switching to dark mode")
-	case LightMode:
+	case operation.LightMode:
 		fmt.Println("Switching to light mode")
 	default:
 		return fmt.Errorf("Unexpected mode '%+v'", mode)
+	}
+
+	gtk := apps.Gtk{}
+	err := gtk.Switch(mode, nil)
+	if err != nil {
+		return err
 	}
 	return nil
 }
