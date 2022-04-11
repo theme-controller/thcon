@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -27,7 +28,13 @@ func Switch(mode operation.Operation) error {
 	}
 
 	gtk := apps.Gtk{}
-	err := gtk.Switch(mode, nil)
+	err := gtk.Switch(context.Background(), mode, nil)
+	if err != nil {
+		return err
+	}
+
+	gnomeTerm := apps.GnomeTerminal{}
+	err = gnomeTerm.Switch(context.Background(), mode, nil)
 	if err != nil {
 		return err
 	}
