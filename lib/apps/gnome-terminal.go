@@ -9,10 +9,19 @@ import (
 
 	"github.com/godbus/dbus/v5"
 	"github.com/gotk3/gotk3/glib"
+	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type GnomeTerminal struct{}
+type GnomeTerminal struct {
+	progress event.ProgressChannel
+}
+
+func NewGnomeTerminal(progress event.ProgressChannel) Switchable {
+	return &GnomeTerminal{
+		progress: progress,
+	}
+}
 
 type windowNode struct {
 	XMLName xml.Name `xml:"node"`
@@ -81,23 +90,30 @@ func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, c
 		profileId = "efb1da39-d74e-40e4-b21f-d9a7a55fec58"
 	}
 
+	gt.progress <- event.AddSubsteps(gt.Name(), 1)
 	if err := setDefaultProfile(ctx, profileId); err != nil {
+		gt.progress <- event.StepFailed(gt.Name(), err)
 		return fmt.Errorf("Unable to set default gnome-terminal profile: %+v", err)
 	}
+	gt.progress <- event.StepCompleted(gt.Name())
 
 	windows, err := listWindows(ctx, conn)
 	if err != nil {
 		return err
 	}
 
-	if len(windows) == 0 {
-		return nil
+	if len(windows) > 0 {
+		gt.progress <- event.AddSubsteps(gt.Name(), len(windows))
 	}
 
 	var setProfileErrors []error
 	for _, window := range windows {
-		if err := setWindowProfile(ctx, conn, window.Name, profileId); err != nil {
+		err := setWindowProfile(ctx, conn, window.Name, profileId)
+		if err != nil {
 			setProfileErrors = append(setProfileErrors, err)
+			gt.progress <- event.StepFailed(gt.Name(), err)
+		} else {
+			gt.progress <- event.StepCompleted(gt.Name())
 		}
 	}
 
@@ -110,6 +126,11 @@ func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, c
 	}
 
 	return nil
+}
+
+func (gt *GnomeTerminal) Name() string {
+	const name = "Gnome Terminal"
+	return name
 }
 
 var _ Switchable = (*GnomeTerminal)(nil)

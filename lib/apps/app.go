@@ -10,4 +10,5 @@ type RootConfig struct{}
 
 type Switchable interface {
 	Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error
+	Name() string
 }
