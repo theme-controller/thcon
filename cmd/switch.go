@@ -10,7 +10,7 @@ var lightCmd = &cobra.Command{
 	Use:   "light",
 	Short: "Switches to apps to light mode",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return lib.Switch(operation.LightMode)
+		return lib.Switch(cmd.Context(), operation.LightMode)
 	},
 }
 
@@ -18,7 +18,7 @@ var darkCmd = &cobra.Command{
 	Use:   "dark",
 	Short: "Switches to apps to dark mode",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return lib.Switch(operation.DarkMode)
+		return lib.Switch(cmd.Context(), operation.DarkMode)
 	},
 }
 

@@ -21,8 +21,19 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/theme-controller/thcon/cmd"
+import (
+	"log"
+
+	"github.com/theme-controller/thcon/cmd"
+)
 
 func main() {
+	log.SetFlags(
+		log.Ldate |
+		log.Ltime |
+		log.Lmicroseconds |
+		log.Lshortfile |
+		log.Lmsgprefix,
+	)
 	cmd.Execute()
 }

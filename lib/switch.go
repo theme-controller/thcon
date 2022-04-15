@@ -3,10 +3,11 @@ package lib
 import (
 	"context"
 	"fmt"
-	"log"
 	"runtime"
 	"sync"
 
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
 	"github.com/theme-controller/thcon/lib/event"
@@ -21,7 +22,20 @@ const (
 var verbosity int
 var showProgress bool
 
-func Switch(mode operation.Operation) error {
+func Switch(ctx context.Context, mode operation.Operation) error {
+	if verbosity < 0 {
+		verbosity = 0
+	}
+	switch verbosity {
+	case 0:
+		log.SetLevel(log.WarnLevel)
+	case 1:
+		log.SetLevel(log.InfoLevel)
+	default:
+		log.SetLevel(log.DebugLevel)
+	}
+	log.SetHandler(cli.Default)
+
 	switch mode {
 	case operation.DarkMode:
 		fmt.Println("Switching to dark mode")
@@ -48,7 +62,7 @@ func Switch(mode operation.Operation) error {
 	progressDone := make(chan bool)
 	go func() {
 		for event := range progressChan {
-			log.Printf("[PRG] received progress event: %#v", event)
+			log.WithField("event", event).Debug("received progress event")
 		}
 		progressDone <- true
 	}()
@@ -61,16 +75,19 @@ func Switch(mode operation.Operation) error {
 
 		app := app
 		name := app.Name()
-		log.Printf("[DBG] requesting lock for %s", name)
+		appLog := log.WithField("app", name)
+		appLog.Debug("requesting lock")
+		appCtx := log.NewContext(ctx, appLog)
 		sem <- 1
 		progressChan <- event.StepStarted(name)
 
 		go func() {
+			var err error
 			defer wg.Done()
 			defer func() { <-sem }()
+			defer appLog.Trace(mode.Verb()).Stop(&err)
 
-			log.Printf("[DBG] starting %s", name)
-			err := app.Switch(context.Background(), mode, nil)
+			err = app.Switch(appCtx, mode, nil)
 			if err != nil {
 				progressChan <- event.StepFailed(name, err)
 			} else {
