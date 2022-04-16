@@ -56,6 +56,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	toSwitch := []apps.Switchable{
 		apps.NewGtk(progressChan),
 		apps.NewGnomeTerminal(progressChan),
+		apps.NewKonsole(progressChan),
 	}
 
 	// Render progress events
