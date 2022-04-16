@@ -57,6 +57,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		apps.NewGtk(progressChan),
 		apps.NewGnomeTerminal(progressChan),
 		apps.NewKonsole(progressChan),
+		apps.NewPlasma(progressChan),
 	}
 
 	// Render progress events
