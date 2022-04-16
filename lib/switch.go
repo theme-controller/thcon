@@ -61,8 +61,45 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	// Render progress events
 	progressDone := make(chan bool)
 	go func() {
-		for event := range progressChan {
-			log.WithField("event", event).Debug("received progress event")
+		var totalSteps int = 2
+		var complete int
+		var inProgress int
+		var failed int
+
+		for evt := range progressChan {
+			switch evt.Kind {
+			case event.KAddSubsteps:
+				log.
+					WithField("type", "add steps").
+					WithField("count", evt.SubstepCount).
+					Debug("progress")
+				totalSteps += evt.SubstepCount
+				inProgress += evt.SubstepCount
+			case event.KStepStarted:
+				log.
+					WithField("type", "start step").
+					Debug("progress")
+				inProgress++
+			case event.KStepCompleted:
+				log.
+					WithField("type", "finish step").
+					Debug("progress")
+				inProgress--
+				complete++
+			case event.KStepFailed:
+				log.
+					WithField("type", "fail step").
+					Debug("progress")
+				inProgress--
+				failed++
+			}
+
+			log.WithFields(log.Fields{
+				"total":      totalSteps,
+				"complete":   complete,
+				"failed":     failed,
+				"inProgress": inProgress,
+			}).Debug("progress")
 		}
 		progressDone <- true
 	}()

@@ -3,10 +3,10 @@ package event
 type ProgressKind int
 
 const (
-	addSubsteps ProgressKind = iota
-	stepStarted
-	stepCompleted
-	stepFailed
+	KAddSubsteps ProgressKind = iota
+	KStepStarted
+	KStepCompleted
+	KStepFailed
 )
 
 type ProgressEvent struct {
@@ -21,14 +21,14 @@ type ProgressChannel chan *ProgressEvent
 
 func StepStarted(source string) *ProgressEvent {
 	return &ProgressEvent{
-		Kind:   stepStarted,
+		Kind:   KStepStarted,
 		Source: source,
 	}
 }
 
 func AddSubsteps(source string, count int) *ProgressEvent {
 	return &ProgressEvent{
-		Kind:         addSubsteps,
+		Kind:         KAddSubsteps,
 		Source:       source,
 		SubstepCount: count,
 	}
@@ -36,14 +36,14 @@ func AddSubsteps(source string, count int) *ProgressEvent {
 
 func StepCompleted(source string) *ProgressEvent {
 	return &ProgressEvent{
-		Kind:   stepCompleted,
+		Kind:   KStepCompleted,
 		Source: source,
 	}
 }
 
 func StepFailed(source string, err error) *ProgressEvent {
 	return &ProgressEvent{
-		Kind:   stepFailed,
+		Kind:   KStepFailed,
 		Source: source,
 		Err:    err,
 	}
