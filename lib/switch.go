@@ -2,6 +2,7 @@ package lib
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"sync"
@@ -110,6 +111,8 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		progressDone <- true
 	}()
 
+	var numErrors int
+
 	// Switch all as parallelibly as possible
 	sem := make(chan int, maxProcs)
 	wg := sync.WaitGroup{}
@@ -132,6 +135,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 
 			err = app.Switch(appCtx, mode, nil)
 			if err != nil {
+				numErrors++
 				progressChan <- event.StepFailed(name, err)
 			} else {
 				progressChan <- event.StepCompleted(name)
@@ -144,7 +148,19 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	// Flush remaining progress events
 	close(progressChan)
 	<-progressDone
-	return nil
+
+	switch numErrors {
+	case 0:
+		return nil
+	case 1:
+		return errors.New("One app failed to switch themes")
+	default:
+		var count string = "Some"
+		if numErrors == len(toSwitch) {
+			count = "All"
+		}
+		return fmt.Errorf("%s apps failed to switch themes", count)
+	}
 }
 
 func AddSwitchFlags(cmd *cobra.Command) {

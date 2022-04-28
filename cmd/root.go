@@ -30,6 +30,8 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "thcon",
 	Short: "Switches apps between dark mode and light mode",
+	SilenceErrors: true,
+	SilenceUsage: true,
 }
 
 func Execute() {
