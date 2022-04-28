@@ -29,6 +29,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "thcon",
+	Version: "0.1.0",
 	Short: "Switches apps between dark mode and light mode",
 	SilenceErrors: true,
 	SilenceUsage: true,
