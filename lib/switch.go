@@ -54,8 +54,12 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 
 	progressChan := make(chan *event.ProgressEvent, progressChanBuf)
 	toSwitch := []apps.Switchable{
+		// GNOME
 		apps.NewGtk(progressChan),
+		apps.NewGnomeShell(progressChan),
 		apps.NewGnomeTerminal(progressChan),
+
+		// KDE
 		apps.NewKonsole(progressChan),
 		apps.NewPlasma(progressChan),
 	}
