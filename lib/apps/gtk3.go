@@ -8,17 +8,17 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type Gtk struct {
+type Gtk3 struct {
 	progress event.ProgressChannel
 }
 
-func NewGtk(progress event.ProgressChannel) Switchable {
-	return &Gtk{
+func NewGtk3(progress event.ProgressChannel) Switchable {
+	return &Gtk3{
 		progress: progress,
 	}
 }
 
-func (g *Gtk) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (g *Gtk3) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
 	gsettings := glib.SettingsNew("org.gnome.desktop.interface")
 	var theme = "Adwaita-dark"
 	if mode == operation.LightMode {
@@ -30,9 +30,9 @@ func (g *Gtk) Switch(ctx context.Context, mode operation.Operation, config *Root
 	return nil
 }
 
-func (gt *Gtk) Name() string {
-	const name = "GTK"
+func (gt *Gtk3) Name() string {
+	const name = "GTK3"
 	return name
 }
 
-var _ Switchable = (*Gtk)(nil)
+var _ Switchable = (*Gtk3)(nil)
