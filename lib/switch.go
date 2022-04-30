@@ -63,6 +63,8 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		// KDE
 		apps.NewKonsole(progressChan),
 		apps.NewPlasma(progressChan),
+
+		apps.NewNeovim(progressChan),
 	}
 
 	// Render progress events

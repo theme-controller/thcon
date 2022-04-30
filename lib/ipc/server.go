@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"os/user"
-	"path/filepath"
 
 	"github.com/apex/log"
 )
@@ -21,41 +19,16 @@ type ListenerConfig struct {
 	Verbose         bool
 }
 
-func ensureUserSocketDir() (string, error) {
-	currUser, err := user.Current()
-	if err != nil {
-		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
-	}
-	dirname := filepath.Join(os.TempDir(), "thcon-"+currUser.Uid)
-	err = os.MkdirAll(dirname, 0600)
-	if err != nil {
-		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
-	}
-
-	return dirname, nil
-}
-
 func Serve(ctx context.Context, config *ListenerConfig) error {
 	logger := log.FromContext(ctx)
-	dir, err := ensureUserSocketDir()
-	if err != nil {
-		return err
-	}
-	var filename string
-	if config.PerProcess {
-		filename = fmt.Sprintf("%s-%d.sock", config.AppName, os.Getpid())
-	} else {
-		filename = config.AppName + ".sock"
-	}
-	sockName := filepath.Join(dir, filename)
-
+	sockAddr, err := makeSocketAddr(config.AppName, config.PerProcess)
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, os.Kill)
 	defer stop()
 
 	// Create a unix domain socket for listening
-	listener, err := net.Listen("unix", sockName)
+	listener, err := net.Listen(sockAddr.ListenStreamArgs())
 	if err != nil {
-		logger.WithField("address", sockName).
+		logger.WithField("address", sockAddr).
 			WithError(err).
 			Error("Unable to listen on unix socket")
 		return err
@@ -77,7 +50,7 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 			},
 		),
 	)
-	logger.WithField("address", sockName).Info("listening")
+	logger.WithField("address", sockAddr).Info("listening")
 
 	// Wait for SIGINT or SIGKILL
 	<- ctx.Done()
