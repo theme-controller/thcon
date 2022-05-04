@@ -54,15 +54,15 @@ func ListSockets(appName string, socketPerProcess bool) (sockaddr.UnixSocks, err
 	if socketPerProcess {
 		return listSocketsImpl(os.DirFS(socketDir), socketDir, appName)
 	}
-	sock, err := sockaddr.NewUnixSock(filepath.Join(socketDir, appName + ".sock"))
+	sock, err := sockaddr.NewUnixSock(filepath.Join(socketDir, appName+".sock"))
 	if err != nil {
 		return nil, err
 	}
-	return sockaddr.UnixSocks{ &sock }, nil
+	return sockaddr.UnixSocks{&sock}, nil
 }
 
 func listSocketsImpl(fsys fs.FS, basedir string, appName string) (sockaddr.UnixSocks, error) {
-	matches, err := fs.Glob(fsys, appName + "-*.sock")
+	matches, err := fs.Glob(fsys, appName+"-*.sock")
 	if err != nil {
 		return nil, fmt.Errorf("Failed to list sockets: %+v", err)
 	}

@@ -30,10 +30,10 @@ import (
 func main() {
 	log.SetFlags(
 		log.Ldate |
-		log.Ltime |
-		log.Lmicroseconds |
-		log.Lshortfile |
-		log.Lmsgprefix,
+			log.Ltime |
+			log.Lmicroseconds |
+			log.Lshortfile |
+			log.Lmsgprefix,
 	)
 	cmd.Execute()
 }

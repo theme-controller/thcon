@@ -12,11 +12,11 @@ var shouldReplace bool
 var verboseListen bool
 
 var listenCmd = &cobra.Command{
-	Use:   "listen",
-	Short: "Listens for messages on a socket, printing them to stdout",
-	Args:  cobra.ExactArgs(1),
+	Use:           "listen",
+	Short:         "Listens for messages on a socket, printing them to stdout",
+	Args:          cobra.ExactArgs(1),
 	SilenceErrors: false,
-	SilenceUsage: false,
+	SilenceUsage:  false,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		appName := args[0]
 		if appName == "help" {

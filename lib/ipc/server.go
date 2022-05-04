@@ -53,6 +53,6 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 	logger.WithField("address", sockAddr).Info("listening")
 
 	// Wait for SIGINT or SIGKILL
-	<- ctx.Done()
+	<-ctx.Done()
 	return nil
 }

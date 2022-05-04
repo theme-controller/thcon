@@ -11,6 +11,7 @@ import (
 type GnomeShell struct {
 	progress event.ProgressChannel
 }
+
 var _ Switchable = (*GnomeShell)(nil)
 
 func NewGnomeShell(progress event.ProgressChannel) Switchable {
