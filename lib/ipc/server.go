@@ -22,6 +22,9 @@ type ListenerConfig struct {
 func Serve(ctx context.Context, config *ListenerConfig) error {
 	logger := log.FromContext(ctx)
 	sockAddr, err := makeSocketAddr(config.AppName, config.PerProcess)
+	if err != nil {
+		return err
+	}
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, os.Kill)
 	defer stop()
 
@@ -36,20 +39,22 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 	defer listener.Close()
 
 	// Serve HTTP on that socket
-	go http.Serve(
-		listener,
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				bodyBytes, err := io.ReadAll(r.Body)
-				if err != nil {
-					logger.WithError(err).Error("Unable to read request")
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-				fmt.Println(string(bodyBytes))
-			},
-		),
-	)
+	go func() {
+		_ = http.Serve(
+			listener,
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					bodyBytes, err := io.ReadAll(r.Body)
+					if err != nil {
+						logger.WithError(err).Error("Unable to read request")
+						w.WriteHeader(http.StatusInternalServerError)
+						return
+					}
+					fmt.Println(string(bodyBytes))
+				},
+			),
+		)
+	}()
 	logger.WithField("address", sockAddr).Info("listening")
 
 	// Wait for SIGINT or SIGKILL
