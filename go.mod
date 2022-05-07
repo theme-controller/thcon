@@ -3,6 +3,7 @@ module github.com/theme-controller/thcon
 go 1.16
 
 require (
+	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/apex/log v1.9.0
 	github.com/godbus/dbus/v5 v5.1.0
 	github.com/gotk3/gotk3 v0.6.1

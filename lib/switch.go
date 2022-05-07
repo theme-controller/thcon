@@ -11,6 +11,7 @@ import (
 	"github.com/apex/log/handlers/cli"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
+	"github.com/theme-controller/thcon/lib/config"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
@@ -66,6 +67,13 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 
 		apps.NewNeovim(progressChan),
 	}
+
+	config, err := config.Parse(ctx)
+	if err != nil {
+		log.WithError(err).Error("Unable to parse thcon.toml")
+		return err
+	}
+	log.WithField("config", config).Info("found config")
 
 	// Render progress events
 	progressDone := make(chan bool)
