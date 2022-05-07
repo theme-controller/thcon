@@ -9,4 +9,5 @@ require (
 	github.com/gotk3/gotk3 v0.6.1
 	github.com/hashicorp/go-sockaddr v1.0.2 // indirect
 	github.com/spf13/cobra v1.4.0
+	github.com/stretchr/testify v1.7.1 // indirect
 )
