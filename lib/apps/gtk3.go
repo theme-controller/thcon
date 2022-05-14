@@ -7,6 +7,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type Gtk3Config struct {
+	Gtk3 *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"gtk3"`
+}
+
 type Gtk3 struct{}
 
 func NewGtk3() Switchable {

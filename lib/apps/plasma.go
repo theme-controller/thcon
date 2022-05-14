@@ -8,6 +8,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type PlasmaConfig struct {
+	Plasma *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"plasma"`
+}
+
 type Plasma struct{}
 
 func NewPlasma() Switchable {

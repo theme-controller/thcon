@@ -7,6 +7,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type GnomeShellConfig struct {
+	GnomeShell *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"gnome-shell"`
+}
+
 type GnomeShell struct{}
 
 var _ Switchable = (*GnomeShell)(nil)

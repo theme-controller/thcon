@@ -12,6 +12,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type KonsoleConfig struct {
+	Konsole *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"konsole"`
+}
+
 type Konsole struct{}
 
 func NewKonsole() Switchable {

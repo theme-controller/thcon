@@ -13,6 +13,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type GnomeTerminalConfig struct {
+	GnomeTerminal *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"gnome-terminal"`
+}
+
 type GnomeTerminal struct {
 	progress event.ProgressChannel
 }
