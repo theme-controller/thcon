@@ -4,18 +4,13 @@ import (
 	"context"
 
 	"github.com/gotk3/gotk3/glib"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type Gtk3 struct {
-	progress event.ProgressChannel
-}
+type Gtk3 struct{}
 
-func NewGtk3(progress event.ProgressChannel) Switchable {
-	return &Gtk3{
-		progress: progress,
-	}
+func NewGtk3() Switchable {
+	return &Gtk3{}
 }
 
 func (g *Gtk3) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {

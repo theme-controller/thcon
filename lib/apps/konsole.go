@@ -9,18 +9,13 @@ import (
 
 	"github.com/apex/log"
 	"github.com/godbus/dbus/v5"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type Konsole struct {
-	progress event.ProgressChannel
-}
+type Konsole struct{}
 
-func NewKonsole(progress event.ProgressChannel) Switchable {
-	return &Konsole{
-		progress: progress,
-	}
+func NewKonsole() Switchable {
+	return &Konsole{}
 }
 
 func (k *Konsole) Name() string {

@@ -4,20 +4,15 @@ import (
 	"context"
 
 	"github.com/gotk3/gotk3/glib"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type GnomeShell struct {
-	progress event.ProgressChannel
-}
+type GnomeShell struct{}
 
 var _ Switchable = (*GnomeShell)(nil)
 
-func NewGnomeShell(progress event.ProgressChannel) Switchable {
-	return &GnomeShell{
-		progress: progress,
-	}
+func NewGnomeShell() Switchable {
+	return &GnomeShell{}
 }
 
 func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {

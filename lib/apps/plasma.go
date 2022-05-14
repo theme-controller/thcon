@@ -5,18 +5,13 @@ import (
 	"os/exec"
 
 	"github.com/apex/log"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type Plasma struct {
-	progress event.ProgressChannel
-}
+type Plasma struct{}
 
-func NewPlasma(progress event.ProgressChannel) Switchable {
-	return &Plasma{
-		progress: progress,
-	}
+func NewPlasma() Switchable {
+	return &Plasma{}
 }
 
 func (p *Plasma) Name() string {
