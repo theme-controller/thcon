@@ -9,6 +9,7 @@ import (
 
 type Config struct{
 	apps.GnomeTerminalConfig
+	apps.GnomeShellConfig
 	apps.Gtk3Config
 }
 
