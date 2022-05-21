@@ -14,6 +14,8 @@ type Config struct{
 
 	apps.KonsoleConfig
 	apps.PlasmaConfig
+
+	apps.AllVimConfig
 }
 
 func ConfigFilePath() (string, error) {

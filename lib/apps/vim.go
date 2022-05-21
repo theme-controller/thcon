@@ -16,6 +16,17 @@ import (
 	"github.com/theme-controller/thcon/lib/util"
 )
 
+type anyVimConfig struct {
+	Disabled bool   `toml:"disabled"`
+	Dark     string `toml:"dark"`
+	Light    string `toml:"light"`
+}
+
+type AllVimConfig struct {
+	Vim *anyVimConfig `toml:"vim"`
+	Neovim *anyVimConfig `toml:"nvim"`
+}
+
 type anyVim struct {
 	progress event.ProgressChannel
 	flavor   string
