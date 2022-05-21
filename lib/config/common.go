@@ -16,12 +16,8 @@ func (c Config) String() string {
 	return string(marshalled)
 }
 
-func Parse(ctx context.Context) (*Config, error) {
+func Parse(ctx context.Context, configPath string) (*Config, error) {
 	logger := log.FromContext(ctx)
-	configPath, err := ConfigFilePath()
-	if err != nil {
-		return nil, err
-	}
 
 	logger.WithField("path", configPath).Info("reading config")
 	var dest Config

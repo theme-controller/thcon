@@ -48,7 +48,7 @@ func TestParse(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		_, err = Parse(context.Background())
+		_, err = Parse(context.Background(), f.Name())
 		require.NoError(t, err)
 	})
 }

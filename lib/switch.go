@@ -57,7 +57,11 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	progressChan := make(chan *event.ProgressEvent, progressChanBuf)
 	toSwitch := apps.All(progressChan)
 
-	config, err := config.Parse(ctx)
+	configPath, err := config.ConfigFilePath()
+	if err != nil {
+		return err
+	}
+	config, err := config.Parse(ctx, configPath)
 	if err != nil {
 		log.WithError(err).Error("Unable to parse thcon.toml")
 		return err
