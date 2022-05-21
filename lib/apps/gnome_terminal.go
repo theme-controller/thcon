@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/godbus/dbus/v5"
+	"github.com/google/uuid"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
@@ -15,9 +16,9 @@ import (
 
 type GnomeTerminalConfig struct {
 	GnomeTerminal *struct {
-		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark"`
-		Light    string `toml:"light"`
+		Disabled bool      `toml:"disabled"`
+		Dark     uuid.UUID `toml:"dark"`
+		Light    uuid.UUID `toml:"light"`
 	} `toml:"gnome-terminal"`
 }
 
