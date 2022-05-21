@@ -22,7 +22,7 @@ func ensureUserSocketDir() (string, error) {
 		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
 	}
 	dirname := filepath.Join(os.TempDir(), "thcon-"+currUser.Uid)
-	err = os.MkdirAll(dirname, 0600)
+	err = os.MkdirAll(dirname, 0700)
 	if err != nil {
 		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
 	}
