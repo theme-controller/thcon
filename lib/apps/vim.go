@@ -23,7 +23,7 @@ type anyVimConfig struct {
 }
 
 type AllVimConfig struct {
-	Vim *anyVimConfig `toml:"vim"`
+	Vim    *anyVimConfig `toml:"vim"`
 	Neovim *anyVimConfig `toml:"nvim"`
 }
 
@@ -83,20 +83,24 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *R
 	if extension != ".lua" {
 		extension = ""
 	}
-	symlink_target := filepath.Join(thcon_dir, v.flavor + extension)
+	symlink_target := filepath.Join(thcon_dir, v.flavor+extension)
 	exists, err := util.SymlinkExists(symlink_target)
 	if err != nil {
 		return nil
 	}
-	if (exists) {
-		os.Remove(symlink_target)
+	if exists {
+		if err := os.Remove(symlink_target); err != nil {
+			return err
+		}
 	}
-	os.Symlink(rc_file, symlink_target)
+	if err := os.Symlink(rc_file, symlink_target); err != nil {
+		return err
+	}
 
 	type IpcMessage struct {
 		RcFile string `json:"rc_file"`
 	}
-	msg, err := json.Marshal(IpcMessage{ rc_file })
+	msg, err := json.Marshal(IpcMessage{rc_file})
 	if err != nil {
 		return err
 	}
@@ -115,7 +119,7 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *R
 		}
 
 		payload := &ipc.Outbound{
-			Socket: sock,
+			Socket:  sock,
 			Message: msg,
 		}
 		if err := ipc.Send(ctx, payload); err != nil {

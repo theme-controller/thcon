@@ -12,7 +12,7 @@ import (
 
 func TestGnomeTerminalConfig(t *testing.T) {
 	const (
-		dark_theme_id = "dddddddd-0000-4000-0000-000000000000"
+		dark_theme_id  = "dddddddd-0000-4000-0000-000000000000"
 		light_theme_id = "11111111-0000-4000-0000-000000000000"
 	)
 

@@ -7,7 +7,7 @@ import (
 	"github.com/theme-controller/thcon/lib/apps"
 )
 
-type Config struct{
+type Config struct {
 	apps.GnomeTerminalConfig
 	apps.GnomeShellConfig
 	apps.Gtk3Config
