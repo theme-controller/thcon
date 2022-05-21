@@ -2,12 +2,18 @@ package apps
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
+	"syscall"
 
 	"github.com/apex/log"
+	"github.com/mitchellh/go-homedir"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/ipc"
 	"github.com/theme-controller/thcon/lib/operation"
+	"github.com/theme-controller/thcon/lib/util"
 )
 
 type anyVim struct {
@@ -35,9 +41,55 @@ func (v *anyVim) Name() string {
 	return v.flavor
 }
 
+func (v *anyVim) sockbase() string {
+	if v.flavor == "neovim" {
+		return "nvim"
+	}
+	return "vim"
+}
+
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
 	logger := log.FromContext(ctx)
-	socks, err := ipc.ListSockets(v.flavor, true)
+
+	var rc_file string
+	switch mode {
+	case operation.DarkMode:
+		rc_file = "~/.config/nvim/lua/sjbarag/dark.lua"
+	case operation.LightMode:
+		rc_file = "~/.config/nvim/lua/sjbarag/light.lua"
+	}
+	rc_file, err := homedir.Expand(rc_file)
+	if err != nil {
+		return err
+	}
+
+	thcon_dir, err := util.EnsureThconStateDir()
+	if err != nil {
+		return err
+	}
+
+	var extension string = filepath.Ext(rc_file)
+	if extension != ".lua" {
+		extension = ""
+	}
+	symlink_target := filepath.Join(thcon_dir, v.flavor + extension)
+	exists, err := util.SymlinkExists(symlink_target)
+	if err != nil {
+		return nil
+	}
+	if (exists) {
+		os.Remove(symlink_target)
+	}
+	os.Symlink(rc_file, symlink_target)
+
+	type IpcMessage struct {
+		RcFile string `json:"rc_file"`
+	}
+	msg, err := json.Marshal(IpcMessage{ rc_file })
+	if err != nil {
+		return err
+	}
+	socks, err := ipc.ListSockets(v.sockbase(), true)
 	if err != nil {
 		return err
 	}
@@ -52,15 +104,20 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *R
 		}
 
 		payload := &ipc.Outbound{
-			Socket:  sock,
-			Message: []byte(`{ foo: "hello vim" }`),
+			Socket: sock,
+			Message: msg,
 		}
 		if err := ipc.Send(ctx, payload); err != nil {
 			writeFailure = true
 			v.progress <- event.StepFailed(v.flavor, err)
-			logger.
-				WithError(err).
-				Error("apply settings")
+			if errors.Is(err, syscall.ECONNREFUSED) {
+				logger.WithField("sock", sock).Warn("cleaning up abandoned socket")
+				_ = os.Remove(sock.Path())
+			} else {
+				logger.
+					WithError(err).
+					Error("apply settings")
+			}
 		}
 		if idx > 1 {
 			v.progress <- event.StepCompleted(v.flavor)
