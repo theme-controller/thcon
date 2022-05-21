@@ -11,6 +11,8 @@ type Config struct{
 	apps.GnomeTerminalConfig
 	apps.GnomeShellConfig
 	apps.Gtk3Config
+
+	apps.KonsoleConfig
 }
 
 func ConfigFilePath() (string, error) {
