@@ -13,6 +13,7 @@ type Config struct{
 	apps.Gtk3Config
 
 	apps.KonsoleConfig
+	apps.PlasmaConfig
 }
 
 func ConfigFilePath() (string, error) {
