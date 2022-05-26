@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"runtime"
 	"sync"
 
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
 	"github.com/theme-controller/thcon/lib/config"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
+	"github.com/theme-controller/thcon/lib/util"
 )
 
 const (
@@ -28,15 +30,19 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	if verbosity < 0 {
 		verbosity = 0
 	}
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	switch verbosity {
 	case 0:
-		log.SetLevel(log.WarnLevel)
+		zerolog.SetGlobalLevel(zerolog.WarnLevel)
 	case 1:
-		log.SetLevel(log.InfoLevel)
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	case 2:
+		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	default:
-		log.SetLevel(log.DebugLevel)
+		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
+		zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	}
-	log.SetHandler(cli.Default)
 
 	switch mode {
 	case operation.DarkMode:
@@ -63,10 +69,10 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	}
 	config, err := config.Parse(ctx, configPath)
 	if err != nil {
-		log.WithError(err).Error("Unable to parse thcon.toml")
+		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err
 	}
-	log.WithField("config", config).Info("found config")
+	log.Info().Str("config", config.String()).Msg("found config")
 
 	// Render progress events
 	progressDone := make(chan bool)
@@ -79,37 +85,25 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		for evt := range progressChan {
 			switch evt.Kind {
 			case event.KAddSubsteps:
-				log.
-					WithField("type", "add steps").
-					WithField("count", evt.SubstepCount).
-					Debug("progress")
 				totalSteps += evt.SubstepCount
 				inProgress += evt.SubstepCount
 			case event.KStepStarted:
-				log.
-					WithField("type", "start step").
-					Debug("progress")
 				inProgress++
 			case event.KStepCompleted:
-				log.
-					WithField("type", "finish step").
-					Debug("progress")
 				inProgress--
 				complete++
 			case event.KStepFailed:
-				log.
-					WithField("type", "fail step").
-					Debug("progress")
 				inProgress--
 				failed++
 			}
 
-			log.WithFields(log.Fields{
-				"total":      totalSteps,
-				"complete":   complete,
-				"failed":     failed,
-				"inProgress": inProgress,
-			}).Debug("progress")
+			log.Trace().
+				Err(evt.Err).
+				Int("total", totalSteps).
+				Int("complete", complete).
+				Int("failed", failed).
+				Int("inProgress", inProgress).
+				Msg(evt.Kind.ToString())
 		}
 		progressDone <- true
 	}()
@@ -124,9 +118,12 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 
 		app := app
 		name := app.Name()
-		appLog := log.WithField("app", name)
-		appLog.Debug("requesting lock")
-		appCtx := log.NewContext(ctx, appLog)
+		// TODO: keep switching to zerolog
+		appLog := log.With().
+			Str("app", name).
+			Logger()
+		appLog.Debug().Msg("requesting lock")
+		appCtx := appLog.WithContext(ctx)
 		sem <- 1
 		progressChan <- event.StepStarted(name)
 
@@ -134,7 +131,9 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 			var err error
 			defer wg.Done()
 			defer func() { <-sem }()
-			defer appLog.Trace(mode.Verb()).Stop(&err)
+			appLog.Debug().Msg(mode.Verb())
+			dur := appLog.Hook(util.RecordDuration())
+			defer dur.Trace().Msg("done")
 
 			err = app.Switch(appCtx, mode, nil)
 			if err != nil {

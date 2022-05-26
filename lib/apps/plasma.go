@@ -6,7 +6,7 @@ import (
 	"context"
 	"os/exec"
 
-	"github.com/apex/log"
+	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -30,8 +30,6 @@ func (p *Plasma) Name() string {
 }
 
 func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
-	logger := log.FromContext(ctx)
-
 	var packageName string
 	switch mode {
 	case operation.DarkMode:
@@ -48,7 +46,9 @@ func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *R
 	)
 	err := laft.Run()
 	if err != nil {
-		logger.WithError(err).Error("exec lookandfeeltool")
+		log.Error().
+			Err(err).
+			Msg("exec lookandfeeltool")
 		return err
 	}
 

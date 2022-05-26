@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/BurntSushi/toml"
-	"github.com/apex/log"
+	"github.com/rs/zerolog/log"
 )
 
 func (c Config) String() string {
@@ -17,17 +17,21 @@ func (c Config) String() string {
 }
 
 func Parse(ctx context.Context, configPath string) (*Config, error) {
-	logger := log.FromContext(ctx)
-
-	logger.WithField("path", configPath).Info("reading config")
+	log.Info().Str("path", configPath).Msg("reading config")
 	var dest Config
 	md, err := toml.DecodeFile(configPath, &dest)
 	if err != nil {
 		return nil, err
 	}
-	logger.
-		WithField("undecoded", md.Undecoded()).
-		WithField("decoded", dest).
-		Debug("config read")
+
+	log.Debug().
+		Interface("undecoded", md.Undecoded()).
+		Stringer("decoded", dest).
+		Msg("config read")
+
+	// log.
+	// 	WithField("undecoded", md.Undecoded()).
+	// 	WithField("decoded", dest).
+	// 	Debug("config read")
 	return &dest, nil
 }

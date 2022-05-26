@@ -9,7 +9,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/apex/log"
+	"github.com/rs/zerolog/log"
 )
 
 type ListenerConfig struct {
@@ -20,7 +20,6 @@ type ListenerConfig struct {
 }
 
 func Serve(ctx context.Context, config *ListenerConfig) error {
-	logger := log.FromContext(ctx)
 	sockAddr, err := makeSocketAddr(config.AppName, config.PerProcess)
 	if err != nil {
 		return err
@@ -31,9 +30,11 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 	// Create a unix domain socket for listening
 	listener, err := net.Listen(sockAddr.ListenStreamArgs())
 	if err != nil {
-		logger.WithField("address", sockAddr).
-			WithError(err).
-			Error("Unable to listen on unix socket")
+		log.Error().
+			Stringer("address", sockAddr).
+			Err(err).
+			Msg("Unable to listen on unix socket")
+
 		return err
 	}
 	defer listener.Close()
@@ -46,7 +47,7 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 				func(w http.ResponseWriter, r *http.Request) {
 					bodyBytes, err := io.ReadAll(r.Body)
 					if err != nil {
-						logger.WithError(err).Error("Unable to read request")
+						log.Error().Err(err).Msg("Unable to read request")
 						w.WriteHeader(http.StatusInternalServerError)
 						return
 					}
@@ -55,7 +56,7 @@ func Serve(ctx context.Context, config *ListenerConfig) error {
 			),
 		)
 	}()
-	logger.WithField("address", sockAddr).Info("listening")
+	log.Info().Stringer("address", sockAddr).Msg("listening")
 
 	// Wait for SIGINT or SIGKILL
 	<-ctx.Done()

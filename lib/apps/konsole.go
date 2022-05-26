@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apex/log"
 	"github.com/godbus/dbus/v5"
+	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -103,7 +103,6 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 }
 
 func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
-	logger := log.FromContext(ctx)
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		return fmt.Errorf("Unable connect to dbus session bus: %+v", err)
@@ -122,35 +121,35 @@ func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *
 	if err != nil {
 		return err
 	}
-	logger.WithField("services", konsoleServices).Debug("list services")
+	log.Debug().
+		Strs("service", konsoleServices).
+		Msg("list services")
 
 	var getSessionErrs []error
 	for _, service := range konsoleServices {
 		sessions, err := getSessionIds(ctx, conn, service)
 		if err != nil {
-			logger.
-				WithField("service", service).
-				WithError(err).
-				Error("list sessions")
+			log.Error().
+				Str("service", service).
+				Err(err).
+				Msg("list sessions")
 			getSessionErrs = append(getSessionErrs, err)
 			continue
 		}
 
-		logger.WithFields(log.Fields{
-			"sessions": sessions,
-			"service":  service,
-		}).Debug("list sessions")
+		serviceLogger := log.With().
+			Str("service", service).
+			Strs("sessions", sessions).
+			Logger()
+		serviceLogger.Debug().Msg("list sessions")
+
 		for _, session := range sessions {
 			err := applyProfile(ctx, conn, service, session, profileName)
 			if err != nil {
-				logger.
-					WithFields(log.Fields{
-						"sessions": sessions,
-						"service":  service,
-						"profile":  profileName,
-					}).
-					WithError(err).
-					Error("apply profile")
+				serviceLogger.Error().
+					Str("profile", profileName).
+					Err(err).
+					Msg("apply profile")
 			}
 		}
 	}

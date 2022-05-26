@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/text"
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/ipc"
 )
@@ -25,12 +24,10 @@ var listenCmd = &cobra.Command{
 
 		ctx := cmd.Context()
 		if verboseListen {
-			log.SetLevel(log.DebugLevel)
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		} else {
-			log.SetLevel(log.WarnLevel)
+			zerolog.SetGlobalLevel(zerolog.WarnLevel)
 		}
-		log.SetHandler(text.Default)
-		log.NewContext(ctx, log.Log)
 
 		return ipc.Serve(ctx, &ipc.ListenerConfig{
 			AppName:         args[0],

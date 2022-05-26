@@ -9,6 +9,21 @@ const (
 	KStepFailed
 )
 
+func (pk ProgressKind) ToString() string {
+	switch pk {
+	case KAddSubsteps:
+		return "add steps"
+	case KStepStarted:
+		return "start step"
+	case KStepCompleted:
+		return "finish step"
+	case KStepFailed:
+		return "fail step"
+	default:
+		return ""
+	}
+}
+
 type ProgressEvent struct {
 	Kind         ProgressKind
 	SubstepCount int
@@ -48,3 +63,4 @@ func StepFailed(source string, err error) *ProgressEvent {
 		Err:    err,
 	}
 }
+

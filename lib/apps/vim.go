@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/apex/log"
 	"github.com/mitchellh/go-homedir"
+	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/ipc"
 	"github.com/theme-controller/thcon/lib/operation"
@@ -60,8 +60,6 @@ func (v *anyVim) sockbase() string {
 }
 
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
-	logger := log.FromContext(ctx)
-
 	var rc_file string
 	switch mode {
 	case operation.DarkMode:
@@ -126,12 +124,14 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *R
 			writeFailure = true
 			v.progress <- event.StepFailed(v.flavor, err)
 			if errors.Is(err, syscall.ECONNREFUSED) {
-				logger.WithField("sock", sock).Warn("cleaning up abandoned socket")
+				log.Warn().
+					Stringer("sock", sock).
+					Msg("cleaning up abandoned socket")
 				_ = os.Remove(sock.Path())
 			} else {
-				logger.
-					WithError(err).
-					Error("apply settings")
+				log.Error().
+					Err(err).
+					Msg("apply settings")
 			}
 		}
 		if idx > 1 {

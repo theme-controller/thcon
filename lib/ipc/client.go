@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/apex/log"
 	"github.com/hashicorp/go-sockaddr"
+	"github.com/rs/zerolog/log"
 )
 
 type Outbound struct {
@@ -16,8 +16,7 @@ type Outbound struct {
 }
 
 func Send(ctx context.Context, payload *Outbound) error {
-	logger := log.FromContext(ctx)
-	logger.WithField("addr", payload.Socket.String()).Debug("send")
+	log.Debug().Stringer("addr", payload.Socket).Msg("send")
 
 	c := http.Client{
 		Transport: &http.Transport{
