@@ -3,9 +3,13 @@ package config
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/theme-controller/thcon/lib/apps"
 )
 
-type Config struct{}
+type Config struct {
+	apps.AllVimConfig
+}
 
 func ConfigFilePath() (string, error) {
 	homeDir, err := os.UserHomeDir()

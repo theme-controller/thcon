@@ -18,6 +18,7 @@ func TestConfigPath(t *testing.T) {
 
 	switch runtime.GOOS {
 	case "linux":
+	case "darwin":
 		home, err := os.UserHomeDir()
 		require.NoError(t, err)
 		require.Equal(
@@ -25,8 +26,6 @@ func TestConfigPath(t *testing.T) {
 			filepath.Join(home, ".config", "thcon", "thcon.toml"),
 			res,
 		)
-	case "darwin":
-		require.Fail(t, "Darwin support isn't ready yet")
 	case "window":
 		require.Fail(t, "Windows support isn't ready yet")
 	default:
