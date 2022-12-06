@@ -29,9 +29,5 @@ func Parse(ctx context.Context, configPath string) (*Config, error) {
 		Stringer("decoded", dest).
 		Msg("config read")
 
-	// log.
-	// 	WithField("undecoded", md.Undecoded()).
-	// 	WithField("decoded", dest).
-	// 	Debug("config read")
 	return &dest, nil
 }

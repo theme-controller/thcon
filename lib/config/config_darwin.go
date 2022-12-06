@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	apps.TerminalDotAppConfig
 	apps.AllVimConfig
 }
 
