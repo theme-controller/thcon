@@ -15,6 +15,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
+type HelixConfig struct {
+	Helix *struct {
+		Disabled bool   `toml:"disabled"`
+		Dark     string `toml:"dark"`
+		Light    string `toml:"light"`
+	} `toml:"helix"`
+}
+
 type Helix struct{}
 
 func NewHelix() *Helix {
@@ -23,7 +31,7 @@ func NewHelix() *Helix {
 
 var _ Switchable = (*Helix)(nil)
 
-func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	// 1) Read, modify, and write the helix config to change the theme for new sessions.
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

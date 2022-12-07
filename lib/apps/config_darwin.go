@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	HelixConfig
 	AllVimConfig
+	HelixConfig
 }
 
 func ConfigFilePath() (string, error) {
