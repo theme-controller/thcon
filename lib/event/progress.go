@@ -63,4 +63,3 @@ func StepFailed(source string, err error) *ProgressEvent {
 		Err:    err,
 	}
 }
-

@@ -7,7 +7,7 @@ import (
 )
 
 func RecordDuration() DurationHook {
-	return DurationHook {
+	return DurationHook{
 		start: zerolog.TimestampFunc(),
 	}
 }

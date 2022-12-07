@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -35,7 +34,7 @@ func TestConfigPath(t *testing.T) {
 
 func TestParse(t *testing.T) {
 	t.Run("Ignores unused sections", func(t *testing.T) {
-		f, err := ioutil.TempFile("", "thcon_config_unused_*.toml")
+		f, err := os.CreateTemp("", "thcon_config_unused_*.toml")
 		require.NoError(t, err)
 		defer os.Remove(f.Name())
 
