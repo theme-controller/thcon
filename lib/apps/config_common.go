@@ -1,4 +1,4 @@
-package config
+package apps
 
 import (
 	"context"
@@ -16,7 +16,7 @@ func (c Config) String() string {
 	return string(marshalled)
 }
 
-func Parse(ctx context.Context, configPath string) (*Config, error) {
+func ParseConfig(ctx context.Context, configPath string) (*Config, error) {
 	log.Info().Str("path", configPath).Msg("reading config")
 	var dest Config
 	md, err := toml.DecodeFile(configPath, &dest)

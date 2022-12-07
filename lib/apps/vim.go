@@ -59,7 +59,7 @@ func (v *anyVim) sockbase() string {
 	return "vim"
 }
 
-func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	var rc_file string
 	switch mode {
 	case operation.DarkMode:

@@ -1,4 +1,4 @@
-package config
+package apps
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func TestParse(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		_, err = Parse(context.Background(), f.Name())
+		_, err = ParseConfig(context.Background(), f.Name())
 		require.NoError(t, err)
 	})
 }

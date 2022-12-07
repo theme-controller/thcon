@@ -102,7 +102,7 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 	return nil
 }
 
-func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		return fmt.Errorf("Unable connect to dbus session bus: %+v", err)

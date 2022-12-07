@@ -24,7 +24,7 @@ type TerminalDotApp struct{}
 
 var _ Switchable = (*TerminalDotApp)(nil)
 
-func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	const switchProfileAppleScriptf = `tell application "Terminal"
 	set new_settings to first settings set whose name is "%s"
 

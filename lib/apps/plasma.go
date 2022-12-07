@@ -29,7 +29,7 @@ func (p *Plasma) Name() string {
 	return name
 }
 
-func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	var packageName string
 	switch mode {
 	case operation.DarkMode:

@@ -86,7 +86,7 @@ func setDefaultProfile(ctx context.Context, profileId string) error {
 	return nil
 }
 
-func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		return fmt.Errorf("Unable connect to dbus session bus: %+v", err)

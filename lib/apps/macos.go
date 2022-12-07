@@ -24,7 +24,7 @@ func NewMacOS() Switchable {
 	return &MacOS{}
 }
 
-func (m *MacOS) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (m *MacOS) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	const appearanceAppleScriptf = `tell app "System Events" to tell appearance preferences to set dark mode to %t`
 	script := fmt.Sprintf(appearanceAppleScriptf, mode == operation.DarkMode)
 	cmd := exec.CommandContext(ctx, "osascript", "-e", script)

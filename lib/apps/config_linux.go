@@ -1,21 +1,19 @@
-package config
+package apps
 
 import (
 	"os"
 	"path/filepath"
-
-	"github.com/theme-controller/thcon/lib/apps"
 )
 
 type Config struct {
-	apps.GnomeTerminalConfig
-	apps.GnomeShellConfig
-	apps.Gtk3Config
+	GnomeTerminalConfig
+	GnomeShellConfig
+	Gtk3Config
 
-	apps.KonsoleConfig
-	apps.PlasmaConfig
+	KonsoleConfig
+	PlasmaConfig
 
-	apps.AllVimConfig
+	AllVimConfig
 }
 
 func ConfigFilePath() (string, error) {

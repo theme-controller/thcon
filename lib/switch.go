@@ -12,7 +12,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
-	"github.com/theme-controller/thcon/lib/config"
 	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
@@ -63,11 +62,11 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	progressChan := make(chan *event.ProgressEvent, progressChanBuf)
 	toSwitch := apps.All(progressChan)
 
-	configPath, err := config.ConfigFilePath()
+	configPath, err := apps.ConfigFilePath()
 	if err != nil {
 		return err
 	}
-	config, err := config.Parse(ctx, configPath)
+	config, err := apps.ParseConfig(ctx, configPath)
 	if err != nil {
 		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err

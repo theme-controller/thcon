@@ -25,7 +25,7 @@ func NewGnomeShell() Switchable {
 	return &GnomeShell{}
 }
 
-func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	gsettings := glib.SettingsNew("org.gnome.shell.extensions.user-theme")
 	var theme = "Arc-Dark-solid"
 	if mode == operation.LightMode {

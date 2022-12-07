@@ -1,15 +1,13 @@
-package config
+package apps
 
 import (
 	"os"
 	"path/filepath"
-
-	"github.com/theme-controller/thcon/lib/apps"
 )
 
 type Config struct {
-	apps.TerminalDotAppConfig
-	apps.AllVimConfig
+	HelixConfig
+	AllVimConfig
 }
 
 func ConfigFilePath() (string, error) {

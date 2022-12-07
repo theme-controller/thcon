@@ -23,7 +23,7 @@ func NewGtk3() Switchable {
 	return &Gtk3{}
 }
 
-func (g *Gtk3) Switch(ctx context.Context, mode operation.Operation, config *RootConfig) error {
+func (g *Gtk3) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	gsettings := glib.SettingsNew("org.gnome.desktop.interface")
 	var theme = "Adwaita-dark"
 	if mode == operation.LightMode {
