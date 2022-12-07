@@ -10,5 +10,6 @@ func All(progressChan event.ProgressChannel) []Switchable {
 		// &TerminalDotApp{},
 		NewVim(progressChan),
 		NewNeovim(progressChan),
+		NewHelix(),
 	}
 }

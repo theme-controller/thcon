@@ -15,5 +15,6 @@ func All(progressChan event.ProgressChannel) []Switchable {
 
 		// Cross-platform
 		NewNeovim(progressChan),
+		NewHelix(),
 	}
 }
