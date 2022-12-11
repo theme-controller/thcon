@@ -7,7 +7,7 @@ func All(progressChan event.ProgressChannel) []Switchable {
 		NewMacOS(),
 		// Terminal.app is intentionally disabled for now
 		// while I investigate AppleScript failures on 12.5.1.
-		// &TerminalDotApp{},
+		&TerminalDotApp{},
 		NewVim(progressChan),
 		NewNeovim(progressChan),
 		NewHelix(),
