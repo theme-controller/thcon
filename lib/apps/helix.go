@@ -4,12 +4,14 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"syscall"
 
+	goValidator "github.com/go-playground/validator/v10"
 	gops "github.com/mitchellh/go-ps"
 	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
@@ -18,8 +20,8 @@ import (
 type HelixConfig struct {
 	Helix *struct {
 		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark"`
-		Light    string `toml:"light"`
+		Dark     string `toml:"dark" validate:"required_with=Light"`
+		Light    string `toml:"light" validate:"required_with=Dark"`
 	} `toml:"helix"`
 }
 
@@ -30,6 +32,20 @@ func NewHelix() *Helix {
 }
 
 var _ Switchable = (*Helix)(nil)
+
+func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+	if config.Helix == nil {
+		return nil
+	}
+
+	err := validator.StructCtx(ctx, config.Helix)
+	var errs *goValidator.ValidationErrors
+	if errors.As(err, errs) {
+		return *errs
+	}
+
+	return nil
+}
 
 func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	// 1) Read, modify, and write the helix config to change the theme for new sessions.

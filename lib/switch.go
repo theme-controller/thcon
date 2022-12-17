@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -60,7 +61,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	}
 
 	progressChan := make(chan *event.ProgressEvent, progressChanBuf)
-	toSwitch := apps.All(progressChan)
+	allApps := apps.All(progressChan)
 
 	configPath, err := apps.ConfigFilePath()
 	if err != nil {
@@ -71,7 +72,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err
 	}
-	log.Info().Str("config", config.String()).Msg("found config")
+	log.Info().Stringer("config", config).Msg("found config")
 
 	// Render progress events
 	progressDone := make(chan bool)
@@ -106,6 +107,23 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		}
 		progressDone <- true
 	}()
+
+	// Validate configs
+	var toSwitch []apps.Switchable
+	validator := validator.New()
+	for _, app := range allApps {
+		errs := app.ValidateConfig(ctx, validator, config)
+		if errs != nil {
+			for _, err := range errs {
+				log.Warn().
+					Str("app", app.Name()).
+					Err(err).
+					Msg("validate config")
+			}
+			continue
+		}
+		toSwitch = append(toSwitch, app)
+	}
 
 	var numErrors int
 

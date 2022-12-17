@@ -6,7 +6,8 @@ import (
 )
 
 type Config struct {
-	AllVimConfig
+	VimConfig
+	NeovimConfig
 	HelixConfig
 }
 

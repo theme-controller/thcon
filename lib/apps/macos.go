@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	goValidator "github.com/go-playground/validator/v10"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -22,6 +23,11 @@ var _ Switchable = (*MacOS)(nil)
 
 func NewMacOS() Switchable {
 	return &MacOS{}
+}
+
+func (m *MacOS) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+	// No validation necessary, since there's nothing to configure.
+	return nil
 }
 
 func (m *MacOS) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

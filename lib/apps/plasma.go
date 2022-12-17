@@ -4,8 +4,10 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"os/exec"
 
+	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
 )
@@ -13,8 +15,8 @@ import (
 type PlasmaConfig struct {
 	Plasma *struct {
 		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark"`
-		Light    string `toml:"light"`
+		Dark     string `toml:"dark" validate:"required_with=Light"`
+		Light    string `toml:"light" validate:"required_with=Dark"`
 	} `toml:"plasma"`
 }
 
@@ -27,6 +29,20 @@ func NewPlasma() Switchable {
 func (p *Plasma) Name() string {
 	const name = "Plasma"
 	return name
+}
+
+func (p *Plasma) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+	if config.Plasma == nil {
+		return nil
+	}
+
+	err := validator.StructCtx(ctx, config.Plasma)
+	var errs *goValidator.ValidationErrors
+	if errors.As(err, errs) {
+		return *errs
+	}
+
+	return nil
 }
 
 func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

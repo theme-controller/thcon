@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	goValidator "github.com/go-playground/validator/v10"
 	"github.com/godbus/dbus/v5"
 	"github.com/google/uuid"
 	"github.com/gotk3/gotk3/glib"
@@ -19,8 +20,8 @@ import (
 type GnomeTerminalConfig struct {
 	GnomeTerminal *struct {
 		Disabled bool      `toml:"disabled"`
-		Dark     uuid.UUID `toml:"dark"`
-		Light    uuid.UUID `toml:"light"`
+		Dark     uuid.UUID `toml:"dark" validate:"required_with=Light"`
+		Light    uuid.UUID `toml:"light" validate:"required_with=Dark"`
 	} `toml:"gnome-terminal"`
 }
 
@@ -83,6 +84,20 @@ func setDefaultProfile(ctx context.Context, profileId string) error {
 	).SetString("default", profileId)
 
 	glib.SettingsSync()
+	return nil
+}
+
+func (gt *GnomeTerminal) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+	if config.GnomeTerminal == nil {
+		return nil
+	}
+
+	err := validator.StructCtx(ctx, config.GnomeTerminal)
+	var errs *goValidator.ValidationErrors
+	if errors.As(err, errs) {
+		return *errs
+	}
+
 	return nil
 }
 

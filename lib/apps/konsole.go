@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	goValidator "github.com/go-playground/validator/v10"
 	"github.com/godbus/dbus/v5"
 	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
@@ -17,8 +18,8 @@ import (
 type KonsoleConfig struct {
 	Konsole *struct {
 		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark"`
-		Light    string `toml:"light"`
+		Dark     string `toml:"dark" validate:"required_with=Light"`
+		Light    string `toml:"light" validate:"required_with=Dark"`
 	} `toml:"konsole"`
 }
 
@@ -97,6 +98,20 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 
 	if err != nil {
 		return errors.New("Unable to apply profile")
+	}
+
+	return nil
+}
+
+func (k *Konsole) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+	if config.Konsole == nil {
+		return nil
+	}
+
+	err := validator.StructCtx(ctx, config.Konsole)
+	var errs *goValidator.ValidationErrors
+	if errors.As(err, errs) {
+		return *errs
 	}
 
 	return nil

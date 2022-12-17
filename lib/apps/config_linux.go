@@ -13,7 +13,9 @@ type Config struct {
 	KonsoleConfig
 	PlasmaConfig
 
-	AllVimConfig
+	VimConfig
+	NeovimConfig
+	HelixConfig
 }
 
 func ConfigFilePath() (string, error) {
