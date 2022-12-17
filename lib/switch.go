@@ -152,7 +152,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 			dur := appLog.Hook(util.RecordDuration())
 			defer dur.Trace().Msg("done")
 
-			err = app.Switch(appCtx, mode, nil)
+			err = app.Switch(appCtx, mode, config)
 			if err != nil {
 				numErrors++
 				progressChan <- event.StepFailed(name, err)
