@@ -5,19 +5,19 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/stretchr/testify/require"
-	"github.com/theme-controller/thcon/lib/config"
+	"github.com/theme-controller/thcon/lib/apps"
 )
 
 func TestVimConfig(t *testing.T) {
 	t.Run("can be omitted", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		_, err := toml.Decode("", &dst)
 		require.NoError(t, err)
 		require.Nil(t, dst.Vim)
 	})
 
 	t.Run("can be disabled", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [vim]
 disabled = true
@@ -29,7 +29,7 @@ disabled = true
 	})
 
 	t.Run("disabled by default when config present", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [vim]
 dark = "foo theme"
@@ -42,7 +42,7 @@ light = "bar theme"
 	})
 
 	t.Run("includes dark mode and light mode themes", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [vim]
 dark = "foo theme"
@@ -58,14 +58,14 @@ light = "bar theme"
 
 func TestNeovimConfig(t *testing.T) {
 	t.Run("can be omitted", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		_, err := toml.Decode("", &dst)
 		require.NoError(t, err)
 		require.Nil(t, dst.Neovim)
 	})
 
 	t.Run("can be disabled", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [nvim]
 disabled = true
@@ -77,7 +77,7 @@ disabled = true
 	})
 
 	t.Run("disabled by default when config present", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [nvim]
 dark = "foo theme"
@@ -90,7 +90,7 @@ light = "bar theme"
 	})
 
 	t.Run("includes dark mode and light mode themes", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [nvim]
 dark = "foo theme"
