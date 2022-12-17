@@ -36,6 +36,9 @@
         {
           name: "Lint",
           uses: "golangci/golangci-lint-action@v3",
+          with: {
+            skip-build-cache: true,
+          },
         },
         {
           name: "Test",
