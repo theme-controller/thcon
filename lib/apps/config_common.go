@@ -3,6 +3,7 @@ package apps
 import (
 	"context"
 	"encoding/json"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/rs/zerolog/log"
@@ -18,9 +19,12 @@ func (c Config) String() string {
 
 func ParseConfig(ctx context.Context, configPath string) (*Config, error) {
 	log.Info().Str("path", configPath).Msg("reading config")
-	var dest Config
-	md, err := toml.DecodeFile(configPath, &dest)
+	dest := new(Config)
+	md, err := toml.DecodeFile(configPath, dest)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return dest, nil
+		}
 		return nil, err
 	}
 
@@ -29,5 +33,5 @@ func ParseConfig(ctx context.Context, configPath string) (*Config, error) {
 		Stringer("decoded", dest).
 		Msg("config read")
 
-	return &dest, nil
+	return dest, nil
 }
