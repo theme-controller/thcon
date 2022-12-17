@@ -6,6 +6,7 @@ import (
 )
 
 type Config struct {
+	TerminalDotAppConfigSlice
 	VimConfig
 	NeovimConfig
 	HelixConfigSlice
