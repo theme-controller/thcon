@@ -22,8 +22,8 @@ type VimConfigSlice struct {
 }
 type vimConfig struct {
 	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"required_with=Light"`
-	Light    string `toml:"light" validate:"required_with=Dark"`
+	Dark     string `toml:"dark" validate:"file,required_with=Light"`
+	Light    string `toml:"light" validate:"file,required_with=Dark"`
 }
 
 type NeovimConfigSlice struct {
