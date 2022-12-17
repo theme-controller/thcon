@@ -17,12 +17,14 @@ import (
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type HelixConfig struct {
-	Helix *struct {
-		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark" validate:"required_with=Light"`
-		Light    string `toml:"light" validate:"required_with=Dark"`
-	} `toml:"helix"`
+type HelixConfigSlice struct {
+	Helix *helixConfig `toml:"helix"`
+}
+
+type helixConfig struct {
+	Disabled bool   `toml:"disabled"`
+	Dark     string `toml:"dark" validate:"required_with=Light"`
+	Light    string `toml:"light" validate:"required_with=Dark"`
 }
 
 type Helix struct{}
@@ -39,9 +41,9 @@ func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Valid
 	}
 
 	err := validator.StructCtx(ctx, config.Helix)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
+	var errs goValidator.ValidationErrors
+	if errors.As(err, &errs) {
+		return errs
 	}
 
 	return nil
@@ -54,23 +56,30 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 		return fmt.Errorf("unable to get user's home directory: %v", err)
 	}
 
+	var themeConfig *helixConfig = config.Helix
+	if themeConfig == nil {
+		themeConfig = &helixConfig{
+			Dark:  "solarized_dark",
+			Light: "solarized_light",
+		}
+	}
+	var themeName = themeConfig.Dark
+	if mode == operation.LightMode {
+		themeName = themeConfig.Light
+	}
+
 	// Helix config is consistent by default, but may be provided via CLI flags.
 	// https://docs.helix-editor.com/configuration.html
 	// TODO: Make this configurable in thcon.toml.
 	configPath := filepath.Join(homeDir, ".config", "helix", "config.toml")
-	configBytes, err := os.ReadFile(configPath)
+	hxConfigBytes, err := os.ReadFile(configPath)
 	if err != nil {
 		return fmt.Errorf("unable to read helix config: %v", err)
 	}
 
-	// TODO: make this configurable in thcon.toml
-	var themeName string = "solarized_dark"
-	if mode == operation.LightMode {
-		themeName = "solarized_light"
-	}
 	themeLine := fmt.Sprintf(`theme = "%s"`, themeName)
 	themeLineRE := regexp.MustCompile(`(?m)^\s*theme\s*=\s*".+"$`)
-	newConfig := themeLineRE.ReplaceAll(configBytes, []byte(themeLine))
+	newConfig := themeLineRE.ReplaceAll(hxConfigBytes, []byte(themeLine))
 	if err := os.WriteFile(configPath, newConfig, os.ModePerm); err != nil {
 		return fmt.Errorf("unable to write new helix config: %v", err)
 	}

@@ -8,7 +8,7 @@ import (
 type Config struct {
 	VimConfig
 	NeovimConfig
-	HelixConfig
+	HelixConfigSlice
 }
 
 func ConfigFilePath() (string, error) {
