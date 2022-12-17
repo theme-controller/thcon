@@ -13,8 +13,8 @@ type Config struct {
 	KonsoleConfig
 	PlasmaConfig
 
-	VimConfig
-	NeovimConfig
+	VimConfigSlice
+	NeovimConfigSlice
 	HelixConfigSlice
 }
 

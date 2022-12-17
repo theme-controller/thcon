@@ -17,20 +17,22 @@ import (
 	"github.com/theme-controller/thcon/lib/util"
 )
 
-type VimConfig struct {
-	Vim *struct {
-		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark" validate:"required_with=Light"`
-		Light    string `toml:"light" validate:"required_with=Dark"`
-	} `toml:"vim"`
+type VimConfigSlice struct {
+	Vim *vimConfig `toml:"vim"`
+}
+type vimConfig struct {
+	Disabled bool   `toml:"disabled"`
+	Dark     string `toml:"dark" validate:"required_with=Light"`
+	Light    string `toml:"light" validate:"required_with=Dark"`
 }
 
-type NeovimConfig struct {
-	Neovim *struct {
-		Disabled bool   `toml:"disabled"`
-		Dark     string `toml:"dark" validate:"required_with=Light"`
-		Light    string `toml:"light" validate:"required_with=Dark"`
-	} `toml:"nvim"`
+type NeovimConfigSlice struct {
+	Neovim *neovimConfig `toml:"nvim"`
+}
+type neovimConfig struct {
+	Disabled bool   `toml:"disabled"`
+	Dark     string `toml:"dark" validate:"required_with=Light"`
+	Light    string `toml:"light" validate:"required_with=Dark"`
 }
 
 type anyVim struct {
@@ -82,12 +84,34 @@ func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Vali
 
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	var rc_file string
-	switch mode {
-	case operation.DarkMode:
-		rc_file = "~/.config/nvim/lua/sjbarag/dark.lua"
-	case operation.LightMode:
-		rc_file = "~/.config/nvim/lua/sjbarag/light.lua"
+	if v.flavor == "neovim" {
+		var themeConfig *neovimConfig = config.Neovim
+		if themeConfig == nil {
+			themeConfig = &neovimConfig{
+				Dark:  "~/.config/nvim/lua/dark.thcon.lua",
+				Light: "~/.config/nvim/lua/light.thcon.lua",
+			}
+		}
+		if mode == operation.DarkMode {
+			rc_file = themeConfig.Dark
+		} else {
+			rc_file = themeConfig.Light
+		}
+	} else {
+		var themeConfig *vimConfig = config.Vim
+		if themeConfig == nil {
+			themeConfig = &vimConfig{
+				Dark:  "~/dark.thcon.vimrc",
+				Light: "~/light.thcon.vimrc",
+			}
+		}
+		if mode == operation.DarkMode {
+			rc_file = themeConfig.Dark
+		} else {
+			rc_file = themeConfig.Light
+		}
 	}
+
 	rc_file, err := homedir.Expand(rc_file)
 	if err != nil {
 		return err
