@@ -9,7 +9,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/theme-controller/thcon/lib/config"
+	"github.com/theme-controller/thcon/lib/apps"
 )
 
 func TestGnomeTerminalConfig(t *testing.T) {
@@ -19,14 +19,14 @@ func TestGnomeTerminalConfig(t *testing.T) {
 	)
 
 	t.Run("can be omitted", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		_, err := toml.Decode("", &dst)
 		require.NoError(t, err)
 		require.Nil(t, dst.GnomeTerminal)
 	})
 
 	t.Run("can be disabled", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := `
 [gnome-terminal]
 disabled = true
@@ -38,7 +38,7 @@ disabled = true
 	})
 
 	t.Run("disabled by default when config present", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := fmt.Sprintf(`
 [gnome-terminal]
 dark = "%s"
@@ -52,7 +52,7 @@ light = "%s"
 	})
 
 	t.Run("includes dark mode and light mode themes", func(t *testing.T) {
-		var dst config.Config
+		var dst apps.Config
 		c := fmt.Sprintf(`
 [gnome-terminal]
 dark = "%s"
