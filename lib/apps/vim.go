@@ -67,7 +67,7 @@ func (v *anyVim) sockbase() string {
 	return "vim"
 }
 
-func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	var err error
 	if v.flavor == "neovim" {
 		err = validator.StructCtx(ctx, config.Neovim)

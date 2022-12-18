@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/go-playground/validator/v10"
+	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -110,19 +110,38 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 
 	// Validate configs
 	var toSwitch []apps.Switchable
-	validator := validator.New()
+	validator := goValidator.New()
 	for _, app := range allApps {
-		errs := app.ValidateConfig(ctx, validator, config)
-		if errs != nil {
-			for _, err := range errs {
-				log.Warn().
-					Str("app", app.Name()).
-					Err(err).
-					Msg("validate config")
-			}
+		err := app.ValidateConfig(ctx, validator, config)
+		if err == nil {
+			toSwitch = append(toSwitch, app)
 			continue
 		}
-		toSwitch = append(toSwitch, app)
+
+		if err != nil {
+			var valErrs goValidator.ValidationErrors
+			if errors.As(err, &valErrs) {
+				for _, err := range valErrs {
+					log.Warn().
+						Str("app", app.Name()).
+						Err(err).
+						Msg("validate config")
+				}
+				continue
+			}
+
+			if errors.Is(err, apps.ErrNeedsConfig) {
+				log.Info().
+					Str("app", app.Name()).
+					Msg("app disabled: needs configuration")
+				continue
+			}
+
+			log.Error().
+				Str("app", app.Name()).
+				Err(err).
+				Msg("unexpected validation error")
+		}
 	}
 
 	var numErrors int

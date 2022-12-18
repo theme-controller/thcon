@@ -27,7 +27,7 @@ func NewGnomeShell() Switchable {
 	return &GnomeShell{}
 }
 
-func (g *GnomeShell) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (g *GnomeShell) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.GnomeShell == nil {
 		return nil
 	}

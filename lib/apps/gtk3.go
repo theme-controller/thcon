@@ -25,7 +25,7 @@ func NewGtk3() Switchable {
 	return &Gtk3{}
 }
 
-func (g *Gtk3) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (g *Gtk3) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.Gtk3 == nil {
 		return nil
 	}

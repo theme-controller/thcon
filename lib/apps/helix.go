@@ -35,7 +35,7 @@ func NewHelix() *Helix {
 
 var _ Switchable = (*Helix)(nil)
 
-func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.Helix == nil {
 		return nil
 	}

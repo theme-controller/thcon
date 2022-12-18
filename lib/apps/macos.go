@@ -25,7 +25,7 @@ func NewMacOS() Switchable {
 	return &MacOS{}
 }
 
-func (m *MacOS) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (m *MacOS) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	// No validation necessary, since there's nothing to configure.
 	return nil
 }

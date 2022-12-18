@@ -31,7 +31,7 @@ func (p *Plasma) Name() string {
 	return name
 }
 
-func (p *Plasma) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (p *Plasma) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.Plasma == nil {
 		return nil
 	}

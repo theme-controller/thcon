@@ -28,7 +28,7 @@ type TerminalDotApp struct{}
 
 var _ Switchable = (*TerminalDotApp)(nil)
 
-func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.TerminalDotApp == nil {
 		return nil
 	}

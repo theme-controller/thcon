@@ -103,7 +103,7 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 	return nil
 }
 
-func (k *Konsole) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) goValidator.ValidationErrors {
+func (k *Konsole) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.Konsole == nil {
 		return nil
 	}
