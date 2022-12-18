@@ -105,16 +105,10 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 
 func (k *Konsole) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.Konsole == nil {
-		return nil
+		return ErrNeedsConfig
 	}
 
-	err := validator.StructCtx(ctx, config.Konsole)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.Konsole)
 }
 
 func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

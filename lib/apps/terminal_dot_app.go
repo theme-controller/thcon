@@ -4,7 +4,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -33,13 +32,7 @@ func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, validator *goVali
 		return nil
 	}
 
-	err := validator.StructCtx(ctx, config.TerminalDotApp)
-	var errs goValidator.ValidationErrors
-	if errors.As(err, &errs) {
-		return errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.TerminalDotApp)
 }
 
 func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

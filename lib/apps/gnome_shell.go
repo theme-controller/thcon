@@ -4,7 +4,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/gotk3/gotk3/glib"
@@ -29,16 +28,10 @@ func NewGnomeShell() Switchable {
 
 func (g *GnomeShell) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.GnomeShell == nil {
-		return nil
+		return ErrNeedsConfig
 	}
 
-	err := validator.StructCtx(ctx, config.GnomeShell)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.GnomeShell)
 }
 
 func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

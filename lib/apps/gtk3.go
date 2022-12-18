@@ -4,7 +4,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/gotk3/gotk3/glib"
@@ -30,13 +29,7 @@ func (g *Gtk3) ValidateConfig(ctx context.Context, validator *goValidator.Valida
 		return nil
 	}
 
-	err := validator.StructCtx(ctx, config.Gtk3)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.Gtk3)
 }
 
 func (g *Gtk3) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

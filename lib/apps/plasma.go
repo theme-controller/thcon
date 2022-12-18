@@ -4,7 +4,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 	"os/exec"
 
 	goValidator "github.com/go-playground/validator/v10"
@@ -36,13 +35,7 @@ func (p *Plasma) ValidateConfig(ctx context.Context, validator *goValidator.Vali
 		return nil
 	}
 
-	err := validator.StructCtx(ctx, config.Plasma)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.Plasma)
 }
 
 func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

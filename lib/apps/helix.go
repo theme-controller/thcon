@@ -4,7 +4,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -40,13 +39,7 @@ func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Valid
 		return nil
 	}
 
-	err := validator.StructCtx(ctx, config.Helix)
-	var errs goValidator.ValidationErrors
-	if errors.As(err, &errs) {
-		return errs
-	}
-
-	return nil
+	return validator.StructCtx(ctx, config.Helix)
 }
 
 func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

@@ -68,18 +68,19 @@ func (v *anyVim) sockbase() string {
 }
 
 func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	var err error
+	var cfg interface{}
+
 	if v.flavor == "neovim" {
-		err = validator.StructCtx(ctx, config.Neovim)
+		cfg = config.Neovim
 	} else {
-		err = validator.StructCtx(ctx, config.Vim)
+		cfg = config.Vim
 	}
 
-	if errs, ok := err.(goValidator.ValidationErrors); ok {
-		return errs
+	if cfg == nil {
+		return ErrNeedsConfig
 	}
 
-	return nil
+	return validator.StructCtx(ctx, config.Vim)
 }
 
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

@@ -89,7 +89,7 @@ func setDefaultProfile(ctx context.Context, profileId string) error {
 
 func (gt *GnomeTerminal) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
 	if config.GnomeTerminal == nil {
-		return nil
+		return ErrNeedsConfig
 	}
 
 	err := validator.StructCtx(ctx, config.GnomeTerminal)
