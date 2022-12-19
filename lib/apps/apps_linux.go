@@ -1,20 +1,19 @@
 package apps
 
-import "github.com/theme-controller/thcon/lib/event"
-
-func All(progressChan event.ProgressChannel) []Switchable {
+func All() []Switchable {
 	return []Switchable{
 		// GNOME
 		NewGtk3(),
 		NewGnomeShell(),
-		NewGnomeTerminal(progressChan),
+		NewGnomeTerminal(),
 
 		// KDE
 		NewKonsole(),
 		NewPlasma(),
 
 		// Cross-platform
-		NewNeovim(progressChan),
+		NewVim(),
+		NewNeovim(),
 		NewHelix(),
 	}
 }

@@ -11,7 +11,6 @@ import (
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rs/zerolog/log"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/ipc"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
@@ -36,23 +35,20 @@ type neovimConfig struct {
 }
 
 type anyVim struct {
-	progress event.ProgressChannel
-	flavor   string
+	flavor string
 }
 
 var _ Switchable = (*anyVim)(nil)
 
-func NewVim(progress event.ProgressChannel) Switchable {
+func NewVim() Switchable {
 	return &anyVim{
-		flavor:   "vim",
-		progress: progress,
+		flavor: "vim",
 	}
 }
 
-func NewNeovim(progress event.ProgressChannel) Switchable {
+func NewNeovim() Switchable {
 	return &anyVim{
-		flavor:   "neovim",
-		progress: progress,
+		flavor: "neovim",
 	}
 }
 
@@ -68,19 +64,19 @@ func (v *anyVim) sockbase() string {
 }
 
 func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	var cfg interface{}
-
 	if v.flavor == "neovim" {
-		cfg = config.Neovim
-	} else {
-		cfg = config.Vim
+		cfg := config.Neovim
+		if cfg == nil {
+			return ErrNeedsConfig
+		}
+		return validator.StructCtx(ctx, cfg)
 	}
 
+	cfg := config.Vim
 	if cfg == nil {
 		return ErrNeedsConfig
 	}
-
-	return validator.StructCtx(ctx, config.Vim)
+	return validator.StructCtx(ctx, cfg)
 }
 
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
@@ -152,23 +148,15 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 	if err != nil {
 		return err
 	}
-	if len(socks) > 1 {
-		v.progress <- event.AddSubsteps(v.flavor, len(socks))
-	}
 
 	var writeFailure bool
-	for idx, sock := range socks {
-		if idx > 1 {
-			v.progress <- event.StepStarted(v.flavor)
-		}
-
+	for _, sock := range socks {
 		payload := &ipc.Outbound{
 			Socket:  sock,
 			Message: msg,
 		}
 		if err := ipc.Send(ctx, payload); err != nil {
 			writeFailure = true
-			v.progress <- event.StepFailed(v.flavor, err)
 			if errors.Is(err, syscall.ECONNREFUSED) {
 				log.Warn().
 					Stringer("sock", sock).
@@ -179,9 +167,6 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 					Err(err).
 					Msg("apply settings")
 			}
-		}
-		if idx > 1 {
-			v.progress <- event.StepCompleted(v.flavor)
 		}
 	}
 

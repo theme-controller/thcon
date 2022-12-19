@@ -6,16 +6,15 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"sync"
 
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
-	"github.com/theme-controller/thcon/lib/event"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -54,14 +53,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	}
 
 	// TODO: make apps dynamic
-	var progressChanBuf int = 2
-	maxProcs := runtime.GOMAXPROCS(0)
-	if maxProcs > progressChanBuf {
-		progressChanBuf = maxProcs - 1
-	}
-
-	progressChan := make(chan *event.ProgressEvent, progressChanBuf)
-	allApps := apps.All(progressChan)
+	allApps := apps.All()
 
 	configPath, err := apps.ConfigFilePath()
 	if err != nil {
@@ -74,40 +66,6 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	}
 	log.Info().Stringer("config", config).Msg("found config")
 
-	// Render progress events
-	progressDone := make(chan bool)
-	go func() {
-		var totalSteps int = 2
-		var complete int
-		var inProgress int
-		var failed int
-
-		for evt := range progressChan {
-			switch evt.Kind {
-			case event.KAddSubsteps:
-				totalSteps += evt.SubstepCount
-				inProgress += evt.SubstepCount
-			case event.KStepStarted:
-				inProgress++
-			case event.KStepCompleted:
-				inProgress--
-				complete++
-			case event.KStepFailed:
-				inProgress--
-				failed++
-			}
-
-			log.Trace().
-				Err(evt.Err).
-				Int("total", totalSteps).
-				Int("complete", complete).
-				Int("failed", failed).
-				Int("inProgress", inProgress).
-				Msg(evt.Kind.ToString())
-		}
-		progressDone <- true
-	}()
-
 	// Validate configs
 	var toSwitch []apps.Switchable
 	validator := goValidator.New()
@@ -118,25 +76,19 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 			continue
 		}
 
-		if err != nil {
-			var valErrs goValidator.ValidationErrors
-			if errors.As(err, &valErrs) {
-				for _, err := range valErrs {
-					log.Warn().
-						Str("app", app.Name()).
-						Err(err).
-						Msg("validate config")
-				}
-				continue
-			}
-
-			if errors.Is(err, apps.ErrNeedsConfig) {
-				log.Info().
+		var valErrs goValidator.ValidationErrors
+		if errors.As(err, &valErrs) {
+			for _, err := range valErrs {
+				log.Warn().
 					Str("app", app.Name()).
-					Msg("app disabled: needs configuration")
-				continue
+					Err(err).
+					Msg("validate config")
 			}
-
+		} else if errors.Is(err, apps.ErrNeedsConfig) {
+			log.Info().
+				Str("app", app.Name()).
+				Msg("app disabled: needs configuration")
+		} else {
 			log.Error().
 				Str("app", app.Name()).
 				Err(err).
@@ -147,26 +99,20 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	var numErrors int
 
 	// Switch all as parallelibly as possible
-	sem := make(chan int, maxProcs)
-	wg := sync.WaitGroup{}
-	for _, app := range toSwitch {
-		wg.Add(1)
+	g := errgroup.Group{}
+	g.SetLimit(runtime.GOMAXPROCS(0))
 
+	for _, app := range toSwitch {
 		app := app
 		name := app.Name()
-		// TODO: keep switching to zerolog
 		appLog := log.With().
 			Str("app", name).
 			Logger()
-		appLog.Debug().Msg("requesting lock")
 		appCtx := appLog.WithContext(ctx)
-		sem <- 1
-		progressChan <- event.StepStarted(name)
 
-		go func() {
+		appLog.Trace().Msg("queueing")
+		g.Go(func() error {
 			var err error
-			defer wg.Done()
-			defer func() { <-sem }()
 			appLog.Debug().Msg(mode.Verb())
 			dur := appLog.Hook(util.RecordDuration())
 			defer dur.Trace().Msg("done")
@@ -174,18 +120,16 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 			err = app.Switch(appCtx, mode, config)
 			if err != nil {
 				numErrors++
-				progressChan <- event.StepFailed(name, err)
-			} else {
-				progressChan <- event.StepCompleted(name)
 			}
-		}()
+
+			// Always return nil, to allow other apps to switch
+			// even if the current one encounters an error.
+			return nil
+		})
 	}
 
-	// Wait for all apps to finish switching
-	wg.Wait()
-	// Flush remaining progress events
-	close(progressChan)
-	<-progressDone
+	// Ignore the returned error, since it's always nil.
+	_ = g.Wait()
 
 	switch numErrors {
 	case 0:
