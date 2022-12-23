@@ -64,7 +64,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err
 	}
-	log.Info().Stringer("config", config).Msg("found config")
+	log.Debug().Stringer("config", config).Msg("found config")
 
 	// Validate configs
 	var toSwitch []apps.Switchable
