@@ -10,6 +10,7 @@ type Config struct {
 	VimConfigSlice
 	NeovimConfigSlice
 	HelixConfigSlice
+	Iterm2ConfigSlice
 }
 
 func ConfigFilePath() (string, error) {
