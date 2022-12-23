@@ -9,7 +9,6 @@ import (
 	"os/exec"
 
 	goValidator "github.com/go-playground/validator/v10"
-	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -58,7 +57,6 @@ end tell`
 	}
 
 	script := fmt.Sprintf(switchProfileAppleScriptf, profile)
-	log.Debug().Str("script", script).Msg("calling osascript...")
 	cmd := exec.CommandContext(ctx, "osascript", "-e", script)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
