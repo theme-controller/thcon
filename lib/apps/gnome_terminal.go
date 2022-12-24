@@ -144,4 +144,9 @@ func (gt *GnomeTerminal) Name() string {
 	return name
 }
 
+func (gt *GnomeTerminal) Argname() string {
+	const argname = "gnome-terminal"
+	return argname
+}
+
 var _ Switchable = (*GnomeTerminal)(nil)

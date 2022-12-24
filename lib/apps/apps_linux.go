@@ -1,19 +1,17 @@
 package apps
 
-func All() []Switchable {
-	return []Switchable{
-		// GNOME
-		NewGtk3(),
-		NewGnomeShell(),
-		NewGnomeTerminal(),
+var All = []Switchable{
+	// GNOME
+	NewGtk3(),
+	NewGnomeShell(),
+	NewGnomeTerminal(),
 
-		// KDE
-		NewKonsole(),
-		NewPlasma(),
+	// KDE
+	NewKonsole(),
+	NewPlasma(),
 
-		// Cross-platform
-		NewVim(),
-		NewNeovim(),
-		NewHelix(),
-	}
+	// Cross-platform
+	NewVim(),
+	NewNeovim(),
+	NewHelix(),
 }

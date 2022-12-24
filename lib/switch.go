@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
@@ -23,7 +24,7 @@ const (
 
 var verbosity int
 
-func Switch(ctx context.Context, mode operation.Operation) error {
+func Switch(ctx context.Context, mode operation.Operation, args []string) error {
 	if verbosity < 0 {
 		verbosity = 0
 	}
@@ -50,8 +51,17 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 		return fmt.Errorf("Unexpected mode '%+v'", mode)
 	}
 
-	// TODO: make apps dynamic
-	allApps := apps.All()
+	var chosenApps []apps.Switchable
+	if len(args) == 0 {
+		chosenApps = apps.All
+	} else {
+		apps := apps.Map()
+		for _, arg := range args {
+			if app, found := apps[arg]; found {
+				chosenApps = append(chosenApps, app)
+			}
+		}
+	}
 
 	configPath, err := apps.ConfigFilePath()
 	if err != nil {
@@ -67,7 +77,7 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 	// Validate configs
 	var toSwitch []apps.Switchable
 	validator := goValidator.New()
-	for _, app := range allApps {
+	for _, app := range chosenApps {
 		err := app.ValidateConfig(ctx, validator, config)
 		if err == nil {
 			toSwitch = append(toSwitch, app)
@@ -156,4 +166,46 @@ func AddSwitchFlags(cmd *cobra.Command) {
 		"v",
 		"enable verbose logging (add multiple times for higher verbosity)",
 	)
+}
+
+func WithSwitchUsage(cmd *cobra.Command) {
+	cobra.AddTemplateFunc("commaJoin", func(args []string) string {
+		return strings.Join(args, ", ")
+	})
+
+	// Copied from https://github.com/spf13/cobra/blob/b43be995ebb4bee335a787bd44498b91aef7619c/command.go#L539-L568
+	// then modified.
+	cmd.SetUsageTemplate(`Usage:{{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}{{$cmds := .Commands}}{{if eq (len .Groups) 0}}
+
+Available Commands:{{range $cmds}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{else}}{{range $group := .Groups}}
+
+{{.Title}}{{range $cmds}}{{if (and (eq .GroupID $group.ID) (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if not .AllChildCommandsHaveGroup}}
+
+Additional Commands:{{range $cmds}}{{if (and (eq .GroupID "") (or .IsAvailableCommand (eq .Name "help")))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{end}}{{end}}
+
+Apps:
+  {{commaJoin .ValidArgs | trimTrailingWhitespaces}}{{if .HasAvailableLocalFlags}}
+
+Flags:
+{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`)
 }

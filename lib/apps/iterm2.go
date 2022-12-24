@@ -75,7 +75,12 @@ func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config 
 	})
 }
 
-func (it2 Iterm2) Name() string {
+func (it2 *Iterm2) Name() string {
 	const name = "iTerm2"
 	return name
+}
+
+func (it2 *Iterm2) Argname() string {
+	const argname = "iterm2"
+	return argname
 }

@@ -45,3 +45,8 @@ func (m *MacOS) Name() string {
 	const name = "macOS Appearance"
 	return name
 }
+
+func (m *MacOS) Argname() string {
+	const argname = "macos"
+	return argname
+}

@@ -56,6 +56,10 @@ func (v *anyVim) Name() string {
 	return v.flavor
 }
 
+func (v *anyVim) Argname() string {
+	return v.flavor
+}
+
 func (v *anyVim) sockbase() string {
 	if v.flavor == "neovim" {
 		return "nvim"

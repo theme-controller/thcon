@@ -13,7 +13,8 @@ import (
 var ErrNeedsConfig = errors.New("app needs configuration")
 
 type Switchable interface {
-	Switch(ctx context.Context, mode operation.Operation, config *Config) error
+	Argname() string
 	Name() string
+	Switch(ctx context.Context, mode operation.Operation, config *Config) error
 	ValidateConfig(ctx context.Context, validator *validator.Validate, config *Config) error
 }

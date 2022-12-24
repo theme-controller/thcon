@@ -71,3 +71,8 @@ func (tda *TerminalDotApp) Name() string {
 	const name = "Terminal.app"
 	return name
 }
+
+func (tda *TerminalDotApp) Argname() string {
+	const argname = "terminal-app"
+	return argname
+}

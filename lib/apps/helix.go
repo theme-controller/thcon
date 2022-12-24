@@ -109,3 +109,7 @@ func (h *Helix) Name() string {
 	const name = "helix"
 	return name
 }
+
+func (h *Helix) Argname() string {
+	return h.Name()
+}

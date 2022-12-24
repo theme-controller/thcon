@@ -50,3 +50,8 @@ func (gt *GnomeShell) Name() string {
 	const name = "GNOME Shell User Theme"
 	return name
 }
+
+func (gt *GnomeShell) Argname() string {
+	const argname = "gnome-shell"
+	return argname
+}

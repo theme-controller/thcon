@@ -28,11 +28,16 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:           "thcon",
-	Version:       "0.1.0",
-	Short:         "Switches apps between dark mode and light mode",
-	SilenceErrors: true,
-	SilenceUsage:  true,
+	Use:     "thcon",
+	Version: "0.1.0",
+	Short:   "Switches apps between dark mode and light mode",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// PersistentPreRun executes after arg validation.
+		// Silence usage here (instead of at the struct definition level),
+		// to allow usage to be displayed with arg validation errors,
+		// but not with other errors.
+		cmd.SilenceUsage = true
+	},
 }
 
 func Execute() {

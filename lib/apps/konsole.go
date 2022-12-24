@@ -34,6 +34,11 @@ func (k *Konsole) Name() string {
 	return name
 }
 
+func (k *Konsole) Argname() string {
+	const argname = "konsole"
+	return argname
+}
+
 func getKonsoleServiceIds(ctx context.Context, conn *dbus.Conn) ([]string, error) {
 	obj := conn.Object("org.freedesktop.DBus", "/")
 	var names []string

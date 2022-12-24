@@ -49,4 +49,9 @@ func (gt *Gtk3) Name() string {
 	return name
 }
 
+func (gt *Gtk3) Argname() string {
+	const argname = "gtk3"
+	return argname
+}
+
 var _ Switchable = (*Gtk3)(nil)
