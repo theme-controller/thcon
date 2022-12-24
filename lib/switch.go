@@ -115,12 +115,18 @@ func Switch(ctx context.Context, mode operation.Operation) error {
 			var err error
 			appLog.Debug().Msg(mode.Verb())
 			dur := appLog.Hook(util.RecordDuration())
-			defer dur.Trace().Msg("done")
 
 			err = app.Switch(appCtx, mode, config)
 			if err != nil {
+				appLog.Error().Err(err).Msg("failed")
 				numErrors++
+
+				// Always return nil, to allow other apps to switch
+				// even if the current one encounters an error.
+				return nil
 			}
+
+			dur.Trace().Msg("done")
 
 			// Always return nil, to allow other apps to switch
 			// even if the current one encounters an error.
