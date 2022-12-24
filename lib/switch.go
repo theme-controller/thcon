@@ -18,12 +18,10 @@ import (
 )
 
 const (
-	verboseFlag  = "verbose"
-	progressFlag = "progress"
+	verboseFlag = "verbose"
 )
 
 var verbosity int
-var showProgress bool
 
 func Switch(ctx context.Context, mode operation.Operation) error {
 	if verbosity < 0 {
@@ -157,12 +155,5 @@ func AddSwitchFlags(cmd *cobra.Command) {
 		verboseFlag,
 		"v",
 		"enable verbose logging (add multiple times for higher verbosity)",
-	)
-
-	cmd.Flags().BoolVar(
-		&showProgress,
-		progressFlag,
-		false,
-		"show progress while switching apps",
 	)
 }
