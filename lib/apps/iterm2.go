@@ -4,11 +4,11 @@ package apps
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	goValidator "github.com/go-playground/validator/v10"
-	"github.com/theme-controller/thcon/lib/ipc"
+	"github.com/rs/zerolog/log"
+	"github.com/theme-controller/thcon/lib/apps/iterm2pb"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -43,36 +43,69 @@ func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config 
 		return ErrNeedsConfig
 	}
 
-	var profile = config.Iterm2.Dark
+	var desiredProfile = config.Iterm2.Dark
 	if mode == operation.LightMode {
-		profile = config.Iterm2.Light
+		desiredProfile = config.Iterm2.Light
 	}
 
-	socks, err := ipc.ListSockets("iterm2", false /* socketPerProcess */)
+	client, err := iterm2pb.NewClient(ctx)
 	if err != nil {
-		return fmt.Errorf("unable to list sockets: %v", err)
+		return fmt.Errorf("unable to create iterm2 client: %v", err)
 	}
 
-	// With no sockets found, iTerm2 is likely not running.
-	if len(socks) == 0 {
-		return nil
-	}
-
-	if len(socks) > 1 {
-		return fmt.Errorf("expected one socket, but found multiple: %v", socks)
-	}
-
-	msg, err := json.Marshal(it2Payload{
-		Profile: profile,
-	})
+	profiles, err := client.ListProfiles(ctx)
 	if err != nil {
-		return fmt.Errorf("unable to JSON-encode iTerm2 payload: %v", err)
+		return fmt.Errorf("unable to get profiles: %v", err)
 	}
 
-	return ipc.Send(ctx, &ipc.Outbound{
-		Socket:  socks[0],
-		Message: msg,
-	})
+	quotedDesiredProfile := `"` + desiredProfile + `"`
+	var foundProfileProps map[string]string
+
+	for _, profile := range profiles {
+		props := map[string]string{}
+
+		for _, prop := range profile.Properties {
+			k := prop.GetKey()
+			v := prop.GetJsonValue()
+
+			if k == "Name" && v != quotedDesiredProfile {
+				// This clearly isn't the profile we're looking for,
+				// so don't bother gathering more props from it.
+				break
+			}
+
+			props[k] = v
+		}
+
+		// If we never found a "Name" key, move on to the next profile.
+		if _, hasName := props["Name"]; !hasName {
+			continue
+		}
+
+		// Otherwise, it's implied that this is the profile we're looking for.
+		log.Debug().Interface("props", props)
+		foundProfileProps = props
+		break
+	}
+
+	profileGuid := foundProfileProps["Guid"]
+	// Values in are JSON-encoded strings, so remove the leading and trailing
+	// double-quotes.
+	profileGuid = profileGuid[1 : len(profileGuid)-1]
+	if foundProfileProps == nil {
+		return fmt.Errorf("unable to find profile called %q", desiredProfile)
+	}
+
+	if err := client.SetDefaultProfile(ctx, profileGuid); err != nil {
+		return fmt.Errorf("unable to set default profile to %q: %v", desiredProfile, err)
+	}
+
+	sessionIds, err := client.GetSessionIds(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to list all sessions: %v", err)
+	}
+
+	return client.UpdateCurrentProfileInSessions(ctx, foundProfileProps, sessionIds)
 }
 
 func (it2 *Iterm2) Name() string {

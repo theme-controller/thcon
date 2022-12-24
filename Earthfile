@@ -32,6 +32,20 @@ test:
   # Run tests
   RUN go test ./...
 
+protoc-gen:
+  RUN apt install -y protobuf-compiler protoc-gen-go
+
+  WORKDIR ./proto
+  COPY ./misc/proto/* ./
+
+  RUN protoc \
+    --proto_path=. \
+    --go_out=. \
+    --go_opt=Miterm2.proto="github.com/theme-controller/thcon/lib/apps;iterm2pb",paths=source_relative \
+    iterm2.proto
+
+  SAVE ARTIFACT iterm2.pb.go AS LOCAL ./lib/apps/iterm2pb/iterm2pb_darwin.go
+
 lint:
   FROM +sources
   RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.1
