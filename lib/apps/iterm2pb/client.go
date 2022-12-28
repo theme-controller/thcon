@@ -1,4 +1,5 @@
-// go:build darwin
+//go:build darwin
+
 package iterm2pb
 
 import (
