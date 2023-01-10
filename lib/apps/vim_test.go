@@ -25,7 +25,7 @@ disabled = true
 		_, err := toml.Decode(c, &dst)
 		require.NoError(t, err)
 		require.NotNil(t, dst.Vim)
-		require.True(t, dst.Vim.Disabled)
+		require.True(t, dst.Vim.IsDisabled())
 	})
 
 	t.Run("disabled by default when config present", func(t *testing.T) {
@@ -38,7 +38,7 @@ light = "bar theme"
 		_, err := toml.Decode(c, &dst)
 		require.NoError(t, err)
 		require.NotNil(t, dst.Vim)
-		require.False(t, dst.Vim.Disabled)
+		require.False(t, dst.Vim.IsDisabled())
 	})
 
 	t.Run("includes dark mode and light mode themes", func(t *testing.T) {
@@ -73,7 +73,7 @@ disabled = true
 		_, err := toml.Decode(c, &dst)
 		require.NoError(t, err)
 		require.NotNil(t, dst.Neovim)
-		require.True(t, dst.Neovim.Disabled)
+		require.True(t, dst.Neovim.IsDisabled())
 	})
 
 	t.Run("disabled by default when config present", func(t *testing.T) {
@@ -86,7 +86,7 @@ light = "bar theme"
 		_, err := toml.Decode(c, &dst)
 		require.NoError(t, err)
 		require.NotNil(t, dst.Neovim)
-		require.False(t, dst.Neovim.Disabled)
+		require.False(t, dst.Neovim.IsDisabled())
 	})
 
 	t.Run("includes dark mode and light mode themes", func(t *testing.T) {

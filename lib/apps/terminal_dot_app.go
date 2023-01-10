@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 
-	goValidator "github.com/go-playground/validator/v10"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -17,21 +17,17 @@ type TerminalDotAppConfigSlice struct {
 }
 
 type terminalDotAppConfig struct {
-	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"required"`
-	Light    string `toml:"light" validate:"required"`
+	health.Disabled
+	Dark  string `toml:"dark" validate:"required"`
+	Light string `toml:"light" validate:"required"`
 }
 
 type TerminalDotApp struct{}
 
 var _ Switchable = (*TerminalDotApp)(nil)
 
-func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.TerminalDotApp == nil {
-		return nil
-	}
-
-	return validator.StructCtx(ctx, config.TerminalDotApp)
+func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.HasDefaults(ctx, config.TerminalDotApp)
 }
 
 func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

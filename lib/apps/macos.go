@@ -7,14 +7,16 @@ import (
 	"fmt"
 	"os/exec"
 
-	goValidator "github.com/go-playground/validator/v10"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
-type MacOSConfig struct {
-	MacOS *struct {
-		Disabled bool `toml:"disabled"`
-	}
+type MacOSConfigSlice struct {
+	MacOS *macOSConfig `toml:"macos"`
+}
+
+type macOSConfig struct {
+	health.Disabled
 }
 
 type MacOS struct{}
@@ -25,9 +27,8 @@ func NewMacOS() Switchable {
 	return &MacOS{}
 }
 
-func (m *MacOS) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	// No validation necessary, since there's nothing to configure.
-	return nil
+func (m *MacOS) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.HasDefaults(ctx, config.MacOS)
 }
 
 func (m *MacOS) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
