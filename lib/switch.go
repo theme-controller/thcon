@@ -13,6 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/theme-controller/thcon/lib/apps"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
 	"golang.org/x/sync/errgroup"
@@ -51,16 +52,22 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 		return fmt.Errorf("Unexpected mode '%+v'", mode)
 	}
 
-	var chosenApps []apps.Switchable
-	if len(args) == 0 {
-		chosenApps = apps.All
-	} else {
+	// TODO: maybe put this in context and pass it through to the health.___ functions?
+	// It'd be nice to still get validation errors for a disabled app, but without having to implement IsDisabled()
+	// on every config struct or have to do that casting here.
+	// Or perhaps the casting to *Disabled belongs somewhere that isn't lib/health/health.go?
+	userRequestedApps := len(args) > 0
+
+	chosenApps := []apps.Switchable{}
+	if userRequestedApps {
 		apps := apps.Map()
 		for _, arg := range args {
 			if app, found := apps[arg]; found {
 				chosenApps = append(chosenApps, app)
 			}
 		}
+	} else {
+		chosenApps = apps.All
 	}
 
 	configPath, err := apps.ConfigFilePath()
@@ -72,35 +79,34 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err
 	}
-	log.Debug().Stringer("config", config).Msg("found config")
 
 	// Validate configs
-	var toSwitch []apps.Switchable
-	validator := goValidator.New()
+	toSwitch := []apps.Switchable{}
 	for _, app := range chosenApps {
-		err := app.ValidateConfig(ctx, validator, config)
-		if err == nil {
-			toSwitch = append(toSwitch, app)
-			continue
-		}
+		appLog := log.With().Str("app", app.Name()).Logger()
+		status, err := app.ValidateConfig(ctx, config)
 
-		var valErrs goValidator.ValidationErrors
-		if errors.As(err, &valErrs) {
-			for _, err := range valErrs {
-				log.Warn().
-					Str("app", app.Name()).
-					Err(err).
-					Msg("validate config")
+		switch status {
+		case health.StatusDisabled:
+			appLog.Info().Msg("skipping (disabled)")
+		case health.StatusMissingConfig:
+			appLog.Info().Msg("skipping (requires config)")
+		case health.StatusNotOk:
+			if err == nil {
+				appLog.Error().Err(nil).Msg("skipping (unknown)")
+				continue
 			}
-		} else if errors.Is(err, apps.ErrNeedsConfig) {
-			log.Info().
-				Str("app", app.Name()).
-				Msg("app disabled: needs configuration")
-		} else {
-			log.Error().
-				Str("app", app.Name()).
-				Err(err).
-				Msg("unexpected validation error")
+
+			if verrs, ok := err.(goValidator.ValidationErrors); ok {
+				appLog.Error().
+					Errs("validation errors", health.ValidationErrorsToErrorSlice(verrs)).
+					Msg("skipping (validation failed)")
+				continue
+			}
+
+			appLog.Error().Err(err).Msg("skipping (unexpected error)")
+		case health.StatusOk:
+			toSwitch = append(toSwitch, app)
 		}
 	}
 

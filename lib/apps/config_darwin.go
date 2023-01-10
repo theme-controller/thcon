@@ -6,6 +6,7 @@ import (
 )
 
 type Config struct {
+	MacOSConfigSlice
 	TerminalDotAppConfigSlice
 	VimConfigSlice
 	NeovimConfigSlice

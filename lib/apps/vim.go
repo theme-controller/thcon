@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"syscall"
 
-	goValidator "github.com/go-playground/validator/v10"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rs/zerolog/log"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/ipc"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
@@ -20,18 +20,18 @@ type VimConfigSlice struct {
 	Vim *vimConfig `toml:"vim"`
 }
 type vimConfig struct {
-	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"file,required_with=Light"`
-	Light    string `toml:"light" validate:"file,required_with=Dark"`
+	health.Disabled
+	Dark  string `toml:"dark" validate:"file,required_with=Light"`
+	Light string `toml:"light" validate:"file,required_with=Dark"`
 }
 
 type NeovimConfigSlice struct {
 	Neovim *neovimConfig `toml:"nvim"`
 }
 type neovimConfig struct {
-	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"required_with=Light"`
-	Light    string `toml:"light" validate:"required_with=Dark"`
+	health.Disabled
+	Dark  string `toml:"dark" validate:"required_with=Light"`
+	Light string `toml:"light" validate:"required_with=Dark"`
 }
 
 type anyVim struct {
@@ -67,20 +67,14 @@ func (v *anyVim) sockbase() string {
 	return "vim"
 }
 
-func (v *anyVim) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
+func (v *anyVim) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
 	if v.flavor == "neovim" {
 		cfg := config.Neovim
-		if cfg == nil {
-			return ErrNeedsConfig
-		}
-		return validator.StructCtx(ctx, cfg)
+		return health.RequiresConfig(ctx, cfg)
 	}
 
 	cfg := config.Vim
-	if cfg == nil {
-		return ErrNeedsConfig
-	}
-	return validator.StructCtx(ctx, cfg)
+	return health.RequiresConfig(ctx, cfg)
 }
 
 func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

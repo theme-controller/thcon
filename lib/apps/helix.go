@@ -10,9 +10,9 @@ import (
 	"regexp"
 	"syscall"
 
-	goValidator "github.com/go-playground/validator/v10"
 	gops "github.com/mitchellh/go-ps"
 	"github.com/rs/zerolog/log"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -21,9 +21,9 @@ type HelixConfigSlice struct {
 }
 
 type helixConfig struct {
-	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"required_with=Light"`
-	Light    string `toml:"light" validate:"required_with=Dark"`
+	Dark  string `toml:"dark" validate:"required_with=Light"`
+	Light string `toml:"light" validate:"required_with=Dark"`
+	health.Disabled
 }
 
 type Helix struct{}
@@ -34,12 +34,8 @@ func NewHelix() *Helix {
 
 var _ Switchable = (*Helix)(nil)
 
-func (h *Helix) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.Helix == nil {
-		return nil
-	}
-
-	return validator.StructCtx(ctx, config.Helix)
+func (h *Helix) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.HasDefaults(ctx, config.Helix)
 }
 
 func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Config) error {

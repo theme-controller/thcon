@@ -6,9 +6,9 @@ import (
 	"context"
 	"fmt"
 
-	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/apps/iterm2pb"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -17,26 +17,22 @@ type Iterm2ConfigSlice struct {
 }
 
 type iterm2Config struct {
-	Disabled bool   `toml:"disabled"`
-	Dark     string `toml:"dark" validate:"required"`
-	Light    string `toml:"light" validate:"required"`
+	health.Disabled
+	Dark  string `toml:"dark" validate:"required"`
+	Light string `toml:"light" validate:"required"`
 }
 
 type Iterm2 struct{}
 
 var _ Switchable = (*Iterm2)(nil)
 
-func (it2 *Iterm2) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.Iterm2 == nil {
-		return ErrNeedsConfig
-	}
-
-	return validator.StructCtx(ctx, config.Iterm2)
+func (it2 *Iterm2) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.RequiresConfig(ctx, config.Iterm2)
 }
 
 func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	if config.Iterm2 == nil {
-		return ErrNeedsConfig
+		return nil
 	}
 
 	var desiredProfile = config.Iterm2.Dark
