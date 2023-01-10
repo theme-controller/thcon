@@ -35,10 +35,6 @@ func (it2 *Iterm2) ValidateConfig(ctx context.Context, validator *goValidator.Va
 }
 
 func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
-	type it2Payload struct {
-		Profile string `json:"profile"`
-	}
-
 	if config.Iterm2 == nil {
 		return ErrNeedsConfig
 	}
