@@ -6,8 +6,8 @@ import (
 	"context"
 	"os/exec"
 
-	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog/log"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -35,12 +35,8 @@ func (p *Plasma) Argname() string {
 	return argname
 }
 
-func (p *Plasma) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.Plasma == nil {
-		return nil
-	}
-
-	return validator.StructCtx(ctx, config.Plasma)
+func (p *Plasma) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.HasDefaults(ctx, config.Plasma)
 }
 
 func (p *Plasma) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
