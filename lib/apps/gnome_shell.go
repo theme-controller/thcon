@@ -5,8 +5,8 @@ package apps
 import (
 	"context"
 
-	goValidator "github.com/go-playground/validator/v10"
 	"github.com/gotk3/gotk3/glib"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -26,12 +26,8 @@ func NewGnomeShell() Switchable {
 	return &GnomeShell{}
 }
 
-func (g *GnomeShell) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.GnomeShell == nil {
-		return ErrNeedsConfig
-	}
-
-	return validator.StructCtx(ctx, config.GnomeShell)
+func (g *GnomeShell) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.RequiresConfig(ctx, config.GnomeShell)
 }
 
 func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
