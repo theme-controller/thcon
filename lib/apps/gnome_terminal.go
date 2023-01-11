@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
-	goValidator "github.com/go-playground/validator/v10"
 	"github.com/godbus/dbus/v5"
 	"github.com/google/uuid"
 	"github.com/gotk3/gotk3/glib"
+	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
 
@@ -82,18 +82,8 @@ func setDefaultProfile(ctx context.Context, profileId string) error {
 	return nil
 }
 
-func (gt *GnomeTerminal) ValidateConfig(ctx context.Context, validator *goValidator.Validate, config *Config) error {
-	if config.GnomeTerminal == nil {
-		return ErrNeedsConfig
-	}
-
-	err := validator.StructCtx(ctx, config.GnomeTerminal)
-	var errs *goValidator.ValidationErrors
-	if errors.As(err, errs) {
-		return *errs
-	}
-
-	return nil
+func (gt *GnomeTerminal) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	return health.RequiresConfig(ctx, config.GnomeTerminal)
 }
 
 func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
