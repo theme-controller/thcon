@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+
+	// "time"
 
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
@@ -28,19 +31,23 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 	if verbosity < 0 {
 		verbosity = 0
 	}
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	writer := zerolog.ConsoleWriter{Out: os.Stderr}
 	switch verbosity {
 	case 0:
 		zerolog.SetGlobalLevel(zerolog.WarnLevel)
 	case 1:
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	case 2:
-		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
+		zerolog.TimeFieldFormat = time.RFC3339Nano
+		writer.TimeFormat = "15:04:05.000"
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	default:
-		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
+		zerolog.TimeFieldFormat = time.RFC3339Nano
+		writer.TimeFormat = "15:04:05.000000"
 		zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	}
+	log.Logger = log.Output(writer)
 
 	switch mode {
 	case operation.DarkMode:
