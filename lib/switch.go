@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 	"strings"
 
 	goValidator "github.com/go-playground/validator/v10"
@@ -114,7 +113,6 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 
 	// Switch all as parallelibly as possible
 	g := errgroup.Group{}
-	g.SetLimit(runtime.GOMAXPROCS(0))
 
 	for _, app := range toSwitch {
 		app := app
