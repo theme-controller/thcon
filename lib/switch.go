@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 
@@ -28,6 +29,9 @@ const (
 var verbosity int
 
 func Switch(ctx context.Context, mode operation.Operation, args []string) error {
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, os.Kill)
+	defer stop()
+
 	if verbosity < 0 {
 		verbosity = 0
 	}
@@ -119,7 +123,9 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 	var numErrors int
 
 	// Switch all as parallelibly as possible
-	g := errgroup.Group{}
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	g, ctx := errgroup.WithContext(ctx)
+	defer cancel()
 
 	for _, app := range toSwitch {
 		app := app
@@ -127,6 +133,7 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 		appLog := log.With().
 			Str("app", name).
 			Logger()
+		ctx := ctx
 		appCtx := appLog.WithContext(ctx)
 
 		appLog.Trace().Msg("queueing")
