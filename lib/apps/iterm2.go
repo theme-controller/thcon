@@ -4,10 +4,12 @@ package apps
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
-	"github.com/rs/zerolog/log"
-	"github.com/theme-controller/thcon/lib/apps/iterm2pb"
 	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 )
@@ -35,69 +37,44 @@ func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config 
 		return nil
 	}
 
-	var desiredProfile = config.Iterm2.Dark
+	var desiredProfile string = config.Iterm2.Dark
 	if mode == operation.LightMode {
 		desiredProfile = config.Iterm2.Light
 	}
-
-	client, err := iterm2pb.NewClient(ctx)
+	desiredProfileJson, err := json.Marshal(desiredProfile)
 	if err != nil {
-		return fmt.Errorf("unable to create iterm2 client: %v", err)
+		return fmt.Errorf("unable to marshal theme %q as JSON: %v", desiredProfile, err)
 	}
+	desiredProfile = string(desiredProfileJson)
 
-	profiles, err := client.ListProfiles(ctx)
+	confdir, err := os.UserConfigDir()
 	if err != nil {
-		return fmt.Errorf("unable to get profiles: %v", err)
+		return fmt.Errorf("unable to get user config directory: %v", err)
 	}
 
-	quotedDesiredProfile := `"` + desiredProfile + `"`
-	var foundProfileProps map[string]string
-
-	for _, profile := range profiles {
-		props := map[string]string{}
-
-		for _, prop := range profile.Properties {
-			k := prop.GetKey()
-			v := prop.GetJsonValue()
-
-			if k == "Name" && v != quotedDesiredProfile {
-				// This clearly isn't the profile we're looking for,
-				// so don't bother gathering more props from it.
-				break
-			}
-
-			props[k] = v
-		}
-
-		// If we never found a "Name" key, move on to the next profile.
-		if _, hasName := props["Name"]; !hasName {
-			continue
-		}
-
-		// Otherwise, it's implied that this is the profile we're looking for.
-		log.Debug().Interface("props", props)
-		foundProfileProps = props
-		break
-	}
-
-	profileGuid := foundProfileProps["Guid"]
-	// Values in are JSON-encoded strings, so remove the leading and trailing
-	// double-quotes.
-	profileGuid = profileGuid[1 : len(profileGuid)-1]
-	if foundProfileProps == nil {
-		return fmt.Errorf("unable to find profile called %q", desiredProfile)
-	}
-
-	if err := client.SetDefaultProfile(ctx, profileGuid); err != nil {
-		return fmt.Errorf("unable to set default profile to %q: %v", desiredProfile, err)
-	}
-
-	sessionIds, err := client.GetSessionIds(ctx)
+	// See https://iterm2.com/documentation-dynamic-profiles.html
+	dyProfilePath := filepath.Join(confdir, "iTerm2", "DynamicProfiles", "thcon.json")
+	f, err := os.OpenFile(dyProfilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
-		return fmt.Errorf("unable to list all sessions: %v", err)
+		return fmt.Errorf("unable to open dynamic profile %q: %v", dyProfilePath, err)
 	}
+	defer f.Close()
 
-	return client.UpdateCurrentProfileInSessions(ctx, foundProfileProps, sessionIds)
+	_, err = fmt.Fprintf(f, strings.TrimSpace(`
+{
+  "Profiles": [
+    {
+      "Name": "thcon",
+      "Guid": "4379c5b2-2a9a-48f7-a73f-e569fa1a35b9",
+      "Dynamic Profile Parent Name": %s
+    }
+  ]
+}`), desiredProfile)
+
+	if err != nil {
+		return fmt.Errorf("unable to write dynamic profile %q: %v", dyProfilePath, err)
+	}
+	return nil
 }
 
 func (it2 *Iterm2) Name() string {
