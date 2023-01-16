@@ -3,6 +3,7 @@ package apps
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -22,7 +23,7 @@ func ParseConfig(ctx context.Context, configPath string) (*Config, error) {
 	dest := new(Config)
 	md, err := toml.DecodeFile(configPath, dest)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return dest, nil
 		}
 		return nil, err
