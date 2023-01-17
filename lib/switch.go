@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	// "time"
-
 	goValidator "github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -89,6 +87,11 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 		log.Error().Err(err).Msg("Unable to parse thcon.toml")
 		return err
 	}
+
+	// TODO: figure out how to make extensions show up on the command line without
+	// having to parse the entire config just for --help and completion. It might
+	// not be possible.
+	chosenApps = append(chosenApps, apps.MakeExtensions(ctx, config)...)
 
 	// Validate configs
 	toSwitch := []apps.Switchable{}

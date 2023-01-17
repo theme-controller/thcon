@@ -1,10 +1,10 @@
 package operation
 
-type Operation int
+type Operation string
 
 const (
-	DarkMode Operation = iota
-	LightMode
+	DarkMode  Operation = "dark"
+	LightMode Operation = "light"
 )
 
 func (o Operation) Verb() string {
@@ -20,4 +20,8 @@ func (o Operation) Verb() string {
 	}
 
 	return ""
+}
+
+func (o Operation) String() string {
+	return string(o)
 }
