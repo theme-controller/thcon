@@ -1,0 +1,10 @@
+---
+layout: layouts/main.html
+---
+
+<h1>{{ title }}</h1>
+{%- for app in collections.platforms[platformKey].items -%}
+  <li><a href="{{ app.url }}">{{ app.data.title }}</a></li>
+{%- endfor -%}
+
+{{ content | safe }}

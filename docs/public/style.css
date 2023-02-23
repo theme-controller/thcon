@@ -1,0 +1,162 @@
+:root {
+  --washed-purple: #F2EBFF;
+  --dark-purple: #271244;
+  --mid-gold: #DDBB33;  /* on --dark-purple: Lc -65.3 */
+  --dark-green: #005B00;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--dark-purple);
+    --fg: var(--washed-purple);
+    --link: var(--mid-gold);
+  }
+
+  footer a {
+    color: var(--dark-green);
+  }
+
+  footer a:visited {
+    color: var(--dark-green);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: var(--washed-purple);
+    --fg: var(--dark-purple);
+    --link: var(--dark-green);
+  }
+
+  footer a {
+    color: var(--mid-gold);
+  }
+
+  footer a:visited {
+    color: var(--mid-gold);
+  }
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--fg);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  /* From https://github.com/system-fonts/modern-font-stacks#geometric-humanist */
+  font-family: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+}
+
+main {
+  padding: 0 1.5rem;
+  max-width: 40rem;
+}
+
+a {
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--link);
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-block: .5rem;
+}
+
+h5 {
+  margin-block: .25rem;
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+footer {
+  background-color: var(--fg);
+  color: var(--bg);
+  margin-top: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+h5 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+footer h5 {
+  inline-size: max-content;
+  margin-top: 0;
+}
+
+.footer__categories {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-around;
+  margin: 0 auto;
+  max-width: fit-content;
+  column-gap: 1.25rem;
+}
+
+.footer__category {
+  flex: 1;
+  max-width: 100%;
+}
+
+@media (max-width: 40rem) {
+  .footer__category {
+    flex-basis: 100%;
+  }
+
+  .footer__categories {
+    flex-direction: row;
+  }
+}
+
+.footer__category ul {
+  padding-inline-start: 0;
+  margin-block-start: 0.25rem;
+  list-style: none;
+}
+
+.footer__category li {
+  inline-size: max-content;
+}
+
+table, table td, table th {
+  border-collapse: collapse;
+  border-style: solid;
+  border-color: var(--fg);
+  padding: 0.5rem;
+}
+
+picture > img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: attr(width) / attr(height);
+}
+
+.config__options {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.config__options tr > td:not(:last-of-type) {
+  /* From https://github.com/system-fonts/modern-font-stacks#monospace-code */
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+}
+
+.config__options td p {
+  margin: 0;
+}

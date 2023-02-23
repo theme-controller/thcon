@@ -1,0 +1,21 @@
+<div class="footer__categories">
+  <div class="footer__category">
+    <h5>Platforms</h5>
+    <ul>
+    {%- for name, platform in collections.platforms -%}
+      <li><a href="{{ platform.url }}">{{ platform.name }}</a></li>
+    {%- endfor -%}
+    </ul>
+  </div>
+
+  {%- for _, category in collections.categories -%}
+    <div class="footer__category">
+      <h5>{{ category.name }} </h5>
+      <ul>
+      {%- for app in category.items -%}
+        <li><a href="{{ app.url }}">{{ app.data.title }}</a></li>
+      {%- endfor -%}
+      </ul>
+    </div>
+  {%- endfor -%}
+</div>

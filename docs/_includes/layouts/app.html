@@ -1,0 +1,50 @@
+---
+layout: layouts/main.html
+templateEngineOverride: njk,md
+---
+
+<h1>{{ title }}</h1>
+Project: <a href="{{ url }}">{{ url }}</a>
+
+<h2>Setup</h2>
+{# TODO: figure out why the { content: setup } literal is necessary. #}
+{% renderTemplate "njk,md", { content: setup } %}
+{{ content | safe }}
+{% endrenderTemplate %}
+
+<h2>Configuration</h2>
+<p>Section: <code>[{{ config_section }}]</code></p>
+
+<table class="config__options">
+  <caption>
+  Configuration keys, defaults, and descriptions
+  </caption>
+  <thead>
+    <th scope="col">Key</th>
+    <th scope="col">Default</th>
+    <th scope="col">Description</th>
+  </thead>
+  <tbody>
+  {% for option in options %}
+    <tr>
+      <td>{{ option.key }}</td>
+      <td>{{ option.default }}</td>
+      <td>
+        {% renderTemplate "njk,md", { option: option } %}
+        {{ option.description | safe }}
+        {% endrenderTemplate %}
+      </td>
+    </tr>
+  {% endfor %}
+    <tr>
+      <td>disabled</td>
+      <td>false</td>
+      <td>Disables {{ title }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+{% highlight "toml" %}
+{{ example | safe }}
+{% endhighlight %}
