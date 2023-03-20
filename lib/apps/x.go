@@ -52,13 +52,9 @@ func (x *Extension) Switch(ctx context.Context, mode operation.Operation, config
 		switchCmd = x.config.Light
 	}
 
-	argv := append(
-		[]string{"-c"},
-		switchCmd,
-	)
 	// TODO: make this work in windows.
 	// Doing this "right" probably requires shellescape or something?
-	cmd := exec.CommandContext(ctx, "sh", argv...)
+	cmd := exec.CommandContext(ctx, "sh", "-c", switchCmd)
 
 	cmd.Env = append(
 		os.Environ(),

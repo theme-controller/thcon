@@ -32,6 +32,10 @@ module.exports = function(eleventyConfig) {
         name: "Terminals",
         items: [],
       },
+      other: {
+        name: "Other",
+        items: [],
+      },
     };
 
     for (const item of collectionApi.getAll()) {

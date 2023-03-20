@@ -4,7 +4,9 @@ templateEngineOverride: njk,md
 ---
 
 <h1>{{ title }}</h1>
+{%- if url -%}
 Project: <a href="{{ url }}">{{ url }}</a>
+{%- endif -%}
 
 <h2>Setup</h2>
 {# TODO: figure out why the { content: setup } literal is necessary. #}
