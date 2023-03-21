@@ -47,8 +47,14 @@ body {
   color: var(--fg);
   display: grid;
   grid-template-rows: 1fr auto;
-  /* From https://github.com/system-fonts/modern-font-stacks#geometric-humanist */
-  font-family: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+  /* From https://github.com/system-fonts/modern-font-stacks#system-ui */
+  font-family: system-ui, sans-serif;
+
+}
+
+h1, h2, h3, h4, h5 {
+  /* From https://github.com/system-fonts/modern-font-stacks#industrial */
+  font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
 }
 
 main {
