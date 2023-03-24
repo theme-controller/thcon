@@ -14,4 +14,5 @@ var All = []Switchable{
 	NewVim(),
 	NewNeovim(),
 	NewHelix(),
+	NewKitty(),
 }
