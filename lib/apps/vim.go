@@ -21,8 +21,8 @@ type VimConfigSlice struct {
 }
 type vimConfig struct {
 	health.Disabled
-	Dark  string `toml:"dark" validate:"file,required_with=Light"`
-	Light string `toml:"light" validate:"file,required_with=Dark"`
+	Dark  string `toml:"dark" validate:"expfile,required_with=Light"`
+	Light string `toml:"light" validate:"expfile,required_with=Dark"`
 }
 
 type NeovimConfigSlice struct {

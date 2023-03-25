@@ -67,6 +67,10 @@ const (
 // provides.
 var validator = goValidator.New()
 
+func init() {
+	addCustomValidators(validator)
+}
+
 // RequiresConfig rejects a nil config for apps that don't (or cannot) have a
 // valid default configuration, and otherwise performs config health checking,
 // including:
