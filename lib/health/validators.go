@@ -12,7 +12,10 @@ import (
 // addCustomValidators sets up thcon-internal validators for
 // github.com/go-playground/validator/v10.
 func addCustomValidators(validate *goValidator.Validate) {
-	validate.RegisterValidation("expfile", expandedFile)
+	err := validate.RegisterValidation("expfile", expandedFile)
+	if err != nil {
+		panic(fmt.Errorf("unable to register custom validators: %v", err))
+	}
 }
 
 // expandedFile is identical to the default 'file' validator, but expands '~'

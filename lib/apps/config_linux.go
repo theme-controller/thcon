@@ -16,6 +16,7 @@ type Config struct {
 	VimConfigSlice
 	NeovimConfigSlice
 	HelixConfigSlice
+	KittyConfigSlice
 	ExtensionsSlice
 }
 
