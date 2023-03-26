@@ -30,8 +30,8 @@ type NeovimConfigSlice struct {
 }
 type neovimConfig struct {
 	health.Disabled
-	Dark  string `toml:"dark" validate:"required_with=Light"`
-	Light string `toml:"light" validate:"required_with=Dark"`
+	Dark  string `toml:"dark" validate:"expfile,required_with=Light,sameExtAs=Light"`
+	Light string `toml:"light" validate:"expfile,required_with=Dark,sameExtAs=Dark"`
 }
 
 type anyVim struct {
@@ -65,6 +65,22 @@ func (v *anyVim) sockbase() string {
 		return "nvim"
 	}
 	return "vim"
+}
+
+func (v *anyVim) getSymlinkTarget(rcFile string) (string, error) {
+	thcon_dir, err := util.EnsureThconStateDir()
+	if err != nil {
+		return "", err
+	}
+
+	var extension string = filepath.Ext(rcFile)
+	// Lua syntax must be in a .lua file extension, but any other extension
+	// can contain VimL. Strip non-lua extensions, to produce symlinks called
+	// either 'neovim.lua' (for lua configs) or 'neovimrc'/'vimrc' (for VimL).
+	if extension != ".lua" {
+		extension = "rc"
+	}
+	return filepath.Join(thcon_dir, v.flavor+extension), nil
 }
 
 func (v *anyVim) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
@@ -107,21 +123,17 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 		}
 	}
 
+	// 1) Symlink a thcon state file to point to the desired config.
 	rc_file, err := homedir.Expand(rc_file)
 	if err != nil {
 		return err
 	}
 
-	thcon_dir, err := util.EnsureThconStateDir()
+	symlink_target, err := v.getSymlinkTarget(rc_file)
 	if err != nil {
 		return err
 	}
 
-	var extension string = filepath.Ext(rc_file)
-	if extension != ".lua" {
-		extension = ""
-	}
-	symlink_target := filepath.Join(thcon_dir, v.flavor+extension)
 	exists, err := util.SymlinkExists(symlink_target)
 	if err != nil {
 		return nil
@@ -135,6 +147,7 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 		return err
 	}
 
+	// 2) Notify all vim or nvim processes over IPC (via `thcon listen`).
 	type IpcMessage struct {
 		RcFile string `json:"rc_file"`
 	}
