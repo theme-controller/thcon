@@ -15,7 +15,7 @@ setup: |
   2. Use the paths to those files in `thcon.toml` (examples below)
   3. Ensure you don't have any other [color settings](https://sw.kovidgoyal.net/kitty/conf/#color-scheme)
      in your main `kitty.conf`
-  4. Add `import ~/.local/share/thcon/kitty.conf` to your main `kitty.conf`
+  4. Add `include ~/.local/share/thcon/kitty.conf` to your main `kitty.conf`
 options:
   - key: dark
     default: ~/.config/kitty/dark.thcon.conf
