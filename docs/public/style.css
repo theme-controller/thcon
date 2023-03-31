@@ -57,6 +57,27 @@ h1, h2, h3, h4, h5 {
   font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
 }
 
+nav {
+  border-bottom: 1px;
+}
+
+.crumbs {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.crumbs > li {
+  display: inline-block;
+}
+
+.crumbs > li::after {
+  display: inline-block;
+  color: var(--fg);
+  content: "/";
+
+  padding: 0 0.5rem;
+}
+
 main {
   padding: 0 1.5rem;
   min-width: 25rem;

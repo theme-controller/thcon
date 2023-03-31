@@ -11,6 +11,14 @@
   </head>
   <body>
     <main>
+      <nav>
+      {{-
+        collections.all |
+        eleventyNavigationBreadcrumb(eleventyNavigation.key, { allowMissing: false }) |
+        eleventyNavigationToHtml({ listClass: "crumbs" }) |
+        safe
+      -}}
+      </nav>
       {{- content | safe -}}
     </main>
     <footer>

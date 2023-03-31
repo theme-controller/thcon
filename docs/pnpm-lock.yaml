@@ -2,10 +2,12 @@ lockfileVersion: 5.4
 
 specifiers:
   '@11ty/eleventy': ^2.0.0
+  '@11ty/eleventy-navigation': ^0.3.5
   '@11ty/eleventy-plugin-syntaxhighlight': ^4.2.0
 
 devDependencies:
   '@11ty/eleventy': 2.0.0
+  '@11ty/eleventy-navigation': 0.3.5
   '@11ty/eleventy-plugin-syntaxhighlight': 4.2.0
 
 packages:
@@ -34,6 +36,12 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
+    dev: true
+
+  /@11ty/eleventy-navigation/0.3.5:
+    resolution: {integrity: sha512-4aKW5aIQDFed8xs1G1pWcEiFPcDSwZtA4IH1eERtoJ+Xy+/fsoe0pzbDmw84bHZ9ACny5jblENhfZhcCxklqQw==}
+    dependencies:
+      dependency-graph: 0.11.0
     dev: true
 
   /@11ty/eleventy-plugin-syntaxhighlight/4.2.0:

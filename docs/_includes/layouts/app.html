@@ -1,6 +1,10 @@
 ---
 layout: layouts/main.html
 templateEngineOverride: njk,md
+eleventyComputed:
+  eleventyNavigation:
+    parent: apps
+    key: "{{ title }}"
 ---
 
 <h1>{{ title }}</h1>

@@ -1,6 +1,9 @@
 ---
 title: "thcon"
 layout: layouts/main.html
+eleventyNavigation:
+  key: root
+  title: thcon
 ---
 
 <h1 id="index__title">thcon, A Configurable Theme Controller</h1>
