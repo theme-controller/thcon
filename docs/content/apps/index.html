@@ -1,0 +1,19 @@
+---
+title: Apps by Category
+layout: layouts/main.html
+eleventyNavigation:
+  key: apps
+  parent: root
+---
+
+<h1>{{ title }}</h1>
+
+{%- for _, category in collections.categories -%}
+<h2 id="{{category.name | slugify}}">{{ category.name }}</h2>
+<ul>
+{%- for app in category.items -%}
+  <li><a href="{{ app.url }}">{{ app.data.title }}</a></li>
+{%- endfor -%}
+</ul>
+{%- endfor -%}
+

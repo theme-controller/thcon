@@ -24,18 +24,22 @@ module.exports = function(eleventyConfig) {
     const knownCategories = {
       desktop: {
         name: "Desktop Environments",
+        url: "/categories/desktop-environments",
         items: [],
       },
       editor: {
         name: "Editors",
+        url: "/categories/editors",
         items: [],
       },
       terminal: {
         name: "Terminals",
+        url: "/categories/terminals",
         items: [],
       },
       other: {
         name: "Other",
+        url: "/categories/other",
         items: [],
       },
     };

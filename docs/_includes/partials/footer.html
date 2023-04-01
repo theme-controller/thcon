@@ -1,6 +1,6 @@
 <div class="footer__categories">
   <div class="footer__category">
-    <h5>Platforms</h5>
+    <h5>Apps by platform</h5>
     <ul>
     {%- for name, platform in collections.platforms -%}
       <li><a href="{{ platform.url }}">{{ platform.name }}</a></li>
@@ -8,14 +8,12 @@
     </ul>
   </div>
 
-  {%- for _, category in collections.categories -%}
-    <div class="footer__category">
-      <h5>{{ category.name }} </h5>
-      <ul>
-      {%- for app in category.items -%}
-        <li><a href="{{ app.url }}">{{ app.data.title }}</a></li>
+  <div class="footer__category">
+    <h5>Apps by Category</h5>
+    <ul>
+      {%- for _, category in collections.categories -%}
+        <li><a href="/apps/#{{ category.name | slugify }}">{{ category.name }}</a></li>
       {%- endfor -%}
-      </ul>
-    </div>
-  {%- endfor -%}
+    </ul>
+  </div>
 </div>

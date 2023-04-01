@@ -1,0 +1,14 @@
+---
+layout: layouts/main.html
+eleventyComputed:
+  eleventyNavigation:
+    parent: categories
+    key: "{{ title }}"
+---
+
+<h1>{{ title }}</h1>
+{%- for app in collections.categories[categoryKey].items -%}
+  <li><a href="{{ app.url }}">{{ app.data.title }}</a></li>
+{%- endfor -%}
+
+{{ content | safe }}
