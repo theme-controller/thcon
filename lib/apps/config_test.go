@@ -18,6 +18,7 @@ func TestConfigPath(t *testing.T) {
 	switch runtime.GOOS {
 	case "linux":
 	case "darwin":
+	case "freebsd":
 		home, err := os.UserHomeDir()
 		require.NoError(t, err)
 		require.Equal(
