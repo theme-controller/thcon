@@ -24,5 +24,6 @@ package main
 import "github.com/theme-controller/thcon/cmd"
 
 func main() {
+
 	cmd.Execute()
 }
