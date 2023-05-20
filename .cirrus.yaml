@@ -8,8 +8,15 @@ build_test_lint_template: &BUILD_TEST_LINT_TEMPLATE
   go_get_script: go get ./...
   build_script: go build ./...
   test_script: |
-    [ "$(go env GOARCH)" = "$(uname -m)" ] && go test ./... || :
-  lint_script: $(go env GOPATH)/bin/staticcheck -f text ./...
+    (
+      ./support/is-not-cross-compiling.sh && \
+      go test ./...
+    ) || :
+  lint_script: |
+    (
+      ./support/is-not-cross-compiling.sh && \
+      $(go env GOPATH)/bin/staticcheck -f text ./...
+    ) || :
 
 task:
   name: linux/x86_64
