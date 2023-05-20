@@ -45,7 +45,7 @@ task:
 run_linter_template: &RUN_LINTER_TEMPLATE
   skip: "changesIncludeOnly('doc/*')"
   install_staticcheck_script: go install honnef.co/go/tools/cmd/staticcheck@2023.1
-  run_script: staticcheck -f text ./...
+  lint_script: staticcheck -f text ./...
 
 task:
   name: lint linux
