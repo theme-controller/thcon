@@ -1,18 +1,18 @@
-# ----- build/test -----
+# ----- build/test/lint -----
 build_test_lint_template: &BUILD_TEST_LINT_TEMPLATE
   skip: "changesIncludeOnly('doc/*')"
   modules_cache:
     fingerprint_script: cat go.sum
     folder: $GOPATH/pkg/mod
   install_staticcheck_script: go install honnef.co/go/tools/cmd/staticcheck@2023.1
-  go_get_script: go env GOARCH && go get ./...
-  build_script: go env GOARCH && go build ./...
-  test_script: go env GOARCH && go test ./...
-  lint_script: go env GOARCH && $(go env GOPATH)/bin/staticcheck -f text ./...
+  go_get_script: go get ./...
+  build_script: go build ./...
+  test_script: |
+    [ "$(go env GOARCH)" = "$(uname -m)" ] && go test ./... || :
+  lint_script: $(go env GOPATH)/bin/staticcheck -f text ./...
 
 task:
-  name: test linux/x86_64
-  alias: linux_x86
+  name: linux/x86_64
   container:
     image: golang:1.20-bullseye
   install_script: apt update && apt install -y libglib2.0-dev
@@ -20,8 +20,7 @@ task:
   publish_script: ./support/maybe-upload-artifact.sh "thcon_linux_x86_86"
 
 task:
-  name: test linux/arm64
-  alias: linux_arm
+  name: linux/arm64
   arm_container:
     image: golang:1.20-bullseye
   install_script: apt update && apt install -y libglib2.0-dev
@@ -29,8 +28,7 @@ task:
   publish_script: ./support/maybe-upload-artifact.sh "thcon_linux_arm64"
 
 task:
-  name: test darwin/amd64
-  alias: darwin_x86
+  name: darwin/amd64
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-base:latest
   install_script: brew install go@1.20
@@ -40,8 +38,7 @@ task:
   publish_script: ./support/maybe-upload-artifact.sh "thcon_darwin_amd64"
 
 task:
-  name: test darwin/arm64
-  alias: darwin_arm
+  name: darwin/arm64
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-base:latest
   install_script: brew install go@1.20
@@ -49,8 +46,7 @@ task:
   publish_script: ./support/maybe-upload-artifact.sh "thcon_darwin_arm64"
 
 task:
-  name: test freebsd-13.1/x86_64
-  alias: freebsd-13-1_x86
+  name: freebsd-13.1/x86_64
   freebsd_instance:
     image_family: freebsd-13-1
   install_script: pkg install -y bash go glib pkgconf
