@@ -43,11 +43,11 @@ func listWindows(ctx context.Context, conn *dbus.Conn) ([]windowNode, error) {
 	}
 
 	if err := obj.CallWithContext(ctx, "org.freedesktop.DBus.Introspectable.Introspect", 0).Store(&windowListXml); err != nil {
-		return nil, fmt.Errorf("Unable to retrieve gnome-terminal widnows from DBus: %+v", err)
+		return nil, fmt.Errorf("unable to retrieve gnome-terminal widnows from DBus: %+v", err)
 	}
 
 	if err := xml.Unmarshal(windowListXml, &windowList); err != nil {
-		return nil, fmt.Errorf("Unable to unmarshal XML bytes to windowNode structs: %+v", err)
+		return nil, fmt.Errorf("unable to unmarshal XML bytes to windowNode structs: %+v", err)
 	}
 
 	return windowList.Windows, nil
@@ -67,7 +67,7 @@ func setWindowProfile(ctx context.Context, conn *dbus.Conn, windowId string, pro
 	).Store()
 
 	if err != nil {
-		return fmt.Errorf("Unable to apply profile '%s' for gnome-terminal window '%s': %+v", profileId, windowId, err)
+		return fmt.Errorf("unable to apply profile '%s' for gnome-terminal window '%s': %+v", profileId, windowId, err)
 	}
 
 	return nil
@@ -89,7 +89,7 @@ func (gt *GnomeTerminal) ValidateConfig(ctx context.Context, config *Config) (he
 func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
-		return fmt.Errorf("Unable connect to dbus session bus: %+v", err)
+		return fmt.Errorf("unable connect to dbus session bus: %+v", err)
 	}
 	defer conn.Close()
 
@@ -102,7 +102,7 @@ func (gt *GnomeTerminal) Switch(ctx context.Context, mode operation.Operation, c
 	}
 
 	if err := setDefaultProfile(ctx, profileId); err != nil {
-		return fmt.Errorf("Unable to set default gnome-terminal profile: %+v", err)
+		return fmt.Errorf("unable to set default gnome-terminal profile: %+v", err)
 	}
 
 	windows, err := listWindows(ctx, conn)

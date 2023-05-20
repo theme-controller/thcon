@@ -49,7 +49,7 @@ func getKonsoleServiceIds(ctx context.Context, conn *dbus.Conn) ([]string, error
 	).Store(&names)
 
 	if err != nil {
-		return nil, fmt.Errorf("Unable to get names of Konsole services: %+v", err)
+		return nil, fmt.Errorf("unable to get names of Konsole services: %+v", err)
 	}
 
 	var konsoles []string
@@ -76,11 +76,11 @@ func getSessionIds(ctx context.Context, conn *dbus.Conn, serviceId string) ([]st
 	var sessionList SessionList
 
 	if err := obj.CallWithContext(ctx, "org.freedesktop.DBus.Introspectable.Introspect", 0).Store(&sessionListXml); err != nil {
-		return nil, fmt.Errorf("Unable to retrieve konsole sessions: %+v", err)
+		return nil, fmt.Errorf("unable to retrieve konsole sessions: %+v", err)
 	}
 
 	if err := xml.Unmarshal(sessionListXml, &sessionList); err != nil {
-		return nil, fmt.Errorf("Unable to unmarshal XML bytes to sessionNode structs: %+v", err)
+		return nil, fmt.Errorf("unable to unmarshal XML bytes to sessionNode structs: %+v", err)
 	}
 
 	var sessions []string
@@ -102,7 +102,7 @@ func applyProfile(ctx context.Context, conn *dbus.Conn, serviceId string, sessio
 	).Store()
 
 	if err != nil {
-		return errors.New("Unable to apply profile")
+		return errors.New("unable to apply profile")
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func (k *Konsole) ValidateConfig(ctx context.Context, config *Config) (health.St
 func (k *Konsole) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
-		return fmt.Errorf("Unable connect to dbus session bus: %+v", err)
+		return fmt.Errorf("unable connect to dbus session bus: %+v", err)
 	}
 	defer conn.Close()
 
