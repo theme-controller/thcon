@@ -36,7 +36,7 @@ func (m *MacOS) Switch(ctx context.Context, mode operation.Operation, config *Co
 	script := fmt.Sprintf(appearanceAppleScriptf, mode == operation.DarkMode)
 	cmd := exec.CommandContext(ctx, "osascript", "-e", script)
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("Unable to switch macOS appearance: %+v", err)
+		return fmt.Errorf("unable to switch macOS appearance: %+v", err)
 	}
 
 	return nil

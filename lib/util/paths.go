@@ -16,7 +16,7 @@ func EnsureThconStateDir() (string, error) {
 	dirname := filepath.Join(home, ".local", "share", "thcon")
 	err = os.MkdirAll(dirname, 0700)
 	if err != nil {
-		return "", fmt.Errorf("Unable to create thcon state directory for current user: %+v", err)
+		return "", fmt.Errorf("unable to create thcon state directory for current user: %+v", err)
 	}
 
 	return dirname, nil

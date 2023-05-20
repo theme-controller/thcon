@@ -19,12 +19,12 @@ func init() {
 func ensureUserSocketDir() (string, error) {
 	currUser, err := user.Current()
 	if err != nil {
-		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
+		return "", fmt.Errorf("unable to create socket directory for current user: %+v", err)
 	}
 	dirname := filepath.Join(os.TempDir(), "thcon-"+currUser.Uid)
 	err = os.MkdirAll(dirname, 0700)
 	if err != nil {
-		return "", fmt.Errorf("Unable to create socket directory for current user: %+v", err)
+		return "", fmt.Errorf("unable to create socket directory for current user: %+v", err)
 	}
 
 	return dirname, nil
@@ -64,7 +64,7 @@ func ListSockets(appName string, socketPerProcess bool) (sockaddr.UnixSocks, err
 func listSocketsImpl(fsys fs.FS, basedir string, appName string) (sockaddr.UnixSocks, error) {
 	matches, err := fs.Glob(fsys, appName+"-*.sock")
 	if err != nil {
-		return nil, fmt.Errorf("Failed to list sockets: %+v", err)
+		return nil, fmt.Errorf("failed to list sockets: %+v", err)
 	}
 
 	var socks sockaddr.UnixSocks

@@ -57,7 +57,7 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 	case operation.LightMode:
 		fmt.Println("Switching to light mode")
 	default:
-		return fmt.Errorf("Unexpected mode '%+v'", mode)
+		return fmt.Errorf("unexpected mode '%+v'", mode)
 	}
 
 	// TODO: maybe put this in context and pass it through to the health.___ functions?
@@ -170,11 +170,11 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 	case 0:
 		return nil
 	case 1:
-		return errors.New("One app failed to switch themes")
+		return errors.New("one app failed to switch themes")
 	default:
-		var count string = "Some"
+		var count string = "some"
 		if numErrors == len(toSwitch) {
-			count = "All"
+			count = "all"
 		}
 		return fmt.Errorf("%s apps failed to switch themes", count)
 	}

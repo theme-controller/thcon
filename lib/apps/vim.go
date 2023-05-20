@@ -182,7 +182,7 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 	}
 
 	if writeFailure {
-		return errors.New("Failed to apply settings")
+		return errors.New("failed to apply settings")
 	}
 	return nil
 }
