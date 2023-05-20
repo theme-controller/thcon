@@ -1,6 +1,6 @@
 # ----- build/test -----
 build_and_test_template: &BUILD_AND_TEST_TEMPLATE
-  only_if: "changesInclude('.cirrus.yml', 'go.mod', 'go.sum', '**/*.go')"
+  skip: "changesIncludeOnly('doc/*')"
   modules_cache:
     fingerprint_script: cat go.sum
     folder: $GOPATH/pkg/mod
