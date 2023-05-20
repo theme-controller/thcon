@@ -37,13 +37,13 @@ task:
   alias: test_freebsd-13-1_x86
   freebsd_instance:
     image_family: freebsd-13-1
-  install_script: pkg install -y go
+  install_script: pkg install -y go glib pkgconf
   << : *BUILD_AND_TEST_TEMPLATE
 
 # ----- lint -----
 
 run_linter_template: &RUN_LINTER_TEMPLATE
-  only_if: "changesInclude('.cirrus.yml', 'go.mod', 'go.sum', '**/*.go')"
+  skip: "changesIncludeOnly('doc/*')"
   run_script: golangci-lint run -v --out-format json > lint-report.json
   always:
     golangci_artifacts:
