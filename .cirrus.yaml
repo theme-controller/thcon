@@ -9,7 +9,7 @@ build_and_test_template: &BUILD_AND_TEST_TEMPLATE
   test_script: go test ./...
 
 task:
-  name: "Test linux/x86_64"
+  name: test linux/x86_64
   alias: test_linux_x86
   container:
     image: golang:1.20-bullseye
@@ -17,7 +17,7 @@ task:
   << : *BUILD_AND_TEST_TEMPLATE
 
 task:
-  name: Test linux/arm64
+  name: test linux/arm64
   alias: test_linux_arm
   arm_container:
     image: golang:1.20-bullseye
@@ -25,7 +25,7 @@ task:
   << : *BUILD_AND_TEST_TEMPLATE
 
 task:
-  name: Test darwin/arm64
+  name: test darwin/arm64
   alias: test_darwin_arm
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-base:latest
@@ -33,7 +33,7 @@ task:
   << : *BUILD_AND_TEST_TEMPLATE
 
 task:
-  name: Test freebsd-13.1/x86_64
+  name: test freebsd-13.1/x86_64
   alias: test_freebsd-13-1_x86
   freebsd_instance:
     image_family: freebsd-13-1
@@ -44,32 +44,29 @@ task:
 
 run_linter_template: &RUN_LINTER_TEMPLATE
   skip: "changesIncludeOnly('doc/*')"
-  run_script: golangci-lint run -v --out-format json > lint-report.json
-  always:
-    golangci_artifacts:
-      path: lint-report.json
-      type: text/json
-      format: golangci
+  install_staticcheck_script: go install honnef.co/go/tools/cmd/staticcheck@2023.1
+  run_script: staticcheck -f text ./...
 
 task:
-  name: Lint linux
+  name: lint linux
   alias: lint_linux
   container:
-    image: golangci/golangci-lint:latest
+    image: golang:1.20-bullseye
+  install_script: apt update && apt install -y libglib2.0-dev
   << : *RUN_LINTER_TEMPLATE
 
 task:
-  name: Lint darwin
+  name: lint darwin
   alias: lint_darwin
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-base:latest
-  install_script: brew install golangci-lint  
+  install_script: brew install go@1.20
   << : *RUN_LINTER_TEMPLATE
 
 task:
-  name: Lint freebsd
+  name: lint freebsd
   alias: lint_freebsd
   freebsd_instance:
     image_family: freebsd-13-1
-  install_script: pkg install -y golangci-lint
+  install_script: pkg install -y go glib pkgconf
   << : *RUN_LINTER_TEMPLATE
