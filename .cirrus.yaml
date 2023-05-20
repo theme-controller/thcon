@@ -56,11 +56,3 @@ task:
   install_script: pkg install -y bash go glib pkgconf
   << : *BUILD_TEST_LINT_TEMPLATE
   publish_script: ./support/maybe-upload-artifact.sh "thcon_freebsd_amd64"
-
-task:
-  name: debug
-  container:
-    image: golang:1.20-bullseye
-  depends_on:
-    - linux_x86
-  dbg_script: "ls -la && exit 1"
