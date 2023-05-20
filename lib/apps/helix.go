@@ -4,6 +4,7 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -62,13 +63,18 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 	// TODO: Make this configurable in thcon.toml.
 	configPath := filepath.Join(homeDir, ".config", "helix", "config.toml")
 	hxConfigBytes, err := os.ReadFile(configPath)
-	if err != nil {
+	if errors.Is(err, os.ErrNotExist) {
+		// If no config.toml exists, pretend we read a minimal config with only
+		// a theme key/value, so that the rest of the switching process can
+		// proceed as expected.
+		hxConfigBytes = []byte(`theme = "default"`)
+	} else if err != nil {
 		return fmt.Errorf("unable to read helix config: %v", err)
 	}
 
-	themeLine := fmt.Sprintf(`theme = "%s"`, themeName)
+	newThemeLine := fmt.Sprintf(`theme = "%s"`, themeName)
 	themeLineRE := regexp.MustCompile(`(?m)^\s*theme\s*=\s*".+"$`)
-	newConfig := themeLineRE.ReplaceAll(hxConfigBytes, []byte(themeLine))
+	newConfig := themeLineRE.ReplaceAll(hxConfigBytes, []byte(newThemeLine))
 	if err := os.WriteFile(configPath, newConfig, os.ModePerm); err != nil {
 		return fmt.Errorf("unable to write new helix config: %v", err)
 	}
