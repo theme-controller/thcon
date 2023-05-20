@@ -49,7 +49,9 @@ jobs:
         run: pnpm install
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build with 11ty
-        run: pnpm run build
+        # When served via theme-controller.github.io/thcon ,
+        # ensure absolute paths are prefixed properly.
+        run: pnpm run build --pathprefix=thcon
         working-directory: ${{ env.BUILD_PATH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
