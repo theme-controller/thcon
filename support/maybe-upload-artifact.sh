@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Originally from https://cirrus-ci.org/examples/#release-assets
 
-set -euo pipefail
+set -eo pipefail
 
 if [[ "$CIRRUS_RELEASE" == "" ]]; then
   echo "Not a release. No need to deploy!"
@@ -10,6 +10,11 @@ fi
 
 if [[ "$GITHUB_TOKEN" == "" ]]; then
   echo "Please provide GitHub access token via GITHUB_TOKEN environment variable!"
+  exit 1
+fi
+
+if [[ "$1" == "" ]]; then
+  echo "Please provide a destination filename (shown on the Github Releases page) as \$1."
   exit 1
 fi
 
