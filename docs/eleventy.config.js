@@ -20,6 +20,12 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventyRenderPlugin);
   eleventyConfig.addPlugin(eleventyNavigationPlugin);
 
+  eleventyConfig.addCollection("app", function(collectionApi) {
+    return collectionApi
+      .getFilteredByTag("app")
+      .sort((a, b) => a.data.config_section.localeCompare(b.data.config_section));
+  });
+
   eleventyConfig.addCollection("categories", function(collectionApi) {
     const knownCategories = {
       desktop: {

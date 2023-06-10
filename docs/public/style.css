@@ -126,8 +126,8 @@ footer h5 {
 }
 
 .footer__categories {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
   align-items: start;
   justify-content: space-around;
   margin: 0 auto;
@@ -140,13 +140,15 @@ footer h5 {
   max-width: 100%;
 }
 
-@media (max-width: 40rem) {
+@media (max-width: 43rem) {
   .footer__category {
     flex-basis: 100%;
   }
 
   .footer__categories {
+    display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
   }
 
   main {
