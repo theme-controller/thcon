@@ -18,6 +18,9 @@ build_test_lint_template: &BUILD_TEST_LINT_TEMPLATE
       $(go env GOPATH)/bin/staticcheck -f text ./...
     ) || :
 
+env:
+  GITHUB_TOKEN: ENCRYPTED[28ad04b3163626b1e0e142f317fafbd1ae258b9f1da759ddc2627a504ff99b478d5fc949684a31f94734cb3382bcb41d]
+
 task:
   name: linux/x86_64
   container:
