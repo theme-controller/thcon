@@ -23,11 +23,15 @@ fpath="./thcon"
 name=$1
 url_to_upload="https://uploads.github.com/repos/$CIRRUS_REPO_FULL_NAME/releases/$CIRRUS_RELEASE/assets?name=$name"
 
+echo "Testing for '\$fpath' existence"
+echo "\$fpath == '$fpath'"
+ls -l $fpath
+
 echo "Uploading $fpath..."
 curl -X POST \
   --data-binary @$fpath \
   --header "Authorization: token $GITHUB_TOKEN" \
-  --header "Content-Type: $file_content_type" \
+  --header "Content-Type: application/octet-stream" \
   $url_to_upload
 
 
