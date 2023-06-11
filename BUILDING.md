@@ -1,9 +1,22 @@
-# Building `thcon`
-1. Install [earthly](https://eathly.dev) on your platform
-  1. On Fedora 35 (which supports podman but not docker), I had to add the following block to
-     `~/.config/containers/registries.conf`:
-     ```toml
-     [registries.search]
-     registries = ['docker.io']
-     ```
-2. TBD
+# Working with the Core `thcon` Binary
+This project uses a pretty standard Go build pattern:
+
+```sh
+# Compile
+go build
+
+# Test
+go test
+
+# Lint
+# Install staticcheck: https://staticcheck.io/docs/getting-started/
+staticcheck
+```
+
+Unfortunately, cross-compilation doesn't work very well due to the native
+dependencies involved.
+
+# Building documentation
+1. [Install pnpm](https://pnpm.io/installation)
+2. `pnpm -C docs/ start`
+3. Open `https://localhost:8080` in your browser
