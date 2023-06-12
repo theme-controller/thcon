@@ -8,7 +8,14 @@ eleventyNavigation:
 ---
 
 # Install
-Currently, the simplest way to install `thcon` is with the `go` CLI:
+## Pre-built Binaries
+Static binaries for each supported platform/architecture pair are attached to
+each release on GitHub:
+
+[thcon Releases](https://github.com/theme-controller/thcon/releases)
+
+## go install
+You can also build and install `thcon` from-source using the `go` CLI:
 
 ```sh
 go install github.com/theme-controller/thcon@latest
@@ -33,7 +40,7 @@ dnf install glib2-devel
 pkg install glib pkgconf
 ```
 
-# Download
-Static binaries will be available via the
-[GitHub Releases page](https://github.com/theme-controller/thcon/releases) when
-this project hits 1.0.
+## OS Packages
+`thcon` isn't currently packaged for any operating systems. If you're willing to
+help with packaging, please [file a GitHub Issue](https://github.com/theme-controller/thcon/new)
+to let me know!
