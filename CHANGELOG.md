@@ -1,11 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+
+## [v0.14.0 - 2023-06-11]
+Completely rewritten in Go. Configuration format is backwards-compatible with
+the rust version, but the CLI makes **no claims of backwards compatibility**.
+
+### Added:
+* [Helix Editor](https://helix-editor.com) support
+* [Kitty](https://sw.kovidgoyal.net/kitty/) support
+* Custom application support
+* FreeBSD support
+* Rewrote docs site, now hosted on https://thcon.app
+* `thcon listen` subcommand
+
+### Removed:
+* [Sublime Text](https://www.sublimetext.com) support
+  * ST4 has been out for long enough that maintaining support for ST3 is unnecessary
+* [Visual Studio Code](https://code.visualstudio.com) support
+  * VSCode supports OS theme syncing on all major platforms since no later than March 2022
+* [Atom](https://github.com/atom/atom) support
+  * Atom was sunset in December 2022
+* The `thcon-listen` binary is no longer included during installation
+  * Use the `thcon listen` subcommand instead
 
 ## [v0.13.2 - 2021-11-06]
 ### Changed:
