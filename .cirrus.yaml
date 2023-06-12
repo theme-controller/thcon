@@ -5,8 +5,8 @@ build_test_lint_template: &BUILD_TEST_LINT_TEMPLATE
     fingerprint_script: cat go.sum
     folder: $GOPATH/pkg/mod
   install_staticcheck_script: go install honnef.co/go/tools/cmd/staticcheck@2023.1
-  go_get_script: go get ./...
-  build_script: go build ./...
+  go_get_script: go get
+  build_script: go build
   test_script: |
     (
       ./support/is-not-cross-compiling.sh && \

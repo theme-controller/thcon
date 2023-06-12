@@ -27,7 +27,7 @@ echo "Uploading $fpath..."
 curl -X POST \
   --data-binary @$fpath \
   --header "Authorization: token $GITHUB_TOKEN" \
-  --header "Content-Type: $file_content_type" \
+  --header "Content-Type: application/octet-stream" \
   $url_to_upload
 
 
