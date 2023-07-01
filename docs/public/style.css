@@ -19,6 +19,10 @@
   footer a:visited {
     color: var(--dark-green);
   }
+
+  code {
+    background-color: rgba(255, 255, 255, 0.175);
+  }
 }
 
 @media (prefers-color-scheme: light) {
@@ -34,6 +38,10 @@
 
   footer a:visited {
     color: var(--mid-gold);
+  }
+
+  code {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 
