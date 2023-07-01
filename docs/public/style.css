@@ -41,7 +41,13 @@ html {
   height: 100%;
 }
 
+/* From https://tachyons.io */
+.border-box, a, article, aside, blockquote, body, code, dd, div, dl, dt, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, html, input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], legend, li, main, nav, ol, p, pre, section, table, td, textarea, th, tr, ul {
+  box-sizing: border-box;
+}
+
 body {
+  margin: 0;
   min-height: 100vh;
   background-color: var(--bg);
   color: var(--fg);
@@ -49,12 +55,18 @@ body {
   grid-template-rows: 1fr auto;
   /* From https://github.com/system-fonts/modern-font-stacks#system-ui */
   font-family: system-ui, sans-serif;
-
+  font-size: 1rem;
 }
 
 h1, h2, h3, h4, h5 {
   /* From https://github.com/system-fonts/modern-font-stacks#industrial */
-  font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+  font-family: Bahnschrift, "DIN Alternate", "Franklin Gothic Medium", "Nimbus Sans Narrow", sans-serif-condensed, sans-serif;
+}
+
+p code {
+  /* From https://github.com/system-fonts/modern-font-stacks#monospace-code */
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  padding-inline: 0.125rem;
 }
 
 .crumbs {
@@ -191,7 +203,7 @@ picture > img {
 
 .config__options tr > td:not(:last-of-type) {
   /* From https://github.com/system-fonts/modern-font-stacks#monospace-code */
-  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
 }
 
 .config__options td p {
