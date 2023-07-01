@@ -1,14 +1,15 @@
 /*
-Name:   Base2Tone-Pool Dark
+Name:   Base2Tone-Evening Dark
 Author: by Bram de Haan, adapted from DuoTone themes by Simurai (http://simurai.com/projects/2016/01/01/duotone-themes)
 
 http://atelierbram.github.io/Base2Tone-prism/demo/evening/dark/
 Prism template for Base2Tone by Bram de Haan (https://github.com/atelierbram/Base2Tone-prism)
 Generated with Base16 Builder (https://github.com/base16-builder/base16-builder)
 
-Source: https://github.com/atelierbram/Base2Tone-prism/blob/610d3d65ac0b65ab827080d137d1e0eaaa6e5cd7/output/prism/prism-base2tone-pool-dark.css
+Source: https://raw.githubusercontent.com/atelierbram/Base2Tone-prism/610d3d65ac0b65ab827080d137d1e0eaaa6e5cd7/output/prism/prism-base2tone-evening-dark.css
 Modifications:
 * Media query
+* Lightened colors to improve contrast
 */
 
 @media (prefers-color-scheme: dark) {
@@ -31,20 +32,20 @@ Modifications:
     -moz-hyphens: none;
     -ms-hyphens: none;
     hyphens: none;
-    background: #2a2433;
-    color: #b886fd;
+    background: #2a2734;
+    color: #c4b9fe;
   }
 
   pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
   code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
     text-shadow: none;
-    background: #8f51e6;
+    background: #6a51e6;
   }
 
   pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
   code[class*="language-"]::selection, code[class*="language-"] ::selection {
     text-shadow: none;
-    background: #8f51e6;
+    background: #6a51e6;
   }
 
   /* Code blocks */
@@ -64,11 +65,11 @@ Modifications:
   .token.prolog,
   .token.doctype,
   .token.cdata {
-    color: #635775;
+    color: #b2aba4;
   }
 
   .token.punctuation {
-    color: #635775;
+    color: #b2aba4;
   }
 
   .token.namespace {
@@ -78,23 +79,23 @@ Modifications:
   .token.tag,
   .token.operator,
   .token.number {
-    color: #ed655e;
+    color: #e09142;
   }
 
   .token.property,
   .token.function {
-    color: #b886fd;
+    color: #c4b9fe;
   }
 
   .token.tag-id,
   .token.selector,
   .token.atrule-id {
-    color: #f3ebff;
+    color: #eeebff;
   }
 
   code.language-javascript,
   .token.attr-name {
-    color: #d6b9fe;
+    color: #c4b9fe;
   }
 
   code.language-css,
@@ -114,12 +115,12 @@ Modifications:
   .token.statement,
   .token.regex,
   .token.atrule {
-    color: #ffb6b3;
+    color: #ffcc99;
   }
 
   .token.placeholder,
   .token.variable {
-    color: #ffb6b3;
+    color: #ffcc99;
   }
 
   .token.deleted {
@@ -127,7 +128,7 @@ Modifications:
   }
 
   .token.inserted {
-    border-bottom: 1px dotted #f3ebff;
+    border-bottom: 1px dotted #eeebff;
     text-decoration: none;
   }
 
@@ -141,7 +142,7 @@ Modifications:
   }
 
   .token.important {
-    color: #d6b9fe;
+    color: #c4b9fe;
   }
 
   .token.entity {
@@ -149,7 +150,7 @@ Modifications:
   }
 
   pre > code.highlight {
-    outline: .4em solid #aa75f5;
+    outline: .4em solid #8a75f5;
     outline-offset: .4em;
   }
 
@@ -157,11 +158,11 @@ Modifications:
    * http://prismjs.com/plugins/line-numbers/
    */
   .line-numbers .line-numbers-rows {
-    border-right-color: #372f42;
+    border-right-color: #363342;
   }
 
   .line-numbers-rows > span:before {
-    color: #372f42;
+    color: #363342;
   }
 
   /* overrides color-values for the Line Highlight plugin
@@ -170,7 +171,7 @@ Modifications:
    * https://drafts.csswg.org/css-color/#hex-notation
    */
   .line-highlight {
-    background: #ed655e33;
-    background: linear-gradient(to right, #ed655e33 70%, #ed655e00);
+    background: #e0914233;
+    background: linear-gradient(to right, #e0914233 70%, #e0914200);
   }
 }
