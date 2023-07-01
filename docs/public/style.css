@@ -71,7 +71,7 @@ h1, h2, h3, h4, h5 {
   font-family: Bahnschrift, "DIN Alternate", "Franklin Gothic Medium", "Nimbus Sans Narrow", sans-serif-condensed, sans-serif;
 }
 
-p code {
+p code, li code {
   /* From https://github.com/system-fonts/modern-font-stacks#monospace-code */
   font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
   padding-inline: 0.125rem;
