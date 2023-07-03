@@ -10,6 +10,7 @@ Source: https://raw.githubusercontent.com/atelierbram/Base2Tone-prism/610d3d65ac
 Modifications:
 * Media query
 * Darkened colors to improve contrast
+* Removed ::selection psuedo-selectors for improved contrast when selected
 */
 
 @media (prefers-color-scheme: light) {
@@ -32,20 +33,8 @@ Modifications:
     -moz-hyphens: none;
     -ms-hyphens: none;
     hyphens: none;
-    background: #fbfaf9;
+    background-color: #fbfaf9;
     color: #7a63ee;
-  }
-
-  pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-  code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background: #fbfaf9;
-  }
-
-  pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-  code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: #fbfaf9;
   }
 
   /* Code blocks */
