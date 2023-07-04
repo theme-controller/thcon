@@ -11,14 +11,16 @@ Modifications:
 * Media query
 * Darkened colors to improve contrast
 * Removed ::selection psuedo-selectors for improved contrast when selected
+* Reduced line-height
+* Removed text-decoration on insertions/deletions
+* Reduced overall margin
 */
 
 @media (prefers-color-scheme: light) {
   code[class*="language-"],
   pre[class*="language-"] {
     font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
-    font-size: 14px;
-    line-height: 1.375;
+    font-size: 0.875rem;
     direction: ltr;
     text-align: left;
     white-space: pre;
@@ -39,8 +41,8 @@ Modifications:
 
   /* Code blocks */
   pre[class*="language-"] {
-    padding: 1em;
-    margin: .5em 0;
+    padding: 0.5rem;
+    margin: .5rem 0;
     overflow: auto;
   }
 
@@ -112,15 +114,6 @@ Modifications:
     color: #c4b9fe;
   }
 
-  .token.deleted {
-    text-decoration: line-through;
-  }
-
-  .token.inserted {
-    border-bottom: 1px dotted #b37537;
-    text-decoration: none;
-  }
-
   .token.italic {
     font-style: italic;
   }
@@ -161,6 +154,5 @@ Modifications:
    */
   .line-highlight {
     background: #b3753733;
-    background: linear-gradient(to right, #b3753733 70%, #b3753700);
   }
 }

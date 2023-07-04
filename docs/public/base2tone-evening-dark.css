@@ -1,4 +1,5 @@
 /*
+* Removed border-bottom on highlights
 Name:   Base2Tone-Evening Dark
 Author: by Bram de Haan, adapted from DuoTone themes by Simurai (http://simurai.com/projects/2016/01/01/duotone-themes)
 
@@ -11,14 +12,16 @@ Modifications:
 * Media query
 * Lightened colors to improve contrast
 * Removed ::selection psuedo-selectors for improved contrast when selected
+* Reduced line-height
+* Removed text-decoration on insertions/deletions
+* Reduced overall margin
 */
 
 @media (prefers-color-scheme: dark) {
   code[class*="language-"],
   pre[class*="language-"] {
     font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
-    font-size: 14px;
-    line-height: 1.375;
+    font-size: 0.875rem;
     direction: ltr;
     text-align: left;
     white-space: pre;
@@ -110,15 +113,6 @@ Modifications:
   .token.placeholder,
   .token.variable {
     color: #ffcc99;
-  }
-
-  .token.deleted {
-    text-decoration: line-through;
-  }
-
-  .token.inserted {
-    border-bottom: 1px dotted #eeebff;
-    text-decoration: none;
   }
 
   .token.italic {
