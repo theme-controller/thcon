@@ -11,11 +11,40 @@ setup: |
   tiny amount of setup:
 
   1. Split your dark mode and light mode themes into separate `.conf` files (or use
-  [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes))
+     [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes))
+     `~/.config/kitty/{dark,light}.thcon.conf`
   2. Use the paths to those files in `thcon.toml` (examples below)
-  3. Ensure you don't have any other [color settings](https://sw.kovidgoyal.net/kitty/conf/#color-scheme)
-     in your main `kitty.conf`
-  4. Add `include ~/.local/share/thcon/kitty.conf` to your main `kitty.conf`
+  3. Replace the [color settings](https://sw.kovidgoyal.net/kitty/conf/#color-scheme)
+     in your main `kitty.conf` with
+     <code>include&nbsp;~/.local/share/thcon/kitty.conf</code>
+
+  In other words:
+
+  ```diff-text
+   # kitty.conf
+
+  -background #002b36
+  -foreground #839496
+  -# ...
+  +include ~/.local/share/thcon/kitty.conf
+  ```
+
+  ```text
+  # ~/.config/kitty/dark.thcon.conf
+
+  background #002b36
+  foreground #839496
+  # ...
+  ```
+
+  ```text
+  # ~/.config/kitty/light.thcon.conf
+
+  background #fdf6e3
+  foreground #657b83
+  # ...
+  ```
+
 options:
   - key: dark
     default: ~/.config/kitty/dark.thcon.conf
