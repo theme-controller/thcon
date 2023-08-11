@@ -19,7 +19,7 @@ if [[ "$CIRRUS_RELEASE" == "" && "$CIRRUS_TAG" != "" ]]; then
   if [[ $exists -eq 0 ]]; then
     CIRRUS_RELEASE=$(echo $rel | grep -E -o '"id": \d+' | sed 's/"id": //')
   else
-    echo "Not a release, and no release matches tag $CIRUS_TAG. Not deploying."
+    echo "Not a release, and no release matches tag '$CIRRUS_TAG'. Not deploying."
     exit 0
   fi
 fi
