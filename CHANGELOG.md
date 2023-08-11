@@ -7,6 +7,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ## [Unreleased]
 
+## [v0.15.2 - 2023-08-11]
+Maintenance release to improve CI infrastructure. No other changes beyond v0.15.1.
+
 ## [v0.15.1 - 2023-08-11]
 ### Fixed:
 * When not already running, Terminal.app no longer stays running in the background after switching themes
