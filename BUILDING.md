@@ -6,7 +6,7 @@ This project uses a pretty standard Go build pattern:
 go build
 
 # Test
-go test
+go test ./...
 
 # Lint
 # Install staticcheck: https://staticcheck.io/docs/getting-started/
