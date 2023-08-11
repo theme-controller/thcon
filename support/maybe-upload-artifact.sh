@@ -2,6 +2,22 @@
 # Originally from https://cirrus-ci.org/examples/#release-assets
 
 set -eo pipefail
+set -x
+
+if [[ "$CIRRUS_RELEASE" == "" && "$CIRRUS_TAG" != "" ]]; then
+  rel=$(curl -L \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer $GITHUB_TOKEN" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    https://api.github.com/repos/$CIRRUS_REPO_FULL_NAME/releases/tags/$CIRRUS_TAG
+  )
+
+  if echo $rel | grep '"Not found"'; then
+    echo "Not a release, and no release matches tag $CIRUS_TAG. Not deploying."
+    exit 0
+  fi
+  CIRRUS_RELEASE=$(echo $rel | grep -E -o '"id": \d+' | sed 's/"id": //')
+fi
 
 if [[ "$CIRRUS_RELEASE" == "" ]]; then
   echo "Not a release. No need to deploy!"
