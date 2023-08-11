@@ -7,6 +7,12 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ## [Unreleased]
 
+## [v0.15.0 - 2023-08-11]
+Relicensed to BSD 3-clause (previous releases were Apache 2.0 / MIT dual-licensed).
+
+### Changed:
+* Updated third-party dependencies
+
 ## [v0.14.0 - 2023-06-11]
 Completely rewritten in Go. Configuration format is backwards-compatible with
 the rust version, but the CLI makes **no claims of backwards compatibility**.
