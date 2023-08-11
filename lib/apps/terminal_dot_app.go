@@ -32,12 +32,17 @@ func (tda *TerminalDotApp) ValidateConfig(ctx context.Context, config *Config) (
 
 func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	const switchProfileAppleScriptf = `tell application "Terminal"
+	set was_running to running
 	set new_settings to first settings set whose name is "%s"
 
 	set default settings to new_settings
 	set startup settings to new_settings
 
 	set current settings of every tab of every window to new_settings
+
+	# Quit Terminal.app if it wasn't already running (set ... above starts it in
+	# the background).
+	if not was_running then do shell script "pkill -x Terminal"
 end tell`
 
 	var themeConfig *terminalDotAppConfig = config.TerminalDotApp

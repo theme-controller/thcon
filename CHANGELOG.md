@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+### Fixed:
+* When not already running, Terminal.app no longer stays running in the background after switching themes
 
 ## [v0.15.0 - 2023-08-11]
 Relicensed to BSD 3-clause (previous releases were Apache 2.0 / MIT dual-licensed).
