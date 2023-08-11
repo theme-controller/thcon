@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+## [v0.15.4 - 2023-08-11]
+### Fixed
+* Align version number with released version number
 
 ## [v0.15.3 - 2023-08-11]
 Maintenance release to improve CI infrastructure. No other changes beyond v0.15.1.
