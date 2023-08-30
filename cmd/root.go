@@ -8,7 +8,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:     "thcon",
-	Version: "0.15.4",
+	Version: "0.15.5",
 	Short:   "Switches apps between dark mode and light mode",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// PersistentPreRun executes after arg validation.

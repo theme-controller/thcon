@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
+
+## [v0.15.5 - 2023-08-31]
 ### Fixed
 * No longer reports errors when calling lookandfeeltool on systems without KDE installed.
 * No longer reports errors when switching helix themes where a ~/.config/helix directory doesn't exist.
