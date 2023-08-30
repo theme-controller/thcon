@@ -75,6 +75,10 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 	newThemeLine := fmt.Sprintf(`theme = "%s"`, themeName)
 	themeLineRE := regexp.MustCompile(`(?m)^\s*theme\s*=\s*".+"$`)
 	newConfig := themeLineRE.ReplaceAll(hxConfigBytes, []byte(newThemeLine))
+	if err := os.MkdirAll(filepath.Base(configPath), 0o755); err != nil {
+		return fmt.Errorf("unable to create helix config directory: %w", err)
+	}
+
 	if err := os.WriteFile(configPath, newConfig, os.ModePerm); err != nil {
 		return fmt.Errorf("unable to write new helix config: %v", err)
 	}

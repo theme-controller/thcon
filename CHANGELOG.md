@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Fixed
 * No longer reports errors when calling lookandfeeltool on systems without KDE installed.
+* No longer reports errors when switching helix themes where a ~/.config/helix directory doesn't exist.
 
 ## [v0.15.4 - 2023-08-11]
 ### Fixed
