@@ -10,6 +10,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 * No longer reports errors when calling lookandfeeltool on systems without KDE installed.
 * No longer reports errors when switching helix themes where a ~/.config/helix directory doesn't exist.
 
+### Changed
+* Skipped apps now use a separate "reason" field when info-level logging (-v) is enabled, instead of listing the skip-reason in the message itself.
+
 ## [v0.15.4 - 2023-08-11]
 ### Fixed
 * Align version number with released version number

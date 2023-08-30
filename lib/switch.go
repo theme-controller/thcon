@@ -101,25 +101,26 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 
 		switch status {
 		case health.StatusDisabled:
-			appLog.Info().Msg("skipping (disabled)")
+			appLog.Info().Str("reason", "disabled").Msg("skipping")
 		case health.StatusNotInstalled:
-			appLog.Info().Msg("skipping (not installed)")
+			appLog.Info().Str("reason", "not installed").Msg("skipping")
 		case health.StatusMissingConfig:
-			appLog.Info().Msg("skipping (requires config)")
+			appLog.Info().Str("reason", "requires config").Msg("skipping")
 		case health.StatusNotOk:
 			if err == nil {
-				appLog.Error().Err(nil).Msg("skipping (unknown)")
+				appLog.Error().Err(nil).Str("reason", "unknown").Msg("skipping")
 				continue
 			}
 
 			if verrs, ok := err.(goValidator.ValidationErrors); ok {
 				appLog.Error().
+					Str("reason", "validation failed").
 					Errs("validation errors", health.ValidationErrorsToErrorSlice(verrs)).
-					Msg("skipping (validation failed)")
+					Msg("skipping")
 				continue
 			}
 
-			appLog.Error().Err(err).Msg("skipping (unexpected error)")
+			appLog.Error().Err(err).Str("reason", "unexpected error").Msg("skipping")
 		case health.StatusOk:
 			toSwitch = append(toSwitch, app)
 		}
