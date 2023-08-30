@@ -29,6 +29,8 @@ func (s Status) String() string {
 	switch s {
 	case StatusOk:
 		return "ok"
+	case StatusNotInstalled:
+		return "not_installed"
 	case StatusMissingConfig:
 		return "missing_config"
 	case StatusDisabled:
@@ -46,6 +48,10 @@ const (
 	// StatusOk is returned when the provided app config is healthy, and that
 	// the relevant app can be switched.
 	StatusOk Status = iota
+	// StatusNotInstalled is returned when the application isn't installed.
+	// User interaction is required to install the application, but will be
+	// silently ignored otherwise.
+	StatusNotInstalled
 	// StatusMissingConfig is returned when no app config was provided for an
 	// app that doesn't (or cannot) have a valid default configuration. User
 	// interaction is required.

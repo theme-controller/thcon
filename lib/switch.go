@@ -102,6 +102,8 @@ func Switch(ctx context.Context, mode operation.Operation, args []string) error 
 		switch status {
 		case health.StatusDisabled:
 			appLog.Info().Msg("skipping (disabled)")
+		case health.StatusNotInstalled:
+			appLog.Info().Msg("skipping (not installed)")
 		case health.StatusMissingConfig:
 			appLog.Info().Msg("skipping (requires config)")
 		case health.StatusNotOk:

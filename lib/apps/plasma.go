@@ -4,6 +4,7 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"os/exec"
 
 	"github.com/rs/zerolog/log"
@@ -36,6 +37,10 @@ func (p *Plasma) Argname() string {
 }
 
 func (p *Plasma) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
+	_, err := exec.LookPath("lookandfeeltool")
+	if err != nil {
+		return health.StatusNotInstalled, errors.New("lookandfeeltool is not installed")
+	}
 	return health.HasDefaults(ctx, config.Plasma)
 }
 
