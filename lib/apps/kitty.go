@@ -54,7 +54,7 @@ func (k *Kitty) Switch(ctx context.Context, mode operation.Operation, config *Co
 	}
 	themePath, err := homedir.Expand(themePath)
 	if err != nil {
-		return fmt.Errorf("unable to expand path to config file: %v", err)
+		return fmt.Errorf("unable to expand path to config file: %w", err)
 	}
 
 	stateDir, err := util.EnsureThconStateDir()
@@ -70,17 +70,17 @@ func (k *Kitty) Switch(ctx context.Context, mode operation.Operation, config *Co
 
 	if exists {
 		if err := os.Remove(symlinkTarget); err != nil {
-			return fmt.Errorf("unable to remove old symlink: %v", err)
+			return fmt.Errorf("unable to remove old symlink: %w", err)
 		}
 	}
 	if err := os.Symlink(themePath, symlinkTarget); err != nil {
-		return fmt.Errorf("unable to create symlink for theme: %v", err)
+		return fmt.Errorf("unable to create symlink for theme: %w", err)
 	}
 
 	// 2) Then send USR1 to all kitty instances to force them to reload their config.
 	procs, err := gops.Processes()
 	if err != nil {
-		return fmt.Errorf("unable to list processes: %v", err)
+		return fmt.Errorf("unable to list processes: %w", err)
 	}
 
 	errs := []error{}

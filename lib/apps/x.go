@@ -64,7 +64,7 @@ func (x *Extension) Switch(ctx context.Context, mode operation.Operation, config
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Ctx(ctx).Error().Bytes("output", out).Msg("extension error")
-		return fmt.Errorf("error executing custom comand %q: %v", switchCmd, err)
+		return fmt.Errorf("error executing custom comand %q: %w", switchCmd, err)
 	}
 
 	if len(out) > 0 {

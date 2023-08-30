@@ -43,7 +43,7 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 	// 1) Read, modify, and write the helix config to change the theme for new sessions.
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Errorf("unable to get user's home directory: %v", err)
+		return fmt.Errorf("unable to get user's home directory: %w", err)
 	}
 
 	var themeConfig *helixConfig = config.Helix
@@ -69,7 +69,7 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 		// proceed as expected.
 		hxConfigBytes = []byte(`theme = "default"`)
 	} else if err != nil {
-		return fmt.Errorf("unable to read helix config: %v", err)
+		return fmt.Errorf("unable to read helix config: %w", err)
 	}
 
 	newThemeLine := fmt.Sprintf(`theme = "%s"`, themeName)
@@ -80,13 +80,13 @@ func (h *Helix) Switch(ctx context.Context, mode operation.Operation, config *Co
 	}
 
 	if err := os.WriteFile(configPath, newConfig, os.ModePerm); err != nil {
-		return fmt.Errorf("unable to write new helix config: %v", err)
+		return fmt.Errorf("unable to write new helix config: %w", err)
 	}
 
 	// 2) Then send USR1 to all helix instances to force them to reload their config.
 	procs, err := gops.Processes()
 	if err != nil {
-		return fmt.Errorf("unable to list processes: %v", err)
+		return fmt.Errorf("unable to list processes: %w", err)
 	}
 
 	errs := []error{}

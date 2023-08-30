@@ -16,7 +16,7 @@ func addCustomValidators(validate *goValidator.Validate) {
 	mustRegisterValidator := func(tag string, fn goValidator.Func) {
 		err := validate.RegisterValidation(tag, fn)
 		if err != nil {
-			panic(fmt.Errorf("unable to register custom validator %q %v", tag, err))
+			panic(fmt.Errorf("unable to register custom validator %q %w", tag, err))
 		}
 	}
 	mustRegisterValidator("expfile", expandedFile)

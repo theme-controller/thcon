@@ -43,20 +43,20 @@ func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config 
 	}
 	desiredProfileJson, err := json.Marshal(desiredProfile)
 	if err != nil {
-		return fmt.Errorf("unable to marshal theme %q as JSON: %v", desiredProfile, err)
+		return fmt.Errorf("unable to marshal theme %q as JSON: %w", desiredProfile, err)
 	}
 	desiredProfile = string(desiredProfileJson)
 
 	confdir, err := os.UserConfigDir()
 	if err != nil {
-		return fmt.Errorf("unable to get user config directory: %v", err)
+		return fmt.Errorf("unable to get user config directory: %w", err)
 	}
 
 	// See https://iterm2.com/documentation-dynamic-profiles.html
 	dyProfilePath := filepath.Join(confdir, "iTerm2", "DynamicProfiles", "thcon.json")
 	f, err := os.OpenFile(dyProfilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
-		return fmt.Errorf("unable to open dynamic profile %q: %v", dyProfilePath, err)
+		return fmt.Errorf("unable to open dynamic profile %q: %w", dyProfilePath, err)
 	}
 	defer f.Close()
 
@@ -72,7 +72,7 @@ func (it2 *Iterm2) Switch(ctx context.Context, mode operation.Operation, config 
 }`), desiredProfile)
 
 	if err != nil {
-		return fmt.Errorf("unable to write dynamic profile %q: %v", dyProfilePath, err)
+		return fmt.Errorf("unable to write dynamic profile %q: %w", dyProfilePath, err)
 	}
 	return nil
 }
