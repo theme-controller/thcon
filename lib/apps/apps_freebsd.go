@@ -15,4 +15,5 @@ var All = []Switchable{
 	NewNeovim(),
 	NewHelix(),
 	NewKitty(),
+	new(Alacritty),
 }

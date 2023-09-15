@@ -8,11 +8,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"syscall"
 
 	"github.com/mitchellh/go-homedir"
-	gops "github.com/mitchellh/go-ps"
-	"github.com/rs/zerolog/log"
 	"github.com/theme-controller/thcon/lib/health"
 	"github.com/theme-controller/thcon/lib/operation"
 	"github.com/theme-controller/thcon/lib/util"
@@ -37,8 +34,50 @@ func (a *Alacritty) ValidateConfig(ctx context.Context, config *Config) (health.
 }
 
 func (a *Alacritty) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
-	// Just copy the dark file into ~/.local/share/thcon/alacritty.yaml
-	// and have users use that as an import
+	cfg := config.Alacritty
+	if cfg == nil {
+		return nil
+	}
+
+	// 1) Open the user-specified file to copy from.
+	themePath := cfg.Dark
+	if mode == operation.LightMode {
+		themePath = cfg.Light
+	}
+	useToml := filepath.Ext(themePath) == "toml"
+	themePath, err := homedir.Expand(themePath)
+	if err != nil {
+		return fmt.Errorf("unable to expand path to theme file: %w", err)
+	}
+
+	newTheme, err := os.Open(themePath)
+	if err != nil {
+		return fmt.Errorf("could not open new theme in %q: %w", themePath, err)
+	}
+	defer newTheme.Close()
+
+	// 2) Open the thcon-managed file to copy into.
+	stateDir, err := util.EnsureThconStateDir()
+	if err != nil {
+		return err
+	}
+
+	dstfileBase := "alacritty.yml"
+	if useToml {
+		dstfileBase = "alacritty.toml"
+	}
+
+	dstPath := filepath.Join(stateDir, dstfileBase)
+
+	dstFile, err := os.OpenFile(dstPath, os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		return fmt.Errorf("could not open thcon theme file: %w", err)
+	}
+	defer dstFile.Close()
+
+	// 3) Copy between files.
+	_, err = io.Copy(dstFile, newTheme)
+	return err
 }
 
 func (a *Alacritty) Name() string {
