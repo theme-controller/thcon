@@ -13,6 +13,7 @@ type Config struct {
 	HelixConfigSlice
 	Iterm2ConfigSlice
 	KittyConfigSlice
+	AlacrittyConfigSlice
 	ExtensionsSlice
 }
 
