@@ -6,19 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
-### Added
+### Added:
 * [Alacritty](https://alacritty.org) support
 
+### Removed:
+* Default dark-mode/light-mode config paths for kitty
+
 ## [v0.15.5 - 2023-08-31]
-### Fixed
+### Fixed:
 * No longer reports errors when calling lookandfeeltool on systems without KDE installed.
 * No longer reports errors when switching helix themes where a ~/.config/helix directory doesn't exist.
 
-### Changed
+### Changed:
 * Skipped apps now use a separate "reason" field when info-level logging (-v) is enabled, instead of listing the skip-reason in the message itself.
 
 ## [v0.15.4 - 2023-08-11]
-### Fixed
+### Fixed:
 * Align version number with released version number
 
 ## [v0.15.3 - 2023-08-11]
