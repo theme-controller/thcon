@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -67,12 +68,7 @@ func (v *anyVim) sockbase() string {
 	return "vim"
 }
 
-func (v *anyVim) getSymlinkTarget(rcFile string) (string, error) {
-	thcon_dir, err := util.EnsureThconStateDir()
-	if err != nil {
-		return "", err
-	}
-
+func (v *anyVim) getSymlinkTarget(rcFile string) string {
 	var extension string = filepath.Ext(rcFile)
 	// Lua syntax must be in a .lua file extension, but any other extension
 	// can contain VimL. Strip non-lua extensions, to produce symlinks called
@@ -80,7 +76,7 @@ func (v *anyVim) getSymlinkTarget(rcFile string) (string, error) {
 	if extension != ".lua" {
 		extension = "rc"
 	}
-	return filepath.Join(thcon_dir, v.flavor+extension), nil
+	return extension
 }
 
 func (v *anyVim) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
@@ -126,24 +122,11 @@ func (v *anyVim) Switch(ctx context.Context, mode operation.Operation, config *C
 	// 1) Symlink a thcon state file to point to the desired config.
 	rc_file, err := homedir.Expand(rc_file)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to expand path to theme file: %w", err)
 	}
 
-	symlink_target, err := v.getSymlinkTarget(rc_file)
-	if err != nil {
-		return err
-	}
-
-	exists, err := util.SymlinkExists(symlink_target)
-	if err != nil {
-		return nil
-	}
-	if exists {
-		if err := os.Remove(symlink_target); err != nil {
-			return err
-		}
-	}
-	if err := os.Symlink(rc_file, symlink_target); err != nil {
+	symlink_target := v.getSymlinkTarget(rc_file)
+	if err := util.ReplaceStateSymlink(rc_file, symlink_target); err != nil {
 		return err
 	}
 
