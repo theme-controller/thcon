@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Added:
 * [Alacritty](https://alacritty.org) support
+* [Changelog](https://thcon.app/changelog) page in HTML docs
 
 ### Removed:
 * Default dark-mode/light-mode config paths for kitty
