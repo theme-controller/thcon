@@ -6,6 +6,7 @@ var All = []Switchable{
 	new(Iterm2),
 	NewVim(),
 	NewNeovim(),
+	new(Alacritty),
 	new(Helix),
 	new(Kitty),
 }
