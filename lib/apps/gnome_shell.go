@@ -22,10 +22,6 @@ type GnomeShell struct{}
 
 var _ Switchable = (*GnomeShell)(nil)
 
-func NewGnomeShell() Switchable {
-	return &GnomeShell{}
-}
-
 func (g *GnomeShell) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
 	return health.RequiresConfig(ctx, config.GnomeShell)
 }

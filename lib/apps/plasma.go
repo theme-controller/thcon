@@ -22,10 +22,6 @@ type PlasmaConfig struct {
 
 type Plasma struct{}
 
-func NewPlasma() Switchable {
-	return &Plasma{}
-}
-
 func (p *Plasma) Name() string {
 	const name = "Plasma"
 	return name

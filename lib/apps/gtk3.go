@@ -20,10 +20,6 @@ type Gtk3Config struct {
 
 type Gtk3 struct{}
 
-func NewGtk3() Switchable {
-	return &Gtk3{}
-}
-
 func (g *Gtk3) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
 	return health.HasDefaults(ctx, config.Gtk3)
 }

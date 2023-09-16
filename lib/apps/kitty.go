@@ -28,10 +28,6 @@ type kittyConfig struct {
 
 type Kitty struct{}
 
-func NewKitty() *Kitty {
-	return &Kitty{}
-}
-
 var _ Switchable = (*Kitty)(nil)
 
 func (k *Kitty) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {

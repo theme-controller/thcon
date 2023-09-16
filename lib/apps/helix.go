@@ -29,10 +29,6 @@ type helixConfig struct {
 
 type Helix struct{}
 
-func NewHelix() *Helix {
-	return &Helix{}
-}
-
 var _ Switchable = (*Helix)(nil)
 
 func (h *Helix) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {

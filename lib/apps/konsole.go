@@ -25,10 +25,6 @@ type KonsoleConfig struct {
 
 type Konsole struct{}
 
-func NewKonsole() Switchable {
-	return &Konsole{}
-}
-
 func (k *Konsole) Name() string {
 	const name = "Konsole"
 	return name

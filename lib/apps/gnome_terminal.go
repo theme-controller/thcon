@@ -26,10 +26,6 @@ type GnomeTerminalConfig struct {
 
 type GnomeTerminal struct{}
 
-func NewGnomeTerminal() Switchable {
-	return &GnomeTerminal{}
-}
-
 type windowNode struct {
 	XMLName xml.Name `xml:"node"`
 	Name    string   `xml:"name,attr"`
