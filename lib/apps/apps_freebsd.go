@@ -13,6 +13,7 @@ var All = []Switchable{
 	// Cross-platform
 	NewVim(),
 	NewNeovim(),
+	new(Alacritty),
 	new(Helix),
 	new(Kitty),
 }
