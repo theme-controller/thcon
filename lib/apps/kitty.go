@@ -31,21 +31,17 @@ type Kitty struct{}
 var _ Switchable = (*Kitty)(nil)
 
 func (k *Kitty) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
-	return health.HasDefaults(ctx, config.Kitty)
+	return health.RequiresConfig(ctx, config.Kitty)
 }
 
 func (k *Kitty) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
 	// 1) Replace the ~/.local/state/thcon/kitty-theme.conf symlink
-	var themeConfig *kittyConfig = config.Kitty
-	if themeConfig == nil {
-		themeConfig = &kittyConfig{
-			Dark:  "~/.config/kitty/dark.thcon.conf",
-			Light: "~/.config/kitty/light.thcon.conf",
-		}
+	if config.Kitty == nil {
+		return nil
 	}
-	var themePath = themeConfig.Dark
+	var themePath = config.Kitty.Dark
 	if mode == operation.LightMode {
-		themePath = themeConfig.Light
+		themePath = config.Kitty.Light
 	}
 	themePath, err := homedir.Expand(themePath)
 	if err != nil {

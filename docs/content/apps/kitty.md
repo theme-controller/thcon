@@ -10,8 +10,9 @@ setup: |
   No additional plugins are required to control kitty themes but there is a
   tiny amount of setup:
 
-  1. Split your dark mode and light mode themes into separate `.conf` files (or use
-     [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes))
+  1. Split your dark mode and light mode themes into separate `.conf` files, or
+     skip this step and use pre-defined themes from
+     [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes):
      `~/.config/kitty/{dark,light}.thcon.conf`
   2. Use the paths to those files in `thcon.toml` (examples below)
   3. Replace the [color settings](https://sw.kovidgoyal.net/kitty/conf/#color-scheme)
@@ -47,10 +48,10 @@ setup: |
 
 options:
   - key: dark
-    default: ~/.config/kitty/dark.thcon.conf
+    default: (none)
     description: Path to the file defining dark mode settings
   - key: light
-    default: ~/.config/kitty/light.thcon.conf
+    default: (none)
     description: Path to the file defining light mode settings
 example: |
   [kitty]
