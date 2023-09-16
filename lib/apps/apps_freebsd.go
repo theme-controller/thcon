@@ -2,17 +2,17 @@ package apps
 
 var All = []Switchable{
 	// GNOME
-	NewGtk3(),
-	NewGnomeShell(),
-	NewGnomeTerminal(),
+	new(Gtk3),
+	new(GnomeShell),
+	new(GnomeTerminal),
 
 	// KDE
-	NewKonsole(),
-	NewPlasma(),
+	new(Konsole),
+	new(Plasma),
 
 	// Cross-platform
 	NewVim(),
 	NewNeovim(),
-	NewHelix(),
-	NewKitty(),
+	new(Helix),
+	new(Kitty),
 }

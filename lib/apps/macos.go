@@ -23,10 +23,6 @@ type MacOS struct{}
 
 var _ Switchable = (*MacOS)(nil)
 
-func NewMacOS() Switchable {
-	return &MacOS{}
-}
-
 func (m *MacOS) ValidateConfig(ctx context.Context, config *Config) (health.Status, error) {
 	return health.HasDefaults(ctx, config.MacOS)
 }

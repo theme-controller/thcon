@@ -1,11 +1,11 @@
 package apps
 
 var All = []Switchable{
-	NewMacOS(),
-	&TerminalDotApp{},
-	&Iterm2{},
+	new(MacOS),
+	new(TerminalDotApp),
+	new(Iterm2),
 	NewVim(),
 	NewNeovim(),
-	NewHelix(),
-	NewKitty(),
+	new(Helix),
+	new(Kitty),
 }
