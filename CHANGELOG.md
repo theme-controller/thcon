@@ -9,6 +9,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * [Emacs](https://www.gnu.org/software/emacs/) support
 
+### Changed:
+* Improved contrast of syntax-highlighted code blocks
+
 ## [v0.16.0 - 2023-09-16]
 ### Added:
 * [Alacritty](https://alacritty.org) support

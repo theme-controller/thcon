@@ -222,13 +222,6 @@ picture > img {
   margin: 0;
 }
 
-.token.deleted:not(.prefix) {
-  background-color: hsl(350deg 100% 75% / 55%);
-}
-.token.inserted:not(.prefix) {
-  background-color: hsl(120deg 73% 75% / 30%);
-}
-
 /* Make the + and - characters unselectable for copy/paste. */
 .token.prefix.unchanged,
 .token.prefix.inserted,
