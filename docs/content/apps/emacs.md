@@ -11,7 +11,7 @@ setup: |
   required otherwise:
 
   1. Replace your existing `load-theme` call with this snippet:
-  ```lisp
+  ```emacs-lisp
   (let ((thcon-emacs-el "~/.local/share/thcon/emacs.el"))
     (require 'filenotify)
 
@@ -29,7 +29,7 @@ setup: |
   3. Use the paths to those files in `thcom.toml` (examples below)
 
   In other words:
-  ```diff-lisp
+  ```diff-emacs-lisp
    ; ~/.emacs.d/init.el
   -(load-theme 'tango)
   +(let ((thcon-emacs-el "~/.local/share/thcon/emacs.el"))
@@ -46,14 +46,14 @@ setup: |
   +  (load-file thcon-emacs-el)))
   ```
 
-  ```lisp
+  ```emacs-lisp
   ; ~/.emacs.d/dark.thcon.el
 
   (load-theme 'tsdh-dark)
   ; ...
   ```
 
-  ```lisp
+  ```emacs-lisp
   ; ~/.emacs.d/light.thcon.el
 
   (load-theme 'tsdh-light)
