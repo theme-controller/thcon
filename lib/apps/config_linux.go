@@ -13,6 +13,7 @@ type Config struct {
 	KonsoleConfig
 	PlasmaConfig
 
+	EmacsConfigSlice
 	VimConfigSlice
 	NeovimConfigSlice
 	HelixConfigSlice
