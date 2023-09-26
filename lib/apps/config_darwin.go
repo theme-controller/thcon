@@ -8,6 +8,7 @@ import (
 type Config struct {
 	MacOSConfigSlice
 	TerminalDotAppConfigSlice
+	EmacsConfigSlice
 	VimConfigSlice
 	NeovimConfigSlice
 	HelixConfigSlice

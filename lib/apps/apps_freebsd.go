@@ -11,6 +11,7 @@ var All = []Switchable{
 	new(Plasma),
 
 	// Cross-platform
+	new(Emacs),
 	NewVim(),
 	NewNeovim(),
 	new(Alacritty),
