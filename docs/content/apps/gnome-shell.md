@@ -12,10 +12,10 @@ setup: |
   config (either via GNOME Extensions or GNOME Tweaks).
 options:
   - key: dark
-    default: solarized_dark
+    default: (none)
     description: Theme name to use in dark mode
   - key: light
-    default: solarized_light
+    default: (none)
     description: Theme name to use in light mode
 example: |
   [gnome-shell]
