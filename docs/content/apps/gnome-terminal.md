@@ -5,6 +5,7 @@ platforms: [ linux, freebsd, openbsd ]
 category: terminal
 
 config_section: gnome-terminal
+needs_config: true
 url: https://wiki.gnome.org/Apps/Terminal
 setup: |
   `thcon` controls GNOME Terminal themes by switching between two profiles you

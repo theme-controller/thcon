@@ -5,6 +5,7 @@ platforms: [ linux, freebsd, openbsd ]
 category: terminal
 
 config_section: konsole
+needs_config: true
 url: https://konsole.kde.org/
 setup: |
   `thcon` controls Konsole themes by switching between two profiles you set up

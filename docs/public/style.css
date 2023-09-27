@@ -136,7 +136,8 @@ footer {
   color: var(--bg);
   margin-top: 1rem;
   padding: 1rem;
-  width: 100%;
+  min-width: max-content;
+  max-width: 100%;
 }
 
 h5 {
@@ -206,6 +207,19 @@ picture > img {
   width: 100%;
   height: auto;
   aspect-ratio: attr(width) / attr(height);
+}
+
+.compat-matrix thead th {
+  background-color: var(--fg);
+  color: var(--bg);
+}
+
+.compat-matrix td {
+  white-space: nowrap;
+}
+
+.compat-matrix td:not(:first-of-type) {
+  text-align: center;
 }
 
 .config__options {

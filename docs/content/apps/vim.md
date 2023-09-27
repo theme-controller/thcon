@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: editor
 
 config_section: vim
+needs_config: true
 url: https://www.vim.org/
 setup: |
   ### Install

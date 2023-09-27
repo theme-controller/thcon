@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: editor
 
 config_section: neovim
+needs_config: true
 url: https://neovim.io/
 setup: |
   ### Install

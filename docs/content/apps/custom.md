@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: other
 
 config_section: x.*
+needs_config: true
 setup: |
   The `x.` section exists to support custom integrations that aren't yet
   natively supported. Anything that can be achieved with a shell script

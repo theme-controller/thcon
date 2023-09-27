@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: terminal
 
 config_section: alacritty
+needs_config: true
 url: https://alacritty.org
 setup: |
   No additional plugins are required to control alacritty themes but there is a

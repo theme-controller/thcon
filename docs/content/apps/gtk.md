@@ -5,6 +5,7 @@ platforms: [ linux, freebsd, openbsd ]
 category: desktop
 
 config_section: gtk
+needs_config: false
 url: https://gtk.org/
 setup: |
   `thcon` controls GTK3 and GTK4 themes that would otherwise be managed by

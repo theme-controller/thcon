@@ -5,6 +5,7 @@ platforms: [ linux, freebsd, openbsd ]
 category: desktop
 
 config_section: plasma
+needs_config: false
 url: https://kde.org/plasma-desktop/
 setup: |
   None needed: KDE Plasma themes can be controlled with no setup!

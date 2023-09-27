@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: terminal
 
 config_section: kitty
+needs_config: true
 url: https://sw.kovidgoyal.net/kitty/
 setup: |
   No additional plugins are required to control kitty themes but there is a

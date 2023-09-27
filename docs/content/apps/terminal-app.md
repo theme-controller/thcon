@@ -5,6 +5,7 @@ platforms: [ macos ]
 category: terminal
 
 config_section: terminal-app
+needs_config: false
 url: https://support.apple.com/guide/terminal/welcome/mac
 setup: |
   Terminal.app's default "Basic" profile is aware of the

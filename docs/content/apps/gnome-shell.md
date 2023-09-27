@@ -5,6 +5,7 @@ platforms: [ linux, freebsd, openbsd ]
 category: desktop
 
 config_section: gnome-shell
+needs_config: true
 url: https://wiki.gnome.org/Projects/GnomeShell
 setup: |
   Ensure the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/)

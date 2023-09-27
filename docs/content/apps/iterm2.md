@@ -5,6 +5,7 @@ platforms: [ macos ]
 category: terminal
 
 config_section: iterm2
+needs_config: true
 url: https://iterm2.com
 setup: |
   `thcon` controls iTerm2 themes by switching between two profiles you set up

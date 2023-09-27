@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: editor
 
 config_section: emacs
+needs_config: true
 url: https://www.gnu.org/software/emacs/
 setup: |
   A small snippet of Emacs Lisp is required, but no external dependencies are

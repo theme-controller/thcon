@@ -5,6 +5,7 @@ platforms: [ macos, linux, freebsd, openbsd ]
 category: editor
 
 config_section: helix
+needs_config: false
 url: https://helix-editor.com
 setup: |
   None needed: Helix themes can be controlled with no setup!
