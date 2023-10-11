@@ -26,6 +26,6 @@ options:
     description: The name of the theme (case-sensitive) to apply in light mode
 example: |
   [gtk]
-  dark = HighContrastInverse
-  light = HighContrast
+  dark = "HighContrastInverse"
+  light = "HighContrast"
 ---

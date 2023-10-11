@@ -22,6 +22,6 @@ options:
     description: Theme package name to use in light mode
 example: |
   [plasma]
-  dark = com.example.dark.desktop
-  light = com.example.light.desktop
+  dark = "com.example.dark.desktop"
+  light = "com.example.light.desktop"
 ---
