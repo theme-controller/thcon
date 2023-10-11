@@ -27,7 +27,7 @@ task:
     image: golang:1.21-bullseye
   install_script: apt update && apt install -y libglib2.0-dev
   << : *BUILD_TEST_LINT_TEMPLATE
-  publish_script: ./support/maybe-upload-artifact.sh "thcon_linux_x86_86"
+  publish_script: ./support/maybe-upload-artifact.sh "thcon_linux_amd64"
 
 task:
   name: linux/arm64

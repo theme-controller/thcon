@@ -12,6 +12,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ### Changed:
 * Improved contrast of syntax-highlighted code blocks
+* `thcon_linux_x86_86` binaries are now named `thcon_linux_amd64`
 
 ## [v0.16.0 - 2023-09-16]
 ### Added:
