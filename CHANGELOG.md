@@ -8,6 +8,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ## [Unreleased]
 ### Added:
 * [Emacs](https://www.gnu.org/software/emacs/) support
+* [Prior art](https://thcon.app/prior-art) page in HTML docs
 
 ### Changed:
 * Improved contrast of syntax-highlighted code blocks
