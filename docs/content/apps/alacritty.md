@@ -169,11 +169,11 @@ options:
 example: |
   # For alacritty < 0.13.0, reference YAML files:
   [alacritty]
-  dark = ~/config/alacritty/themes/themes/solarized_dark.yaml
-  light = ~/config/alacritty/themes/themes/solarized_light.yaml
+  dark = "~/config/alacritty/themes/themes/solarized_dark.yaml"
+  light = "~/config/alacritty/themes/themes/solarized_light.yaml"
 
   # For alacritty >= 0.13.0, references TOML files:
   [alacritty]
-  dark = ~/Downloads/solarized_dark.toml
-  light = ~/Downloads/solarized_light.toml
+  dark = "~/Downloads/solarized_dark.toml"
+  light = "~/Downloads/solarized_light.toml"
 ---

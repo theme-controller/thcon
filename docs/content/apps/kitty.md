@@ -56,6 +56,6 @@ options:
     description: Path to the file defining light mode settings
 example: |
   [kitty]
-  dark = ~/src/iTerm2-Color-Schemes/kitty/catppuccin-mocha.conf
-  light = ~/src/iTerm2-Color-Schemes/kitty/catppuccin-latte.conf
+  dark = "~/src/iTerm2-Color-Schemes/kitty/catppuccin-mocha.conf"
+  light = "~/src/iTerm2-Color-Schemes/kitty/catppuccin-latte.conf"
 ---
