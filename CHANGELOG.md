@@ -14,6 +14,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 * Improved contrast of syntax-highlighted code blocks
 * `thcon_linux_x86_86` binaries are now named `thcon_linux_amd64`
 
+### Fixed:
+* `gnome-shell` now respects the user themes included in `config.toml`, instead of always using "Arc" and "Arc-Dark-solid".
+
 ## [v0.16.0 - 2023-09-16]
 ### Added:
 * [Alacritty](https://alacritty.org) support
