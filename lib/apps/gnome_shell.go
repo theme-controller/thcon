@@ -27,10 +27,14 @@ func (g *GnomeShell) ValidateConfig(ctx context.Context, config *Config) (health
 }
 
 func (g *GnomeShell) Switch(ctx context.Context, mode operation.Operation, config *Config) error {
+	if config.GnomeShell == nil {
+		return nil
+	}
+
 	gsettings := glib.SettingsNew("org.gnome.shell.extensions.user-theme")
-	var theme = "Arc-Dark-solid"
+	var theme = config.GnomeShell.Dark
 	if mode == operation.LightMode {
-		theme = "Arc"
+		theme = config.GnomeShell.Light
 	}
 	gsettings.SetString("name", theme)
 	glib.SettingsSync()
