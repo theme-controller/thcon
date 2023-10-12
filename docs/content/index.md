@@ -33,9 +33,6 @@ It sounds like "thicken", and rhymes with "chicken", "quicken", and "stricken".
 
 ## Get Started
 1. [Install thcon](/install)
-2. [View a sample config](/sample)
-3. See which apps are supported on your OS:
-    * [Linux](/platforms/linux)
-    * [macOS](/platforms/macos)
-    * [FreeBSD](/platforms/freebsd)
-    * [OpenBSD](/platforms/openbsd)
+2. [See how to use it](/usage)
+3. [View a sample config](/sample)
+4. See [which apps are supported](/apps) on your OS
