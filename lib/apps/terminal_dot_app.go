@@ -17,9 +17,9 @@ type TerminalDotAppConfigSlice struct {
 }
 
 type terminalDotAppConfig struct {
+	Dark  string `toml:"dark" validate:"required_with=Light"`
+	Light string `toml:"light" validate:"required_with=Dark"`
 	health.Disabled
-	Dark  string `toml:"dark" validate:"required"`
-	Light string `toml:"light" validate:"required"`
 }
 
 type TerminalDotApp struct{}
@@ -46,7 +46,8 @@ func (tda *TerminalDotApp) Switch(ctx context.Context, mode operation.Operation,
 end tell`
 
 	var themeConfig *terminalDotAppConfig = config.TerminalDotApp
-	if themeConfig == nil {
+	shouldApplyDefaults := themeConfig == nil || (!themeConfig.IsDisabled() && themeConfig.Light == "" && themeConfig.Dark == "")
+	if shouldApplyDefaults {
 		themeConfig = &terminalDotAppConfig{
 			Dark:  "Pro",
 			Light: "Basic",

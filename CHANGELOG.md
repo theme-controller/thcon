@@ -11,6 +11,7 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 
 ### Fixed:
 * The `helix` app no longer creates a `config.toml` directory in the current working directory
+* The `terminal-app` app now applies defaults when `disabled=false` is explicitly set without a light/dark config pair
 
 ## [v0.17.0 - 2023-10-11]
 ### Added:
