@@ -9,6 +9,9 @@ Also I copied this intro verbatim from [Keep a Changelog](https://keepachangelog
 ### Added:
 * [Usage](https://thcon.app/usage) page in HTML docs
 
+### Fixed:
+* The `helix` app no longer creates a `config.toml` directory in the current working directory
+
 ## [v0.17.0 - 2023-10-11]
 ### Added:
 * [Emacs](https://www.gnu.org/software/emacs/) support
